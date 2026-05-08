@@ -32,6 +32,8 @@ apis:
         url: https://docs.wise.com/api-docs/api-reference/profile
       - type: Sandbox
         url: https://api.sandbox.transferwise.tech
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:recipients
     name: Wise Recipients API
     description: >-
@@ -48,6 +50,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/recipient
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:quotes
     name: Wise Quotes API
     description: >-
@@ -64,6 +68,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/quote
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:transfers
     name: Wise Transfers API
     description: >-
@@ -79,6 +85,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/transfer
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:balances
     name: Wise Balances API
     description: >-
@@ -94,6 +102,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/balance
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:multi-currency-account
     name: Wise Multi-Currency Account API
     description: >-
@@ -109,6 +119,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:statements
     name: Wise Statements API
     description: >-
@@ -124,6 +136,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/balance-statement
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:cards
     name: Wise Cards API
     description: >-
@@ -139,6 +153,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/card
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:webhooks
     name: Wise Webhooks API
     description: >-
@@ -154,6 +170,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/subscription
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
   - aid: wise:simulation
     name: Wise Simulation API
     description: >-
@@ -169,6 +187,8 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.wise.com/api-docs/api-reference/simulation
+      - type: OpenAPI
+        url: openapi/wise-platform-openapi.yml
 common:
   - type: Website
     url: https://wise.com/
