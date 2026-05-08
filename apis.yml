@@ -1,0 +1,29 @@
+aid: wise
+url: https://raw.githubusercontent.com/api-evangelist/wise/refs/heads/main/apis.yml
+name: Wise
+x-type: company
+description: >-
+  Wise (formerly TransferWise) provides cross-border payments and multi-currency accounts for personal and business customers. The Wise Platform API exposes profiles, balances, transfers, recipients, and quotes.
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Payments
+  - FX
+  - Cross-Border
+  - Banking
+  - Multi-Currency
+created: '2026-05-08'
+modified: '2026-05-08'
+specificationVersion: '0.19'
+apis: []
+common:
+  - type: Website
+    url: https://wise.com/
+  - type: Plans
+    url: plans/wise-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/wise-rate-limits.yml
+  - type: FinOps
+    url: finops/wise-finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
