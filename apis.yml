@@ -1,7 +1,7 @@
 aid: wise
 url: https://raw.githubusercontent.com/api-evangelist/wise/refs/heads/main/apis.yml
 name: Wise
-x-type: company
+kind: company
 description: >-
   Wise (formerly TransferWise) provides cross-border payments and multi-currency accounts for personal and business customers. The Wise Platform API exposes profiles, balances, transfers, recipients, quotes, multi-currency accounts, cards, statements, and webhooks.
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
