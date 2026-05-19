@@ -1,0 +1,120 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — balance-statement
+  description: 'Wise Platform API — balance-statement. 1 operations. Lead operation: Get Balance Statement. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - balance-statement
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-balance-statement
+    baseUri: https://api.wise.com
+    description: Wise Platform API — balance-statement business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-balance-statements-balanceId-statement.json
+      path: /v1/profiles/{profileId}/balance-statements/{balanceId}/statement.json
+      operations:
+      - name: balancestatementget
+        method: GET
+        description: Get Balance Statement
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: balanceId
+          in: path
+          type: integer
+          description: The balance ID to get the statement for.
+          required: true
+        - name: currency
+          in: query
+          type: string
+          description: Currency of the balance statement requested (ISO 4217 Alphabetic Code).
+          required: true
+        - name: intervalStart
+          in: query
+          type: string
+          description: Statement start time in UTC.
+          required: true
+        - name: intervalEnd
+          in: query
+          type: string
+          description: Statement end time in UTC.
+          required: true
+        - name: type
+          in: query
+          type: string
+          description: 'Statement type:'
+        - name: statementLocale
+          in: query
+          type: string
+          description: Language for the statement. Supports 2 character language codes.
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-balance-statement-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — balance-statement. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/balance-statements/{balanceid}/statement-json
+      name: v1-profiles-profileid-balance-statements-balanceid-statement-json
+      description: REST surface for v1-profiles-profileId-balance-statements-balanceId-statement.json.
+      operations:
+      - method: GET
+        name: balancestatementget
+        description: Get Balance Statement
+        call: platform-balance-statement.balancestatementget
+        with:
+          profileId: rest.profileId
+          balanceId: rest.balanceId
+          currency: rest.currency
+          intervalStart: rest.intervalStart
+          intervalEnd: rest.intervalEnd
+          type: rest.type
+          statementLocale: rest.statementLocale
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-balance-statement-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — balance-statement. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: get-balance-statement
+      description: Get Balance Statement
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance-statement.balancestatementget
+      with:
+        profileId: tools.profileId
+        balanceId: tools.balanceId
+        currency: tools.currency
+        intervalStart: tools.intervalStart
+        intervalEnd: tools.intervalEnd
+        type: tools.type
+        statementLocale: tools.statementLocale
+      outputParameters:
+      - type: object
+        mapping: $.

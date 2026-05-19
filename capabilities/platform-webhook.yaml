@@ -1,0 +1,437 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — webhook
+  description: 'Wise Platform API — webhook. 9 operations. Lead operation: Create Application Webhook Subscription. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - webhook
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-webhook
+    baseUri: https://api.wise.com
+    description: Wise Platform API — webhook business capability. Self-contained, no shared references.
+    resources:
+    - name: v3-applications-clientKey-subscriptions
+      path: /v3/applications/{clientKey}/subscriptions
+      operations:
+      - name: webhookapplicationsubscriptioncreate
+        method: POST
+        description: Create Application Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientKey
+          in: path
+          type: string
+          description: Your application's client key.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: webhookapplicationsubscriptionlist
+        method: GET
+        description: List Application Webhook Subscriptions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientKey
+          in: path
+          type: string
+          description: Your application's client key.
+          required: true
+    - name: v3-applications-clientKey-subscriptions-subscriptionId
+      path: /v3/applications/{clientKey}/subscriptions/{subscriptionId}
+      operations:
+      - name: webhookapplicationsubscriptionget
+        method: GET
+        description: Get Application Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientKey
+          in: path
+          type: string
+          description: Your application's client key.
+          required: true
+        - name: subscriptionId
+          in: path
+          type: string
+          description: UUID of the subscription.
+          required: true
+      - name: webhookapplicationsubscriptiondelete
+        method: DELETE
+        description: Delete Application Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientKey
+          in: path
+          type: string
+          description: Your application's client key.
+          required: true
+        - name: subscriptionId
+          in: path
+          type: string
+          description: UUID of the subscription.
+          required: true
+    - name: v3-applications-clientKey-subscriptions-subscriptionId-test-notifications
+      path: /v3/applications/{clientKey}/subscriptions/{subscriptionId}/test-notifications
+      operations:
+      - name: webhookapplicationsubscriptiontest
+        method: POST
+        description: Test Application Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientKey
+          in: path
+          type: string
+          description: Your application's client key.
+          required: true
+        - name: subscriptionId
+          in: path
+          type: string
+          description: UUID of the subscription.
+          required: true
+    - name: v3-profiles-profileId-subscriptions
+      path: /v3/profiles/{profileId}/subscriptions
+      operations:
+      - name: webhookprofilesubscriptioncreate
+        method: POST
+        description: Create Profile Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: ID of the profile you are subscribing to.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: webhookprofilesubscriptionlist
+        method: GET
+        description: List Profile Webhook Subscriptions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: ID of the profile.
+          required: true
+    - name: v3-profiles-profileId-subscriptions-subscriptionId
+      path: /v3/profiles/{profileId}/subscriptions/{subscriptionId}
+      operations:
+      - name: webhookprofilesubscriptionget
+        method: GET
+        description: Get Profile Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: ID of the profile.
+          required: true
+        - name: subscriptionId
+          in: path
+          type: string
+          description: UUID of the subscription.
+          required: true
+      - name: webhookprofilesubscriptiondelete
+        method: DELETE
+        description: Delete Profile Webhook Subscription
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: ID of the profile.
+          required: true
+        - name: subscriptionId
+          in: path
+          type: string
+          description: UUID of the subscription.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-webhook-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — webhook. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v3/applications/{clientkey}/subscriptions
+      name: v3-applications-clientkey-subscriptions
+      description: REST surface for v3-applications-clientKey-subscriptions.
+      operations:
+      - method: POST
+        name: webhookapplicationsubscriptioncreate
+        description: Create Application Webhook Subscription
+        call: platform-webhook.webhookapplicationsubscriptioncreate
+        with:
+          clientKey: rest.clientKey
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: webhookapplicationsubscriptionlist
+        description: List Application Webhook Subscriptions
+        call: platform-webhook.webhookapplicationsubscriptionlist
+        with:
+          clientKey: rest.clientKey
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/applications/{clientkey}/subscriptions/{subscriptionid}
+      name: v3-applications-clientkey-subscriptions-subscriptionid
+      description: REST surface for v3-applications-clientKey-subscriptions-subscriptionId.
+      operations:
+      - method: GET
+        name: webhookapplicationsubscriptionget
+        description: Get Application Webhook Subscription
+        call: platform-webhook.webhookapplicationsubscriptionget
+        with:
+          clientKey: rest.clientKey
+          subscriptionId: rest.subscriptionId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: webhookapplicationsubscriptiondelete
+        description: Delete Application Webhook Subscription
+        call: platform-webhook.webhookapplicationsubscriptiondelete
+        with:
+          clientKey: rest.clientKey
+          subscriptionId: rest.subscriptionId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/applications/{clientkey}/subscriptions/{subscriptionid}/test-notifications
+      name: v3-applications-clientkey-subscriptions-subscriptionid-test-notifications
+      description: REST surface for v3-applications-clientKey-subscriptions-subscriptionId-test-notifications.
+      operations:
+      - method: POST
+        name: webhookapplicationsubscriptiontest
+        description: Test Application Webhook Subscription
+        call: platform-webhook.webhookapplicationsubscriptiontest
+        with:
+          clientKey: rest.clientKey
+          subscriptionId: rest.subscriptionId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/subscriptions
+      name: v3-profiles-profileid-subscriptions
+      description: REST surface for v3-profiles-profileId-subscriptions.
+      operations:
+      - method: POST
+        name: webhookprofilesubscriptioncreate
+        description: Create Profile Webhook Subscription
+        call: platform-webhook.webhookprofilesubscriptioncreate
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: webhookprofilesubscriptionlist
+        description: List Profile Webhook Subscriptions
+        call: platform-webhook.webhookprofilesubscriptionlist
+        with:
+          profileId: rest.profileId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/subscriptions/{subscriptionid}
+      name: v3-profiles-profileid-subscriptions-subscriptionid
+      description: REST surface for v3-profiles-profileId-subscriptions-subscriptionId.
+      operations:
+      - method: GET
+        name: webhookprofilesubscriptionget
+        description: Get Profile Webhook Subscription
+        call: platform-webhook.webhookprofilesubscriptionget
+        with:
+          profileId: rest.profileId
+          subscriptionId: rest.subscriptionId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: webhookprofilesubscriptiondelete
+        description: Delete Profile Webhook Subscription
+        call: platform-webhook.webhookprofilesubscriptiondelete
+        with:
+          profileId: rest.profileId
+          subscriptionId: rest.subscriptionId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-webhook-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — webhook. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: create-application-webhook-subscription
+      description: Create Application Webhook Subscription
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-webhook.webhookapplicationsubscriptioncreate
+      with:
+        clientKey: tools.clientKey
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-application-webhook-subscriptions
+      description: List Application Webhook Subscriptions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-webhook.webhookapplicationsubscriptionlist
+      with:
+        clientKey: tools.clientKey
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-application-webhook-subscription
+      description: Get Application Webhook Subscription
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-webhook.webhookapplicationsubscriptionget
+      with:
+        clientKey: tools.clientKey
+        subscriptionId: tools.subscriptionId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-application-webhook-subscription
+      description: Delete Application Webhook Subscription
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: platform-webhook.webhookapplicationsubscriptiondelete
+      with:
+        clientKey: tools.clientKey
+        subscriptionId: tools.subscriptionId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: test-application-webhook-subscription
+      description: Test Application Webhook Subscription
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-webhook.webhookapplicationsubscriptiontest
+      with:
+        clientKey: tools.clientKey
+        subscriptionId: tools.subscriptionId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-profile-webhook-subscription
+      description: Create Profile Webhook Subscription
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-webhook.webhookprofilesubscriptioncreate
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-profile-webhook-subscriptions
+      description: List Profile Webhook Subscriptions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-webhook.webhookprofilesubscriptionlist
+      with:
+        profileId: tools.profileId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-profile-webhook-subscription
+      description: Get Profile Webhook Subscription
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-webhook.webhookprofilesubscriptionget
+      with:
+        profileId: tools.profileId
+        subscriptionId: tools.subscriptionId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-profile-webhook-subscription
+      description: Delete Profile Webhook Subscription
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: platform-webhook.webhookprofilesubscriptiondelete
+      with:
+        profileId: tools.profileId
+        subscriptionId: tools.subscriptionId
+      outputParameters:
+      - type: object
+        mapping: $.

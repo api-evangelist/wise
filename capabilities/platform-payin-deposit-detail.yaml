@@ -1,0 +1,87 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — payin-deposit-detail
+  description: 'Wise Platform API — payin-deposit-detail. 1 operations. Lead operation: Retrieve bank transfer deposit details.
+    Self-contained Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - payin-deposit-detail
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-payin-deposit-detail
+    baseUri: https://api.wise.com
+    description: Wise Platform API — payin-deposit-detail business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-transfers-transferId-deposit-details-bank-transfer
+      path: /v1/profiles/{profileId}/transfers/{transferId}/deposit-details/bank-transfer
+      operations:
+      - name: payindepositdetailget
+        method: GET
+        description: Retrieve bank transfer deposit details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Profile ID.
+          required: true
+        - name: transferId
+          in: path
+          type: integer
+          description: Transfer ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-payin-deposit-detail-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — payin-deposit-detail. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/transfers/{transferid}/deposit-details/bank-transfer
+      name: v1-profiles-profileid-transfers-transferid-deposit-details-bank-transfer
+      description: REST surface for v1-profiles-profileId-transfers-transferId-deposit-details-bank-transfer.
+      operations:
+      - method: GET
+        name: payindepositdetailget
+        description: Retrieve bank transfer deposit details
+        call: platform-payin-deposit-detail.payindepositdetailget
+        with:
+          profileId: rest.profileId
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-payin-deposit-detail-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — payin-deposit-detail. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: retrieve-bank-transfer-deposit-details
+      description: Retrieve bank transfer deposit details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-payin-deposit-detail.payindepositdetailget
+      with:
+        profileId: tools.profileId
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.

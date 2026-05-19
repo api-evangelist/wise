@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — facetec
+  description: 'Wise Platform API — facetec. 1 operations. Lead operation: Get FaceTec public key. Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - facetec
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-facetec
+    baseUri: https://api.wise.com
+    description: Wise Platform API — facetec business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-facetec-public-key
+      path: /v1/facetec/public-key
+      operations:
+      - name: facetecpublickeyget
+        method: GET
+        description: Get FaceTec public key
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-facetec-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — facetec. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/facetec/public-key
+      name: v1-facetec-public-key
+      description: REST surface for v1-facetec-public-key.
+      operations:
+      - method: GET
+        name: facetecpublickeyget
+        description: Get FaceTec public key
+        call: platform-facetec.facetecpublickeyget
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-facetec-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — facetec. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-facetec-public-key
+      description: Get FaceTec public key
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-facetec.facetecpublickeyget
+      outputParameters:
+      - type: object
+        mapping: $.

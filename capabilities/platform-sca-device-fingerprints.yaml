@@ -1,0 +1,302 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — sca-device-fingerprints
+  description: 'Wise Platform API — sca-device-fingerprints. 4 operations. Lead operation: Verify Device Fingerprint. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - sca-device-fingerprints
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-sca-device-fingerprints
+    baseUri: https://api.wise.com
+    description: Wise Platform API — sca-device-fingerprints business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-one-time-token-partner-device-fingerprint-verify
+      path: /v1/one-time-token/partner-device-fingerprint/verify
+      operations:
+      - name: ottdevicefingerprintverify
+        method: POST
+        description: Verify Device Fingerprint
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: One-Time-Token
+          in: header
+          type: string
+          description: Text value of a OTT.
+          required: true
+        - name: Accept
+          in: header
+          type: string
+          required: true
+        - name: X-TW-JOSE-Method
+          in: header
+          type: string
+          description: JOSE method identifier.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-device-fingerprints
+      path: /v2/profiles/{profileId}/device-fingerprints
+      operations:
+      - name: scadevicefingerprintcreate
+        method: POST
+        description: Create a device fingerprint
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: Accept
+          in: header
+          type: string
+          required: true
+        - name: Accept-Encoding
+          in: header
+          type: string
+          required: true
+        - name: Content-Encoding
+          in: header
+          type: string
+          required: true
+        - name: X-tw-jose-method
+          in: header
+          type: string
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-device-fingerprints-verify
+      path: /v2/profiles/{profileId}/device-fingerprints/verify
+      operations:
+      - name: scadevicefingerprintverify
+        method: POST
+        description: Verify a device fingerprint
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: One-Time-Token
+          in: header
+          type: string
+          description: A one-time token unique identifier.
+          required: true
+        - name: Accept
+          in: header
+          type: string
+          required: true
+        - name: Accept-Encoding
+          in: header
+          type: string
+          required: true
+        - name: Content-Encoding
+          in: header
+          type: string
+          required: true
+        - name: X-tw-jose-method
+          in: header
+          type: string
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-device-fingerprints-deviceFingerprintId
+      path: /v2/profiles/{profileId}/device-fingerprints/{deviceFingerprintId}
+      operations:
+      - name: scadevicefingerprintdelete
+        method: DELETE
+        description: Delete a device fingerprint
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: deviceFingerprintId
+          in: path
+          type: string
+          description: The device fingerprint ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-sca-device-fingerprints-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — sca-device-fingerprints. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/v1/one-time-token/partner-device-fingerprint/verify
+      name: v1-one-time-token-partner-device-fingerprint-verify
+      description: REST surface for v1-one-time-token-partner-device-fingerprint-verify.
+      operations:
+      - method: POST
+        name: ottdevicefingerprintverify
+        description: Verify Device Fingerprint
+        call: platform-sca-device-fingerprints.ottdevicefingerprintverify
+        with:
+          One-Time-Token: rest.One-Time-Token
+          Accept: rest.Accept
+          X-TW-JOSE-Method: rest.X-TW-JOSE-Method
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/device-fingerprints
+      name: v2-profiles-profileid-device-fingerprints
+      description: REST surface for v2-profiles-profileId-device-fingerprints.
+      operations:
+      - method: POST
+        name: scadevicefingerprintcreate
+        description: Create a device fingerprint
+        call: platform-sca-device-fingerprints.scadevicefingerprintcreate
+        with:
+          profileId: rest.profileId
+          Accept: rest.Accept
+          Accept-Encoding: rest.Accept-Encoding
+          Content-Encoding: rest.Content-Encoding
+          X-tw-jose-method: rest.X-tw-jose-method
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/device-fingerprints/verify
+      name: v2-profiles-profileid-device-fingerprints-verify
+      description: REST surface for v2-profiles-profileId-device-fingerprints-verify.
+      operations:
+      - method: POST
+        name: scadevicefingerprintverify
+        description: Verify a device fingerprint
+        call: platform-sca-device-fingerprints.scadevicefingerprintverify
+        with:
+          profileId: rest.profileId
+          One-Time-Token: rest.One-Time-Token
+          Accept: rest.Accept
+          Accept-Encoding: rest.Accept-Encoding
+          Content-Encoding: rest.Content-Encoding
+          X-tw-jose-method: rest.X-tw-jose-method
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/device-fingerprints/{devicefingerprintid}
+      name: v2-profiles-profileid-device-fingerprints-devicefingerprintid
+      description: REST surface for v2-profiles-profileId-device-fingerprints-deviceFingerprintId.
+      operations:
+      - method: DELETE
+        name: scadevicefingerprintdelete
+        description: Delete a device fingerprint
+        call: platform-sca-device-fingerprints.scadevicefingerprintdelete
+        with:
+          profileId: rest.profileId
+          deviceFingerprintId: rest.deviceFingerprintId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-sca-device-fingerprints-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — sca-device-fingerprints. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: verify-device-fingerprint
+      description: Verify Device Fingerprint
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-sca-device-fingerprints.ottdevicefingerprintverify
+      with:
+        One-Time-Token: tools.One-Time-Token
+        Accept: tools.Accept
+        X-TW-JOSE-Method: tools.X-TW-JOSE-Method
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-device-fingerprint
+      description: Create a device fingerprint
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-sca-device-fingerprints.scadevicefingerprintcreate
+      with:
+        profileId: tools.profileId
+        Accept: tools.Accept
+        Accept-Encoding: tools.Accept-Encoding
+        Content-Encoding: tools.Content-Encoding
+        X-tw-jose-method: tools.X-tw-jose-method
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: verify-device-fingerprint-2
+      description: Verify a device fingerprint
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-sca-device-fingerprints.scadevicefingerprintverify
+      with:
+        profileId: tools.profileId
+        One-Time-Token: tools.One-Time-Token
+        Accept: tools.Accept
+        Accept-Encoding: tools.Accept-Encoding
+        Content-Encoding: tools.Content-Encoding
+        X-tw-jose-method: tools.X-tw-jose-method
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-device-fingerprint
+      description: Delete a device fingerprint
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: platform-sca-device-fingerprints.scadevicefingerprintdelete
+      with:
+        profileId: tools.profileId
+        deviceFingerprintId: tools.deviceFingerprintId
+      outputParameters:
+      - type: object
+        mapping: $.

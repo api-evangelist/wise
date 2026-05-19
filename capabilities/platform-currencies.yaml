@@ -1,0 +1,80 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — currencies
+  description: 'Wise Platform API — currencies. 1 operations. Lead operation: Get all currencies allowed for transfers. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - currencies
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-currencies
+    baseUri: https://api.wise.com
+    description: Wise Platform API — currencies business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-currencies
+      path: /v1/currencies
+      operations:
+      - name: currenciesget
+        method: GET
+        description: Get all currencies allowed for transfers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: Accept-Language
+          in: header
+          type: string
+          description: Locale code for localizing currency names (e.g. `de`, `fr`, `ja`). Defaults to `en` (British English)
+            if omitted or unsupported. See [Language Support](/guides/
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-currencies-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — currencies. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/currencies
+      name: v1-currencies
+      description: REST surface for v1-currencies.
+      operations:
+      - method: GET
+        name: currenciesget
+        description: Get all currencies allowed for transfers
+        call: platform-currencies.currenciesget
+        with:
+          Accept-Language: rest.Accept-Language
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-currencies-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — currencies. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-all-currencies-allowed-transfers
+      description: Get all currencies allowed for transfers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-currencies.currenciesget
+      with:
+        Accept-Language: tools.Accept-Language
+      outputParameters:
+      - type: object
+        mapping: $.

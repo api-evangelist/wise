@@ -1,0 +1,797 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — simulation
+  description: 'Wise Platform API — simulation. 15 operations. Lead operation: Simulate a balance top-up. Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - simulation
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-simulation
+    baseUri: https://api.wise.com
+    description: Wise Platform API — simulation business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-simulation-balance-topup
+      path: /v1/simulation/balance/topup
+      operations:
+      - name: simulationbalancetopup
+        method: POST
+        description: Simulate a balance top-up
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-profiles-profileId-bank-transactions-import
+      path: /v1/simulation/profiles/{profileId}/bank-transactions/import
+      operations:
+      - name: simulationbanktransactionimport
+        method: POST
+        description: Simulate incoming bank transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-profiles-profileId-swift-in
+      path: /v1/simulation/profiles/{profileId}/swift-in
+      operations:
+      - name: simulationswiftin
+        method: POST
+        description: Simulate incoming Swift payment
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-profiles-profileId-verifications
+      path: /v1/simulation/profiles/{profileId}/verifications
+      operations:
+      - name: simulationverification
+        method: POST
+        description: Simulate verification for a profile
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile to verify.
+          required: true
+    - name: v1-simulation-spend-profiles-profileId-cards-cardToken-production
+      path: /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/production
+      operations:
+      - name: simulationcardproduction
+        method: POST
+        description: Simulate card production state change
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: cardToken
+          in: path
+          type: string
+          description: The card token.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-spend-profiles-profileId-cards-cardToken-transactions-clearing
+      path: /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/clearing
+      operations:
+      - name: simulationcardtransactionclearing
+        method: POST
+        description: Simulate a card transaction clearing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: cardToken
+          in: path
+          type: string
+          description: The card token.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-spend-profiles-profileId-cards-cardToken-transactions-reversal
+      path: /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/reversal
+      operations:
+      - name: simulationcardtransactionreversal
+        method: POST
+        description: Simulate a card transaction reversal
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: cardToken
+          in: path
+          type: string
+          description: The card token.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-simulation-transfers-transferId-status
+      path: /v1/simulation/transfers/{transferId}/{status}
+      operations:
+      - name: simulationtransferstatechange
+        method: GET
+        description: Simulate transfer state change
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The ID of the transfer to simulate.
+          required: true
+        - name: status
+          in: path
+          type: string
+          description: The target transfer status.
+          required: true
+    - name: v1-simulation-verify-profile
+      path: /v1/simulation/verify-profile
+      operations:
+      - name: simulationverifyprofile
+        method: POST
+        description: Simulate verification for all profiles
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements
+      path: /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements
+      operations:
+      - name: simulationkycreviewrequirementslist
+        method: GET
+        description: List KYC review requirements
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The ID of the existing KYC review.
+          required: true
+    - name: v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements-add
+      path: /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements/add
+      operations:
+      - name: simulationkycreviewrequirementsadd
+        method: POST
+        description: Simulate adding new requirement
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID requiring the new requirement to be added.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The ID of the existing KYC review.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements-submit
+      path: /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements/submit
+      operations:
+      - name: simulationkycreviewrequirementssubmit
+        method: POST
+        description: Simulate requirement submission
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The ID of the existing KYC review.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-verify
+      path: /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/verify
+      operations:
+      - name: simulationkycreviewverify
+        method: POST
+        description: Simulate verifying a KYC review
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The ID of the existing KYC review.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-simulation-spend-profiles-profileId-cards-cardToken-transactions
+      path: /v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions
+      operations:
+      - name: simulationcardtransactions
+        method: GET
+        description: List simulated card transactions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: cardToken
+          in: path
+          type: string
+          description: The card token.
+          required: true
+        - name: limit
+          in: query
+          type: integer
+          description: The maximum number of transactions to return. The default value is 10.
+    - name: v2-simulation-spend-profiles-profileId-cards-cardToken-transactions-authorisatio
+      path: /v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/authorisation
+      operations:
+      - name: simulationcardtransactionauthorisation
+        method: POST
+        description: Simulate a card transaction authorisation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: cardToken
+          in: path
+          type: string
+          description: The card token.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-simulation-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — simulation. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/simulation/balance/topup
+      name: v1-simulation-balance-topup
+      description: REST surface for v1-simulation-balance-topup.
+      operations:
+      - method: POST
+        name: simulationbalancetopup
+        description: Simulate a balance top-up
+        call: platform-simulation.simulationbalancetopup
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/profiles/{profileid}/bank-transactions/import
+      name: v1-simulation-profiles-profileid-bank-transactions-import
+      description: REST surface for v1-simulation-profiles-profileId-bank-transactions-import.
+      operations:
+      - method: POST
+        name: simulationbanktransactionimport
+        description: Simulate incoming bank transfer
+        call: platform-simulation.simulationbanktransactionimport
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/profiles/{profileid}/swift-in
+      name: v1-simulation-profiles-profileid-swift-in
+      description: REST surface for v1-simulation-profiles-profileId-swift-in.
+      operations:
+      - method: POST
+        name: simulationswiftin
+        description: Simulate incoming Swift payment
+        call: platform-simulation.simulationswiftin
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/profiles/{profileid}/verifications
+      name: v1-simulation-profiles-profileid-verifications
+      description: REST surface for v1-simulation-profiles-profileId-verifications.
+      operations:
+      - method: POST
+        name: simulationverification
+        description: Simulate verification for a profile
+        call: platform-simulation.simulationverification
+        with:
+          profileId: rest.profileId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/spend/profiles/{profileid}/cards/{cardtoken}/production
+      name: v1-simulation-spend-profiles-profileid-cards-cardtoken-production
+      description: REST surface for v1-simulation-spend-profiles-profileId-cards-cardToken-production.
+      operations:
+      - method: POST
+        name: simulationcardproduction
+        description: Simulate card production state change
+        call: platform-simulation.simulationcardproduction
+        with:
+          profileId: rest.profileId
+          cardToken: rest.cardToken
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/spend/profiles/{profileid}/cards/{cardtoken}/transactions/clearing
+      name: v1-simulation-spend-profiles-profileid-cards-cardtoken-transactions-clearing
+      description: REST surface for v1-simulation-spend-profiles-profileId-cards-cardToken-transactions-clearing.
+      operations:
+      - method: POST
+        name: simulationcardtransactionclearing
+        description: Simulate a card transaction clearing
+        call: platform-simulation.simulationcardtransactionclearing
+        with:
+          profileId: rest.profileId
+          cardToken: rest.cardToken
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/spend/profiles/{profileid}/cards/{cardtoken}/transactions/reversal
+      name: v1-simulation-spend-profiles-profileid-cards-cardtoken-transactions-reversal
+      description: REST surface for v1-simulation-spend-profiles-profileId-cards-cardToken-transactions-reversal.
+      operations:
+      - method: POST
+        name: simulationcardtransactionreversal
+        description: Simulate a card transaction reversal
+        call: platform-simulation.simulationcardtransactionreversal
+        with:
+          profileId: rest.profileId
+          cardToken: rest.cardToken
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/transfers/{transferid}/{status}
+      name: v1-simulation-transfers-transferid-status
+      description: REST surface for v1-simulation-transfers-transferId-status.
+      operations:
+      - method: GET
+        name: simulationtransferstatechange
+        description: Simulate transfer state change
+        call: platform-simulation.simulationtransferstatechange
+        with:
+          transferId: rest.transferId
+          status: rest.status
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/simulation/verify-profile
+      name: v1-simulation-verify-profile
+      description: REST surface for v1-simulation-verify-profile.
+      operations:
+      - method: POST
+        name: simulationverifyprofile
+        description: Simulate verification for all profiles
+        call: platform-simulation.simulationverifyprofile
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/profiles/{profileid}/kyc-reviews/{kycreviewid}/requirements
+      name: v2-simulation-profiles-profileid-kyc-reviews-kycreviewid-requirements
+      description: REST surface for v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements.
+      operations:
+      - method: GET
+        name: simulationkycreviewrequirementslist
+        description: List KYC review requirements
+        call: platform-simulation.simulationkycreviewrequirementslist
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/profiles/{profileid}/kyc-reviews/{kycreviewid}/requirements/add
+      name: v2-simulation-profiles-profileid-kyc-reviews-kycreviewid-requirements-add
+      description: REST surface for v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements-add.
+      operations:
+      - method: POST
+        name: simulationkycreviewrequirementsadd
+        description: Simulate adding new requirement
+        call: platform-simulation.simulationkycreviewrequirementsadd
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/profiles/{profileid}/kyc-reviews/{kycreviewid}/requirements/submit
+      name: v2-simulation-profiles-profileid-kyc-reviews-kycreviewid-requirements-submit
+      description: REST surface for v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-requirements-submit.
+      operations:
+      - method: POST
+        name: simulationkycreviewrequirementssubmit
+        description: Simulate requirement submission
+        call: platform-simulation.simulationkycreviewrequirementssubmit
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/profiles/{profileid}/kyc-reviews/{kycreviewid}/verify
+      name: v2-simulation-profiles-profileid-kyc-reviews-kycreviewid-verify
+      description: REST surface for v2-simulation-profiles-profileId-kyc-reviews-kycReviewId-verify.
+      operations:
+      - method: POST
+        name: simulationkycreviewverify
+        description: Simulate verifying a KYC review
+        call: platform-simulation.simulationkycreviewverify
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/spend/profiles/{profileid}/cards/{cardtoken}/transactions
+      name: v2-simulation-spend-profiles-profileid-cards-cardtoken-transactions
+      description: REST surface for v2-simulation-spend-profiles-profileId-cards-cardToken-transactions.
+      operations:
+      - method: GET
+        name: simulationcardtransactions
+        description: List simulated card transactions
+        call: platform-simulation.simulationcardtransactions
+        with:
+          profileId: rest.profileId
+          cardToken: rest.cardToken
+          limit: rest.limit
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/simulation/spend/profiles/{profileid}/cards/{cardtoken}/transactions/authorisation
+      name: v2-simulation-spend-profiles-profileid-cards-cardtoken-transactions-authorisatio
+      description: REST surface for v2-simulation-spend-profiles-profileId-cards-cardToken-transactions-authorisatio.
+      operations:
+      - method: POST
+        name: simulationcardtransactionauthorisation
+        description: Simulate a card transaction authorisation
+        call: platform-simulation.simulationcardtransactionauthorisation
+        with:
+          profileId: rest.profileId
+          cardToken: rest.cardToken
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-simulation-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — simulation. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: simulate-balance-top-up
+      description: Simulate a balance top-up
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationbalancetopup
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-incoming-bank-transfer
+      description: Simulate incoming bank transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationbanktransactionimport
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-incoming-swift-payment
+      description: Simulate incoming Swift payment
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationswiftin
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-verification-profile
+      description: Simulate verification for a profile
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationverification
+      with:
+        profileId: tools.profileId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-card-production-state-change
+      description: Simulate card production state change
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationcardproduction
+      with:
+        profileId: tools.profileId
+        cardToken: tools.cardToken
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-card-transaction-clearing
+      description: Simulate a card transaction clearing
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationcardtransactionclearing
+      with:
+        profileId: tools.profileId
+        cardToken: tools.cardToken
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-card-transaction-reversal
+      description: Simulate a card transaction reversal
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationcardtransactionreversal
+      with:
+        profileId: tools.profileId
+        cardToken: tools.cardToken
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-transfer-state-change
+      description: Simulate transfer state change
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-simulation.simulationtransferstatechange
+      with:
+        transferId: tools.transferId
+        status: tools.status
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-verification-all-profiles
+      description: Simulate verification for all profiles
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationverifyprofile
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-kyc-review-requirements
+      description: List KYC review requirements
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-simulation.simulationkycreviewrequirementslist
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-adding-new-requirement
+      description: Simulate adding new requirement
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationkycreviewrequirementsadd
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-requirement-submission
+      description: Simulate requirement submission
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationkycreviewrequirementssubmit
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-verifying-kyc-review
+      description: Simulate verifying a KYC review
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationkycreviewverify
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-simulated-card-transactions
+      description: List simulated card transactions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-simulation.simulationcardtransactions
+      with:
+        profileId: tools.profileId
+        cardToken: tools.cardToken
+        limit: tools.limit
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: simulate-card-transaction-authorisation
+      description: Simulate a card transaction authorisation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-simulation.simulationcardtransactionauthorisation
+      with:
+        profileId: tools.profileId
+        cardToken: tools.cardToken
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

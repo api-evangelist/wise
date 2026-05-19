@@ -1,0 +1,337 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — kyc-review
+  description: 'Wise Platform API — kyc-review. 6 operations. Lead operation: Create a KYC Review. Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - kyc-review
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-kyc-review
+    baseUri: https://api.wise.com
+    description: Wise Platform API — kyc-review business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-kyc-reviews
+      path: /v1/profiles/{profileId}/kyc-reviews
+      operations:
+      - name: kycreviewcreate
+        method: POST
+        description: Create a KYC Review
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: kycreviewlist
+        method: GET
+        description: Get all KYC Reviews for a profile
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: pageNumber
+          in: query
+          type: integer
+          description: Page number. Default value is `1`.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Desired number of items per page. Max `100`, default `100`.
+    - name: v1-profiles-profileId-kyc-reviews-kycReviewId
+      path: /v1/profiles/{profileId}/kyc-reviews/{kycReviewId}
+      operations:
+      - name: kycreviewgetv1
+        method: GET
+        description: Get KYC Review by ID (V1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The KYC Review ID.
+          required: true
+      - name: kycreviewredirecturlupdate
+        method: PATCH
+        description: Update KYC Review to get a Hosted KYC link
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The KYC Review ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-kyc-requirements-requirementKey
+      path: /v2/profiles/{profileId}/kyc-requirements/{requirementKey}
+      operations:
+      - name: kycreviewrequirementsubmit
+        method: POST
+        description: Submit a KYC Requirement
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: requirementKey
+          in: path
+          type: string
+          description: The KYC requirement type to submit.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-kyc-reviews-kycReviewId
+      path: /v2/profiles/{profileId}/kyc-reviews/{kycReviewId}
+      operations:
+      - name: kycreviewget
+        method: GET
+        description: Get KYC Review by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: kycReviewId
+          in: path
+          type: string
+          description: The KYC Review ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-kyc-review-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — kyc-review. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/kyc-reviews
+      name: v1-profiles-profileid-kyc-reviews
+      description: REST surface for v1-profiles-profileId-kyc-reviews.
+      operations:
+      - method: POST
+        name: kycreviewcreate
+        description: Create a KYC Review
+        call: platform-kyc-review.kycreviewcreate
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: kycreviewlist
+        description: Get all KYC Reviews for a profile
+        call: platform-kyc-review.kycreviewlist
+        with:
+          profileId: rest.profileId
+          pageNumber: rest.pageNumber
+          pageSize: rest.pageSize
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/kyc-reviews/{kycreviewid}
+      name: v1-profiles-profileid-kyc-reviews-kycreviewid
+      description: REST surface for v1-profiles-profileId-kyc-reviews-kycReviewId.
+      operations:
+      - method: GET
+        name: kycreviewgetv1
+        description: Get KYC Review by ID (V1)
+        call: platform-kyc-review.kycreviewgetv1
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: kycreviewredirecturlupdate
+        description: Update KYC Review to get a Hosted KYC link
+        call: platform-kyc-review.kycreviewredirecturlupdate
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/kyc-requirements/{requirementkey}
+      name: v2-profiles-profileid-kyc-requirements-requirementkey
+      description: REST surface for v2-profiles-profileId-kyc-requirements-requirementKey.
+      operations:
+      - method: POST
+        name: kycreviewrequirementsubmit
+        description: Submit a KYC Requirement
+        call: platform-kyc-review.kycreviewrequirementsubmit
+        with:
+          profileId: rest.profileId
+          requirementKey: rest.requirementKey
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/kyc-reviews/{kycreviewid}
+      name: v2-profiles-profileid-kyc-reviews-kycreviewid
+      description: REST surface for v2-profiles-profileId-kyc-reviews-kycReviewId.
+      operations:
+      - method: GET
+        name: kycreviewget
+        description: Get KYC Review by ID
+        call: platform-kyc-review.kycreviewget
+        with:
+          profileId: rest.profileId
+          kycReviewId: rest.kycReviewId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-kyc-review-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — kyc-review. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: create-kyc-review
+      description: Create a KYC Review
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-kyc-review.kycreviewcreate
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-all-kyc-reviews-profile
+      description: Get all KYC Reviews for a profile
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-kyc-review.kycreviewlist
+      with:
+        profileId: tools.profileId
+        pageNumber: tools.pageNumber
+        pageSize: tools.pageSize
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-kyc-review-id-v1
+      description: Get KYC Review by ID (V1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-kyc-review.kycreviewgetv1
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-kyc-review-get-hosted
+      description: Update KYC Review to get a Hosted KYC link
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-kyc-review.kycreviewredirecturlupdate
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: submit-kyc-requirement
+      description: Submit a KYC Requirement
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-kyc-review.kycreviewrequirementsubmit
+      with:
+        profileId: tools.profileId
+        requirementKey: tools.requirementKey
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-kyc-review-id
+      description: Get KYC Review by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-kyc-review.kycreviewget
+      with:
+        profileId: tools.profileId
+        kycReviewId: tools.kycReviewId
+      outputParameters:
+      - type: object
+        mapping: $.

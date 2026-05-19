@@ -1,0 +1,745 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — transfer
+  description: 'Wise Platform API — transfer. 15 operations. Lead operation: Create a partner licence transfer. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - transfer
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-transfer
+    baseUri: https://api.wise.com
+    description: Wise Platform API — transfer business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-partner-licence-transfers
+      path: /v1/profiles/{profileId}/partner-licence-transfers
+      operations:
+      - name: transferpartnerlicencecreate
+        method: POST
+        description: Create a partner licence transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-profiles-profileId-third-party-transfers-transferId
+      path: /v1/profiles/{profileId}/third-party-transfers/{transferId}
+      operations:
+      - name: transferthirdpartygetv1
+        method: GET
+        description: Get a third party transfer by ID (V1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID
+          required: true
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfer-requirements
+      path: /v1/transfer-requirements
+      operations:
+      - name: transferrequirementsvalidate
+        method: POST
+        description: Validate transfer requirements
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-transfers
+      path: /v1/transfers
+      operations:
+      - name: transfercreate
+        method: POST
+        description: Create a transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: transferlist
+        method: GET
+        description: List transfers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profile
+          in: query
+          type: integer
+          description: User profile ID. If parameter is omitted, defaults to user's personal profile
+        - name: status
+          in: query
+          type: string
+          description: 'Comma separated list of one or more status codes to filter transfers. See [Tracking Transfers](/guides/product/send-money/tracking-transfers)
+            for complete list '
+        - name: sourceCurrency
+          in: query
+          type: string
+          description: Source currency code
+        - name: targetCurrency
+          in: query
+          type: string
+          description: Target currency code
+        - name: createdDateStart
+          in: query
+          type: string
+          description: Starting date to filter transfers, inclusive of the provided date
+        - name: createdDateEnd
+          in: query
+          type: string
+          description: Ending date to filter transfers, inclusive of the provided date
+        - name: limit
+          in: query
+          type: integer
+          description: Maximum number of records to be returned in response
+        - name: offset
+          in: query
+          type: integer
+          description: Starting record number
+    - name: v1-transfers-transferId
+      path: /v1/transfers/{transferId}
+      operations:
+      - name: transferget
+        method: GET
+        description: Get a transfer by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfers-transferId-cancel
+      path: /v1/transfers/{transferId}/cancel
+      operations:
+      - name: transfercancel
+        method: PUT
+        description: Cancel a transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfers-transferId-documents-noc
+      path: /v1/transfers/{transferId}/documents/noc
+      operations:
+      - name: transfernocget
+        method: GET
+        description: Get a non objection certificate (INR)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfers-transferId-payments
+      path: /v1/transfers/{transferId}/payments
+      operations:
+      - name: transferpaymentslist
+        method: GET
+        description: List completed payments
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfers-transferId-receipt.pdf
+      path: /v1/transfers/{transferId}/receipt.pdf
+      operations:
+      - name: transferreceiptget
+        method: GET
+        description: Get a transfer receipt
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v1-transfers-transferId-us-combined-receipt.pdf
+      path: /v1/transfers/{transferId}/us-combined-receipt.pdf
+      operations:
+      - name: transferuscombinedreceiptget
+        method: GET
+        description: Get a US combined disclosure receipt
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v2-profiles-profileId-third-party-transfers
+      path: /v2/profiles/{profileId}/third-party-transfers
+      operations:
+      - name: transferthirdpartycreate
+        method: POST
+        description: Create a third party transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-profiles-profileId-third-party-transfers-transferId
+      path: /v2/profiles/{profileId}/third-party-transfers/{transferId}
+      operations:
+      - name: transferthirdpartyget
+        method: GET
+        description: Get a third party transfer by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID
+          required: true
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v2-transfers-transferId-invoices-bankingpartner
+      path: /v2/transfers/{transferId}/invoices/bankingpartner
+      operations:
+      - name: transferpayoutinfoget
+        method: GET
+        description: Get payout information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+    - name: v3-profiles-profileId-transfers-transferId-payments
+      path: /v3/profiles/{profileId}/transfers/{transferId}/payments
+      operations:
+      - name: transferfund
+        method: POST
+        description: Fund a transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID that created the transfer. Can be either your personal or business profile ID
+          required: true
+        - name: transferId
+          in: path
+          type: integer
+          description: The transfer ID
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-transfer-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — transfer. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/partner-licence-transfers
+      name: v1-profiles-profileid-partner-licence-transfers
+      description: REST surface for v1-profiles-profileId-partner-licence-transfers.
+      operations:
+      - method: POST
+        name: transferpartnerlicencecreate
+        description: Create a partner licence transfer
+        call: platform-transfer.transferpartnerlicencecreate
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/third-party-transfers/{transferid}
+      name: v1-profiles-profileid-third-party-transfers-transferid
+      description: REST surface for v1-profiles-profileId-third-party-transfers-transferId.
+      operations:
+      - method: GET
+        name: transferthirdpartygetv1
+        description: Get a third party transfer by ID (V1)
+        call: platform-transfer.transferthirdpartygetv1
+        with:
+          profileId: rest.profileId
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfer-requirements
+      name: v1-transfer-requirements
+      description: REST surface for v1-transfer-requirements.
+      operations:
+      - method: POST
+        name: transferrequirementsvalidate
+        description: Validate transfer requirements
+        call: platform-transfer.transferrequirementsvalidate
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers
+      name: v1-transfers
+      description: REST surface for v1-transfers.
+      operations:
+      - method: POST
+        name: transfercreate
+        description: Create a transfer
+        call: platform-transfer.transfercreate
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: transferlist
+        description: List transfers
+        call: platform-transfer.transferlist
+        with:
+          profile: rest.profile
+          status: rest.status
+          sourceCurrency: rest.sourceCurrency
+          targetCurrency: rest.targetCurrency
+          createdDateStart: rest.createdDateStart
+          createdDateEnd: rest.createdDateEnd
+          limit: rest.limit
+          offset: rest.offset
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}
+      name: v1-transfers-transferid
+      description: REST surface for v1-transfers-transferId.
+      operations:
+      - method: GET
+        name: transferget
+        description: Get a transfer by ID
+        call: platform-transfer.transferget
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}/cancel
+      name: v1-transfers-transferid-cancel
+      description: REST surface for v1-transfers-transferId-cancel.
+      operations:
+      - method: PUT
+        name: transfercancel
+        description: Cancel a transfer
+        call: platform-transfer.transfercancel
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}/documents/noc
+      name: v1-transfers-transferid-documents-noc
+      description: REST surface for v1-transfers-transferId-documents-noc.
+      operations:
+      - method: GET
+        name: transfernocget
+        description: Get a non objection certificate (INR)
+        call: platform-transfer.transfernocget
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}/payments
+      name: v1-transfers-transferid-payments
+      description: REST surface for v1-transfers-transferId-payments.
+      operations:
+      - method: GET
+        name: transferpaymentslist
+        description: List completed payments
+        call: platform-transfer.transferpaymentslist
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}/receipt-pdf
+      name: v1-transfers-transferid-receipt-pdf
+      description: REST surface for v1-transfers-transferId-receipt.pdf.
+      operations:
+      - method: GET
+        name: transferreceiptget
+        description: Get a transfer receipt
+        call: platform-transfer.transferreceiptget
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/transfers/{transferid}/us-combined-receipt-pdf
+      name: v1-transfers-transferid-us-combined-receipt-pdf
+      description: REST surface for v1-transfers-transferId-us-combined-receipt.pdf.
+      operations:
+      - method: GET
+        name: transferuscombinedreceiptget
+        description: Get a US combined disclosure receipt
+        call: platform-transfer.transferuscombinedreceiptget
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/third-party-transfers
+      name: v2-profiles-profileid-third-party-transfers
+      description: REST surface for v2-profiles-profileId-third-party-transfers.
+      operations:
+      - method: POST
+        name: transferthirdpartycreate
+        description: Create a third party transfer
+        call: platform-transfer.transferthirdpartycreate
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/third-party-transfers/{transferid}
+      name: v2-profiles-profileid-third-party-transfers-transferid
+      description: REST surface for v2-profiles-profileId-third-party-transfers-transferId.
+      operations:
+      - method: GET
+        name: transferthirdpartyget
+        description: Get a third party transfer by ID
+        call: platform-transfer.transferthirdpartyget
+        with:
+          profileId: rest.profileId
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/transfers/{transferid}/invoices/bankingpartner
+      name: v2-transfers-transferid-invoices-bankingpartner
+      description: REST surface for v2-transfers-transferId-invoices-bankingpartner.
+      operations:
+      - method: GET
+        name: transferpayoutinfoget
+        description: Get payout information
+        call: platform-transfer.transferpayoutinfoget
+        with:
+          transferId: rest.transferId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/transfers/{transferid}/payments
+      name: v3-profiles-profileid-transfers-transferid-payments
+      description: REST surface for v3-profiles-profileId-transfers-transferId-payments.
+      operations:
+      - method: POST
+        name: transferfund
+        description: Fund a transfer
+        call: platform-transfer.transferfund
+        with:
+          profileId: rest.profileId
+          transferId: rest.transferId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-transfer-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — transfer. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: create-partner-licence-transfer
+      description: Create a partner licence transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-transfer.transferpartnerlicencecreate
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-third-party-transfer-id
+      description: Get a third party transfer by ID (V1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferthirdpartygetv1
+      with:
+        profileId: tools.profileId
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: validate-transfer-requirements
+      description: Validate transfer requirements
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-transfer.transferrequirementsvalidate
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-transfer
+      description: Create a transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-transfer.transfercreate
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-transfers
+      description: List transfers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferlist
+      with:
+        profile: tools.profile
+        status: tools.status
+        sourceCurrency: tools.sourceCurrency
+        targetCurrency: tools.targetCurrency
+        createdDateStart: tools.createdDateStart
+        createdDateEnd: tools.createdDateEnd
+        limit: tools.limit
+        offset: tools.offset
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-transfer-id
+      description: Get a transfer by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferget
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: cancel-transfer
+      description: Cancel a transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transfercancel
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-non-objection-certificate-inr
+      description: Get a non objection certificate (INR)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transfernocget
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-completed-payments
+      description: List completed payments
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferpaymentslist
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-transfer-receipt
+      description: Get a transfer receipt
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferreceiptget
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-us-combined-disclosure-receipt
+      description: Get a US combined disclosure receipt
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferuscombinedreceiptget
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-third-party-transfer
+      description: Create a third party transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-transfer.transferthirdpartycreate
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-third-party-transfer-id-2
+      description: Get a third party transfer by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferthirdpartyget
+      with:
+        profileId: tools.profileId
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-payout-information
+      description: Get payout information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-transfer.transferpayoutinfoget
+      with:
+        transferId: tools.transferId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fund-transfer
+      description: Fund a transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-transfer.transferfund
+      with:
+        profileId: tools.profileId
+        transferId: tools.transferId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

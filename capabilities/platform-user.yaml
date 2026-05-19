@@ -1,0 +1,280 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — user
+  description: 'Wise Platform API — user. 6 operations. Lead operation: Retrieve current user by token. Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - user
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-user
+    baseUri: https://api.wise.com
+    description: Wise Platform API — user business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-me
+      path: /v1/me
+      operations:
+      - name: usergetbytoken
+        method: GET
+        description: Retrieve current user by token
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: v1-user-signup-registration_code
+      path: /v1/user/signup/registration_code
+      operations:
+      - name: usercreate
+        method: POST
+        description: Create a user with a registration code
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-users-exists
+      path: /v1/users/exists
+      operations:
+      - name: usercheckexists
+        method: POST
+        description: Check if user exists
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-users-userId
+      path: /v1/users/{userId}
+      operations:
+      - name: usergetbyid
+        method: GET
+        description: Retrieve a user by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: userId
+          in: path
+          type: integer
+          description: The user ID.
+          required: true
+    - name: v1-users-userId-contact-email
+      path: /v1/users/{userId}/contact-email
+      operations:
+      - name: usercontactemailset
+        method: PUT
+        description: Set a contact email address
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: userId
+          in: path
+          type: integer
+          description: The user ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: usercontactemailget
+        method: GET
+        description: Retrieve a contact email address
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: userId
+          in: path
+          type: integer
+          description: The user ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-user-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — user. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/me
+      name: v1-me
+      description: REST surface for v1-me.
+      operations:
+      - method: GET
+        name: usergetbytoken
+        description: Retrieve current user by token
+        call: platform-user.usergetbytoken
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/user/signup/registration-code
+      name: v1-user-signup-registration-code
+      description: REST surface for v1-user-signup-registration_code.
+      operations:
+      - method: POST
+        name: usercreate
+        description: Create a user with a registration code
+        call: platform-user.usercreate
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/users/exists
+      name: v1-users-exists
+      description: REST surface for v1-users-exists.
+      operations:
+      - method: POST
+        name: usercheckexists
+        description: Check if user exists
+        call: platform-user.usercheckexists
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/users/{userid}
+      name: v1-users-userid
+      description: REST surface for v1-users-userId.
+      operations:
+      - method: GET
+        name: usergetbyid
+        description: Retrieve a user by ID
+        call: platform-user.usergetbyid
+        with:
+          userId: rest.userId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/users/{userid}/contact-email
+      name: v1-users-userid-contact-email
+      description: REST surface for v1-users-userId-contact-email.
+      operations:
+      - method: PUT
+        name: usercontactemailset
+        description: Set a contact email address
+        call: platform-user.usercontactemailset
+        with:
+          userId: rest.userId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: usercontactemailget
+        description: Retrieve a contact email address
+        call: platform-user.usercontactemailget
+        with:
+          userId: rest.userId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-user-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — user. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: retrieve-current-user-token
+      description: Retrieve current user by token
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-user.usergetbytoken
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-user-registration-code
+      description: Create a user with a registration code
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-user.usercreate
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: check-if-user-exists
+      description: Check if user exists
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-user.usercheckexists
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-user-id
+      description: Retrieve a user by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-user.usergetbyid
+      with:
+        userId: tools.userId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: set-contact-email-address
+      description: Set a contact email address
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-user.usercontactemailset
+      with:
+        userId: tools.userId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-contact-email-address
+      description: Retrieve a contact email address
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-user.usercontactemailget
+      with:
+        userId: tools.userId
+      outputParameters:
+      - type: object
+        mapping: $.

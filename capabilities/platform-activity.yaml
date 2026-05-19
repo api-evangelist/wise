@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — activity
+  description: 'Wise Platform API — activity. 1 operations. Lead operation: List Activities for a Profile. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - activity
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-activity
+    baseUri: https://api.wise.com
+    description: Wise Platform API — activity business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-activities
+      path: /v1/profiles/{profileId}/activities
+      operations:
+      - name: activitylist
+        method: GET
+        description: List Activities for a Profile
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The unique identifier of the profile.
+          required: true
+        - name: monetaryResourceType
+          in: query
+          type: string
+          description: Filter activity by resource type.
+        - name: status
+          in: query
+          type: string
+          description: Filter by activity status.
+        - name: since
+          in: query
+          type: string
+          description: Filter activity list after a certain timestamp. Use ISO 8601 format.
+        - name: until
+          in: query
+          type: string
+          description: Filter activity list until a certain timestamp. Use ISO 8601 format.
+        - name: nextCursor
+          in: query
+          type: string
+          description: Pagination cursor returned from a previous response. Use the `cursor` value from the response to fetch
+            the next page of activities.
+        - name: size
+          in: query
+          type: integer
+          description: Desired size of query. Min 1, max 100, and default value is 10 if not specified.
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-activity-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — activity. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/activities
+      name: v1-profiles-profileid-activities
+      description: REST surface for v1-profiles-profileId-activities.
+      operations:
+      - method: GET
+        name: activitylist
+        description: List Activities for a Profile
+        call: platform-activity.activitylist
+        with:
+          profileId: rest.profileId
+          monetaryResourceType: rest.monetaryResourceType
+          status: rest.status
+          since: rest.since
+          until: rest.until
+          nextCursor: rest.nextCursor
+          size: rest.size
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-activity-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — activity. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-activities-profile
+      description: List Activities for a Profile
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-activity.activitylist
+      with:
+        profileId: tools.profileId
+        monetaryResourceType: tools.monetaryResourceType
+        status: tools.status
+        since: tools.since
+        until: tools.until
+        nextCursor: tools.nextCursor
+        size: tools.size
+      outputParameters:
+      - type: object
+        mapping: $.

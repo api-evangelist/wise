@@ -1,0 +1,305 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — comparison
+  description: 'Wise Platform API — comparison. 2 operations. Lead operation: Request a comparison quote (V3). Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - comparison
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-comparison
+    baseUri: https://api.wise.com
+    description: Wise Platform API — comparison business capability. Self-contained, no shared references.
+    resources:
+    - name: v3-comparisons
+      path: /v3/comparisons
+      operations:
+      - name: comparisongetv3
+        method: GET
+        description: Request a comparison quote (V3)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: sourceCurrency
+          in: query
+          type: string
+          description: ISO 4217 source currency code
+          required: true
+        - name: targetCurrency
+          in: query
+          type: string
+          description: ISO 4217 target currency code
+          required: true
+        - name: sendAmount
+          in: query
+          type: number
+          description: Amount to send in source currency
+          required: true
+        - name: midMarketRate
+          in: query
+          type: number
+          description: Current mid-market rate between the source and target currency
+        - name: wiseFee
+          in: query
+          type: number
+          description: Wise's fee, if the Wise quote is known
+        - name: wiseEstimatedDelivery
+          in: query
+          type: string
+          description: Wise's estimated delivery timestamp, if the Wise quote is known
+        - name: wiseQuoteCreatedTime
+          in: query
+          type: string
+          description: Timestamp when the Wise quote was created
+        - name: payInMethod
+          in: query
+          type: string
+          description: Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)
+        - name: sourceCountry
+          in: query
+          type: string
+          description: Filter by source country (ISO 3166-1 Alpha-2 code)
+        - name: targetCountry
+          in: query
+          type: string
+          description: Filter by target country (ISO 3166-1 Alpha-2 code)
+        - name: providerCountry
+          in: query
+          type: string
+          description: Filter by provider country (ISO 3166-1 Alpha-2 code)
+        - name: providerTypes
+          in: query
+          type: array
+          description: Filter by provider type
+        - name: providers
+          in: query
+          type: string
+          description: Filter by specific provider aliases
+        - name: excludePartners
+          in: query
+          type: boolean
+          description: Exclude Wise's partner banks - default true
+    - name: v4-comparisons
+      path: /v4/comparisons
+      operations:
+      - name: comparisonget
+        method: GET
+        description: Request a comparison quote
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: sourceCurrency
+          in: query
+          type: string
+          description: ISO 4217 source currency code
+          required: true
+        - name: targetCurrency
+          in: query
+          type: string
+          description: ISO 4217 target currency code
+          required: true
+        - name: sendAmount
+          in: query
+          type: number
+          description: Amount to send in source currency. Must provide either `sendAmount` or `recipientGetsAmount`.
+        - name: recipientGetsAmount
+          in: query
+          type: number
+          description: Amount to be received in target currency. Must provide either `sendAmount` or `recipientGetsAmount`.
+        - name: midMarketRate
+          in: query
+          type: number
+          description: Current mid-market rate between the source and target currency
+        - name: wiseFee
+          in: query
+          type: number
+          description: Wise's fee, if the Wise quote is known
+        - name: wiseEstimatedDelivery
+          in: query
+          type: string
+          description: Wise's estimated delivery timestamp, if the Wise quote is known
+        - name: wiseQuoteCreatedTime
+          in: query
+          type: string
+          description: Timestamp when the Wise quote was created
+        - name: payInMethod
+          in: query
+          type: string
+          description: Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)
+        - name: sourceCountry
+          in: query
+          type: string
+          description: Filter by source country (ISO 3166-1 Alpha-2 code)
+        - name: targetCountry
+          in: query
+          type: string
+          description: Filter by target country (ISO 3166-1 Alpha-2 code)
+        - name: providerCountry
+          in: query
+          type: string
+          description: Filter by provider country (ISO 3166-1 Alpha-2 code)
+        - name: filter
+          in: query
+          type: string
+          description: Filter by most popular competitors
+        - name: numberOfProviders
+          in: query
+          type: integer
+          description: Number of popular competitors to return if `filter` is set to `POPULAR` - default value is 4
+        - name: providerTypes
+          in: query
+          type: array
+          description: Filter by provider type
+        - name: providers
+          in: query
+          type: string
+          description: Filter by specific provider aliases
+        - name: excludePartners
+          in: query
+          type: boolean
+          description: Exclude Wise's partner banks - default true
+        - name: includeWise
+          in: query
+          type: boolean
+          description: Overrides filters to ensure Wise data is returned, even if exclusionary filters are applied
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-comparison-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — comparison. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v3/comparisons
+      name: v3-comparisons
+      description: REST surface for v3-comparisons.
+      operations:
+      - method: GET
+        name: comparisongetv3
+        description: Request a comparison quote (V3)
+        call: platform-comparison.comparisongetv3
+        with:
+          sourceCurrency: rest.sourceCurrency
+          targetCurrency: rest.targetCurrency
+          sendAmount: rest.sendAmount
+          midMarketRate: rest.midMarketRate
+          wiseFee: rest.wiseFee
+          wiseEstimatedDelivery: rest.wiseEstimatedDelivery
+          wiseQuoteCreatedTime: rest.wiseQuoteCreatedTime
+          payInMethod: rest.payInMethod
+          sourceCountry: rest.sourceCountry
+          targetCountry: rest.targetCountry
+          providerCountry: rest.providerCountry
+          providerTypes: rest.providerTypes
+          providers: rest.providers
+          excludePartners: rest.excludePartners
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v4/comparisons
+      name: v4-comparisons
+      description: REST surface for v4-comparisons.
+      operations:
+      - method: GET
+        name: comparisonget
+        description: Request a comparison quote
+        call: platform-comparison.comparisonget
+        with:
+          sourceCurrency: rest.sourceCurrency
+          targetCurrency: rest.targetCurrency
+          sendAmount: rest.sendAmount
+          recipientGetsAmount: rest.recipientGetsAmount
+          midMarketRate: rest.midMarketRate
+          wiseFee: rest.wiseFee
+          wiseEstimatedDelivery: rest.wiseEstimatedDelivery
+          wiseQuoteCreatedTime: rest.wiseQuoteCreatedTime
+          payInMethod: rest.payInMethod
+          sourceCountry: rest.sourceCountry
+          targetCountry: rest.targetCountry
+          providerCountry: rest.providerCountry
+          filter: rest.filter
+          numberOfProviders: rest.numberOfProviders
+          providerTypes: rest.providerTypes
+          providers: rest.providers
+          excludePartners: rest.excludePartners
+          includeWise: rest.includeWise
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-comparison-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — comparison. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: request-comparison-quote-v3
+      description: Request a comparison quote (V3)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-comparison.comparisongetv3
+      with:
+        sourceCurrency: tools.sourceCurrency
+        targetCurrency: tools.targetCurrency
+        sendAmount: tools.sendAmount
+        midMarketRate: tools.midMarketRate
+        wiseFee: tools.wiseFee
+        wiseEstimatedDelivery: tools.wiseEstimatedDelivery
+        wiseQuoteCreatedTime: tools.wiseQuoteCreatedTime
+        payInMethod: tools.payInMethod
+        sourceCountry: tools.sourceCountry
+        targetCountry: tools.targetCountry
+        providerCountry: tools.providerCountry
+        providerTypes: tools.providerTypes
+        providers: tools.providers
+        excludePartners: tools.excludePartners
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: request-comparison-quote
+      description: Request a comparison quote
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-comparison.comparisonget
+      with:
+        sourceCurrency: tools.sourceCurrency
+        targetCurrency: tools.targetCurrency
+        sendAmount: tools.sendAmount
+        recipientGetsAmount: tools.recipientGetsAmount
+        midMarketRate: tools.midMarketRate
+        wiseFee: tools.wiseFee
+        wiseEstimatedDelivery: tools.wiseEstimatedDelivery
+        wiseQuoteCreatedTime: tools.wiseQuoteCreatedTime
+        payInMethod: tools.payInMethod
+        sourceCountry: tools.sourceCountry
+        targetCountry: tools.targetCountry
+        providerCountry: tools.providerCountry
+        filter: tools.filter
+        numberOfProviders: tools.numberOfProviders
+        providerTypes: tools.providerTypes
+        providers: tools.providers
+        excludePartners: tools.excludePartners
+        includeWise: tools.includeWise
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,409 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — batch-group
+  description: 'Wise Platform API — batch-group. 7 operations. Lead operation: Fund a batch group via direct debit. Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - batch-group
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-batch-group
+    baseUri: https://api.wise.com
+    description: Wise Platform API — batch-group business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-profiles-profileId-batch-groups-batchGroupId-payment-initiations
+      path: /v1/profiles/{profileId}/batch-groups/{batchGroupId}/payment-initiations
+      operations:
+      - name: batchgrouppaymentinitiationcreate
+        method: POST
+        description: Fund a batch group via direct debit
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-profiles-profileId-batch-groups-batchGroupId-payment-initiations-paymentIniti
+      path: /v1/profiles/{profileId}/batch-groups/{batchGroupId}/payment-initiations/{paymentInitiationId}
+      operations:
+      - name: batchgrouppaymentinitiationget
+        method: GET
+        description: Retrieve a payment initiation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+        - name: paymentInitiationId
+          in: path
+          type: integer
+          description: The payment initiation ID.
+          required: true
+    - name: v3-profiles-profileId-batch-groups
+      path: /v3/profiles/{profileId}/batch-groups
+      operations:
+      - name: batchgroupcreate
+        method: POST
+        description: Create a batch group
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile to create the batch group for.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-profiles-profileId-batch-groups-batchGroupId
+      path: /v3/profiles/{profileId}/batch-groups/{batchGroupId}
+      operations:
+      - name: batchgroupget
+        method: GET
+        description: Retrieve a batch group
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+      - name: batchgroupupdate
+        method: PATCH
+        description: Update batch group status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-profiles-profileId-batch-groups-batchGroupId-transfers
+      path: /v3/profiles/{profileId}/batch-groups/{batchGroupId}/transfers
+      operations:
+      - name: batchgrouptransfercreate
+        method: POST
+        description: Create a batch group transfer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-profiles-profileId-batch-payments-batchGroupId-payments
+      path: /v3/profiles/{profileId}/batch-payments/{batchGroupId}/payments
+      operations:
+      - name: batchgroupfund
+        method: POST
+        description: Fund a batch group
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The ID of the profile that the batch group is associated with.
+          required: true
+        - name: batchGroupId
+          in: path
+          type: string
+          description: The batch group ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-batch-group-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — batch-group. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/profiles/{profileid}/batch-groups/{batchgroupid}/payment-initiations
+      name: v1-profiles-profileid-batch-groups-batchgroupid-payment-initiations
+      description: REST surface for v1-profiles-profileId-batch-groups-batchGroupId-payment-initiations.
+      operations:
+      - method: POST
+        name: batchgrouppaymentinitiationcreate
+        description: Fund a batch group via direct debit
+        call: platform-batch-group.batchgrouppaymentinitiationcreate
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/batch-groups/{batchgroupid}/payment-initiations/{paymentinitiationid}
+      name: v1-profiles-profileid-batch-groups-batchgroupid-payment-initiations-paymentiniti
+      description: REST surface for v1-profiles-profileId-batch-groups-batchGroupId-payment-initiations-paymentIniti.
+      operations:
+      - method: GET
+        name: batchgrouppaymentinitiationget
+        description: Retrieve a payment initiation
+        call: platform-batch-group.batchgrouppaymentinitiationget
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+          paymentInitiationId: rest.paymentInitiationId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/batch-groups
+      name: v3-profiles-profileid-batch-groups
+      description: REST surface for v3-profiles-profileId-batch-groups.
+      operations:
+      - method: POST
+        name: batchgroupcreate
+        description: Create a batch group
+        call: platform-batch-group.batchgroupcreate
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/batch-groups/{batchgroupid}
+      name: v3-profiles-profileid-batch-groups-batchgroupid
+      description: REST surface for v3-profiles-profileId-batch-groups-batchGroupId.
+      operations:
+      - method: GET
+        name: batchgroupget
+        description: Retrieve a batch group
+        call: platform-batch-group.batchgroupget
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: batchgroupupdate
+        description: Update batch group status
+        call: platform-batch-group.batchgroupupdate
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/batch-groups/{batchgroupid}/transfers
+      name: v3-profiles-profileid-batch-groups-batchgroupid-transfers
+      description: REST surface for v3-profiles-profileId-batch-groups-batchGroupId-transfers.
+      operations:
+      - method: POST
+        name: batchgrouptransfercreate
+        description: Create a batch group transfer
+        call: platform-batch-group.batchgrouptransfercreate
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/profiles/{profileid}/batch-payments/{batchgroupid}/payments
+      name: v3-profiles-profileid-batch-payments-batchgroupid-payments
+      description: REST surface for v3-profiles-profileId-batch-payments-batchGroupId-payments.
+      operations:
+      - method: POST
+        name: batchgroupfund
+        description: Fund a batch group
+        call: platform-batch-group.batchgroupfund
+        with:
+          profileId: rest.profileId
+          batchGroupId: rest.batchGroupId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-batch-group-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — batch-group. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: fund-batch-group-direct-debit
+      description: Fund a batch group via direct debit
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-batch-group.batchgrouppaymentinitiationcreate
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-payment-initiation
+      description: Retrieve a payment initiation
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-batch-group.batchgrouppaymentinitiationget
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+        paymentInitiationId: tools.paymentInitiationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-batch-group
+      description: Create a batch group
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-batch-group.batchgroupcreate
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-batch-group
+      description: Retrieve a batch group
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-batch-group.batchgroupget
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-batch-group-status
+      description: Update batch group status
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-batch-group.batchgroupupdate
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-batch-group-transfer
+      description: Create a batch group transfer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-batch-group.batchgrouptransfercreate
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fund-batch-group
+      description: Fund a batch group
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-batch-group.batchgroupfund
+      with:
+        profileId: tools.profileId
+        batchGroupId: tools.batchGroupId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

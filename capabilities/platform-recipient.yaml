@@ -1,0 +1,610 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — recipient
+  description: 'Wise Platform API — recipient. 11 operations. Lead operation: List recipient accounts (v1). Self-contained
+    Naftiko capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - recipient
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-recipient
+    baseUri: https://api.wise.com
+    description: Wise Platform API — recipient business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-accounts
+      path: /v1/accounts
+      operations:
+      - name: recipientlistv1
+        method: GET
+        description: List recipient accounts (v1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: query
+          type: integer
+          description: Filter by personal or business profile, returns only those owned by this profile.
+        - name: currency
+          in: query
+          type: string
+          description: Filter responses by currency.
+      - name: recipientcreate
+        method: POST
+        description: Create a recipient account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: refund
+          in: query
+          type: boolean
+          description: When true, creates a refund recipient account.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-accounts-accountId
+      path: /v1/accounts/{accountId}
+      operations:
+      - name: recipientgetv1
+        method: GET
+        description: Get account by ID (v1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+    - name: v1-accounts-accountId-quotes-quoteId-compatibility
+      path: /v1/accounts/{accountId}/quotes/{quoteId}/compatibility
+      operations:
+      - name: recipientcompatibilitycheckv1
+        method: POST
+        description: Check account and quote compatibility (v1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+        - name: quoteId
+          in: path
+          type: string
+          description: Quote ID.
+          required: true
+    - name: v1-quotes-quoteId-account-requirements
+      path: /v1/quotes/{quoteId}/account-requirements
+      operations:
+      - name: recipientaccountrequirementsget
+        method: GET
+        description: Retrieve recipient account requirements dynamically
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: quoteId
+          in: path
+          type: string
+          description: Quote ID (supports long or UUID based IDs).
+          required: true
+        - name: originatorLegalEntityType
+          in: query
+          type: string
+          description: Legal entity type override for the actual sender.
+        - name: addressRequired
+          in: query
+          type: boolean
+          description: Set to true so address is always required.
+        - name: Accept-Minor-Version
+          in: header
+          type: integer
+          description: Set to `1` to enable v1.1.
+      - name: recipientaccountrequirementspost
+        method: POST
+        description: Retrieve recipient account requirements dynamically (step-by-step)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: quoteId
+          in: path
+          type: string
+          description: Quote ID (supports long or UUID based IDs).
+          required: true
+        - name: originatorLegalEntityType
+          in: query
+          type: string
+          description: Legal entity type override for the actual sender.
+        - name: Accept-Minor-Version
+          in: header
+          type: integer
+          description: Set to `1` to enable v1.1.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-accounts
+      path: /v2/accounts
+      operations:
+      - name: recipientlist
+        method: GET
+        description: List recipient accounts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: creatorId
+          in: query
+          type: integer
+          description: Creator of the account.
+        - name: profileId
+          in: query
+          type: integer
+          description: Filter by personal or business profile. Defaults to the personal profile.
+        - name: profile
+          in: query
+          type: integer
+          description: Alias for `profileId`.
+        - name: currency
+          in: query
+          type: string
+          description: Filter responses by currency. Comma separated values supported (e.g. `USD,GBP`).
+        - name: active
+          in: query
+          type: boolean
+          description: Filter by whether this profile is active. Defaults to `true`.
+        - name: type
+          in: query
+          type: string
+          description: Filter responses by account type. Comma separated values supported (e.g. `iban,swift_code`).
+        - name: ownedByCustomer
+          in: query
+          type: boolean
+          description: Filter to get accounts owned by the customer or not. Leave out to get all accounts.
+        - name: size
+          in: query
+          type: integer
+          description: Page size of the response. Defaults to a maximum of 20.
+        - name: seekPosition
+          in: query
+          type:
+          - integer
+          - 'null'
+          description: Account ID to start the page of responses from. `null` if no more pages.
+        - name: sort
+          in: query
+          type: string
+          description: Sorting strategy for the response. Comma separated options - firstly either `id` or `currency`, followed
+            by `asc` or `desc` for direction.
+    - name: v2-accounts-accountId
+      path: /v2/accounts/{accountId}
+      operations:
+      - name: recipientget
+        method: GET
+        description: Get account by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+      - name: recipientdeactivate
+        method: DELETE
+        description: Deactivate a recipient account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+    - name: v2-accounts-accountId-confirmations
+      path: /v2/accounts/{accountId}/confirmations
+      operations:
+      - name: recipientconfirmationsaccept
+        method: PATCH
+        description: Accept confirmation outcomes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+        - name: quoteId
+          in: query
+          type: string
+          description: Required if the confirmation result contained a `quoteId`.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v2-accounts-accountId-quotes-quoteId-compatibility
+      path: /v2/accounts/{accountId}/quotes/{quoteId}/compatibility
+      operations:
+      - name: recipientcompatibilitycheck
+        method: POST
+        description: Check account and quote compatibility
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: integer
+          description: Recipient account ID.
+          required: true
+        - name: quoteId
+          in: path
+          type: string
+          description: Quote ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-recipient-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — recipient. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/accounts
+      name: v1-accounts
+      description: REST surface for v1-accounts.
+      operations:
+      - method: GET
+        name: recipientlistv1
+        description: List recipient accounts (v1)
+        call: platform-recipient.recipientlistv1
+        with:
+          profileId: rest.profileId
+          currency: rest.currency
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: recipientcreate
+        description: Create a recipient account
+        call: platform-recipient.recipientcreate
+        with:
+          refund: rest.refund
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/accounts/{accountid}
+      name: v1-accounts-accountid
+      description: REST surface for v1-accounts-accountId.
+      operations:
+      - method: GET
+        name: recipientgetv1
+        description: Get account by ID (v1)
+        call: platform-recipient.recipientgetv1
+        with:
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/accounts/{accountid}/quotes/{quoteid}/compatibility
+      name: v1-accounts-accountid-quotes-quoteid-compatibility
+      description: REST surface for v1-accounts-accountId-quotes-quoteId-compatibility.
+      operations:
+      - method: POST
+        name: recipientcompatibilitycheckv1
+        description: Check account and quote compatibility (v1)
+        call: platform-recipient.recipientcompatibilitycheckv1
+        with:
+          accountId: rest.accountId
+          quoteId: rest.quoteId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/quotes/{quoteid}/account-requirements
+      name: v1-quotes-quoteid-account-requirements
+      description: REST surface for v1-quotes-quoteId-account-requirements.
+      operations:
+      - method: GET
+        name: recipientaccountrequirementsget
+        description: Retrieve recipient account requirements dynamically
+        call: platform-recipient.recipientaccountrequirementsget
+        with:
+          quoteId: rest.quoteId
+          originatorLegalEntityType: rest.originatorLegalEntityType
+          addressRequired: rest.addressRequired
+          Accept-Minor-Version: rest.Accept-Minor-Version
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: recipientaccountrequirementspost
+        description: Retrieve recipient account requirements dynamically (step-by-step)
+        call: platform-recipient.recipientaccountrequirementspost
+        with:
+          quoteId: rest.quoteId
+          originatorLegalEntityType: rest.originatorLegalEntityType
+          Accept-Minor-Version: rest.Accept-Minor-Version
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/accounts
+      name: v2-accounts
+      description: REST surface for v2-accounts.
+      operations:
+      - method: GET
+        name: recipientlist
+        description: List recipient accounts
+        call: platform-recipient.recipientlist
+        with:
+          creatorId: rest.creatorId
+          profileId: rest.profileId
+          profile: rest.profile
+          currency: rest.currency
+          active: rest.active
+          type: rest.type
+          ownedByCustomer: rest.ownedByCustomer
+          size: rest.size
+          seekPosition: rest.seekPosition
+          sort: rest.sort
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/accounts/{accountid}
+      name: v2-accounts-accountid
+      description: REST surface for v2-accounts-accountId.
+      operations:
+      - method: GET
+        name: recipientget
+        description: Get account by ID
+        call: platform-recipient.recipientget
+        with:
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: recipientdeactivate
+        description: Deactivate a recipient account
+        call: platform-recipient.recipientdeactivate
+        with:
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/accounts/{accountid}/confirmations
+      name: v2-accounts-accountid-confirmations
+      description: REST surface for v2-accounts-accountId-confirmations.
+      operations:
+      - method: PATCH
+        name: recipientconfirmationsaccept
+        description: Accept confirmation outcomes
+        call: platform-recipient.recipientconfirmationsaccept
+        with:
+          accountId: rest.accountId
+          quoteId: rest.quoteId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/accounts/{accountid}/quotes/{quoteid}/compatibility
+      name: v2-accounts-accountid-quotes-quoteid-compatibility
+      description: REST surface for v2-accounts-accountId-quotes-quoteId-compatibility.
+      operations:
+      - method: POST
+        name: recipientcompatibilitycheck
+        description: Check account and quote compatibility
+        call: platform-recipient.recipientcompatibilitycheck
+        with:
+          accountId: rest.accountId
+          quoteId: rest.quoteId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-recipient-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — recipient. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-recipient-accounts-v1
+      description: List recipient accounts (v1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientlistv1
+      with:
+        profileId: tools.profileId
+        currency: tools.currency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-recipient-account
+      description: Create a recipient account
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-recipient.recipientcreate
+      with:
+        refund: tools.refund
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-account-id-v1
+      description: Get account by ID (v1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientgetv1
+      with:
+        accountId: tools.accountId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: check-account-and-quote-compatibility
+      description: Check account and quote compatibility (v1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-recipient.recipientcompatibilitycheckv1
+      with:
+        accountId: tools.accountId
+        quoteId: tools.quoteId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-recipient-account-requirements-dynamically
+      description: Retrieve recipient account requirements dynamically
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientaccountrequirementsget
+      with:
+        quoteId: tools.quoteId
+        originatorLegalEntityType: tools.originatorLegalEntityType
+        addressRequired: tools.addressRequired
+        Accept-Minor-Version: tools.Accept-Minor-Version
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-recipient-account-requirements-dynamically-2
+      description: Retrieve recipient account requirements dynamically (step-by-step)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-recipient.recipientaccountrequirementspost
+      with:
+        quoteId: tools.quoteId
+        originatorLegalEntityType: tools.originatorLegalEntityType
+        Accept-Minor-Version: tools.Accept-Minor-Version
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-recipient-accounts
+      description: List recipient accounts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientlist
+      with:
+        creatorId: tools.creatorId
+        profileId: tools.profileId
+        profile: tools.profile
+        currency: tools.currency
+        active: tools.active
+        type: tools.type
+        ownedByCustomer: tools.ownedByCustomer
+        size: tools.size
+        seekPosition: tools.seekPosition
+        sort: tools.sort
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-account-id
+      description: Get account by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientget
+      with:
+        accountId: tools.accountId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deactivate-recipient-account
+      description: Deactivate a recipient account
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: platform-recipient.recipientdeactivate
+      with:
+        accountId: tools.accountId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: accept-confirmation-outcomes
+      description: Accept confirmation outcomes
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-recipient.recipientconfirmationsaccept
+      with:
+        accountId: tools.accountId
+        quoteId: tools.quoteId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: check-account-and-quote-compatibility-2
+      description: Check account and quote compatibility
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-recipient.recipientcompatibilitycheck
+      with:
+        accountId: tools.accountId
+        quoteId: tools.quoteId
+      outputParameters:
+      - type: object
+        mapping: $.

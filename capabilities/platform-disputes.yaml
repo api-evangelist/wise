@@ -1,0 +1,483 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — disputes
+  description: 'Wise Platform API — disputes. 8 operations. Lead operation: Upload dispute file (v3). Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - disputes
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-disputes
+    baseUri: https://api.wise.com
+    description: Wise Platform API — disputes business capability. Self-contained, no shared references.
+    resources:
+    - name: v3-spend-profiles-profileId-dispute-form-file
+      path: /v3/spend/profiles/{profileId}/dispute-form/file
+      operations:
+      - name: disputefileuploadv3
+        method: POST
+        description: Upload dispute file (v3)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-spend-profiles-profileId-dispute-form-flows-step-scheme-reason
+      path: /v3/spend/profiles/{profileId}/dispute-form/flows/step/{scheme}/{reason}
+      operations:
+      - name: disputedynamicflowstep
+        method: POST
+        description: Dispute dynamic flow entry point
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: scheme
+          in: path
+          type: string
+          description: The network of the card that was used to make this transaction.
+          required: true
+        - name: reason
+          in: path
+          type: string
+          description: Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget).
+          required: true
+        - name: transactionId
+          in: query
+          type: string
+          description: The ID of the transaction being disputed. Can be a comma-separated list of IDs if the reason code has
+            the `supportsMultipleTransactions` flag.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-spend-profiles-profileId-dispute-form-flows-scheme-reason
+      path: /v3/spend/profiles/{profileId}/dispute-form/flows/{scheme}/{reason}
+      operations:
+      - name: disputesubmit
+        method: POST
+        description: Submit dispute
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: scheme
+          in: path
+          type: string
+          description: The network of the card that was used to make this transaction.
+          required: true
+        - name: reason
+          in: path
+          type: string
+          description: Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget).
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v3-spend-profiles-profileId-dispute-form-reasons
+      path: /v3/spend/profiles/{profileId}/dispute-form/reasons
+      operations:
+      - name: disputereasonsget
+        method: GET
+        description: Retrieve dispute reasons
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+    - name: v3-spend-profiles-profileId-disputes
+      path: /v3/spend/profiles/{profileId}/disputes
+      operations:
+      - name: disputelist
+        method: GET
+        description: List disputes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: status
+          in: query
+          type: string
+          description: Filter by dispute status.
+        - name: transactionId
+          in: query
+          type: integer
+          description: Filter by card transaction ID.
+        - name: pageSize
+          in: query
+          type: integer
+          description: The maximum number of disputes to return per page. Between 10 and 100, defaults to 10.
+        - name: pageNumber
+          in: query
+          type: integer
+          description: The page number to retrieve. Must be at least 1, defaults to 1.
+    - name: v3-spend-profiles-profileId-disputes-disputeId
+      path: /v3/spend/profiles/{profileId}/disputes/{disputeId}
+      operations:
+      - name: disputeget
+        method: GET
+        description: Get dispute
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: disputeId
+          in: path
+          type: string
+          description: The dispute ID.
+          required: true
+    - name: v3-spend-profiles-profileId-disputes-disputeId-status
+      path: /v3/spend/profiles/{profileId}/disputes/{disputeId}/status
+      operations:
+      - name: disputewithdraw
+        method: PUT
+        description: Withdraw dispute
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: disputeId
+          in: path
+          type: string
+          description: The dispute ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v4-spend-profiles-profileId-dispute-form-file
+      path: /v4/spend/profiles/{profileId}/dispute-form/file
+      operations:
+      - name: disputefileupload
+        method: POST
+        description: Upload dispute file
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: Your profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-disputes-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — disputes. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v3/spend/profiles/{profileid}/dispute-form/file
+      name: v3-spend-profiles-profileid-dispute-form-file
+      description: REST surface for v3-spend-profiles-profileId-dispute-form-file.
+      operations:
+      - method: POST
+        name: disputefileuploadv3
+        description: Upload dispute file (v3)
+        call: platform-disputes.disputefileuploadv3
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/dispute-form/flows/step/{scheme}/{reason}
+      name: v3-spend-profiles-profileid-dispute-form-flows-step-scheme-reason
+      description: REST surface for v3-spend-profiles-profileId-dispute-form-flows-step-scheme-reason.
+      operations:
+      - method: POST
+        name: disputedynamicflowstep
+        description: Dispute dynamic flow entry point
+        call: platform-disputes.disputedynamicflowstep
+        with:
+          profileId: rest.profileId
+          scheme: rest.scheme
+          reason: rest.reason
+          transactionId: rest.transactionId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/dispute-form/flows/{scheme}/{reason}
+      name: v3-spend-profiles-profileid-dispute-form-flows-scheme-reason
+      description: REST surface for v3-spend-profiles-profileId-dispute-form-flows-scheme-reason.
+      operations:
+      - method: POST
+        name: disputesubmit
+        description: Submit dispute
+        call: platform-disputes.disputesubmit
+        with:
+          profileId: rest.profileId
+          scheme: rest.scheme
+          reason: rest.reason
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/dispute-form/reasons
+      name: v3-spend-profiles-profileid-dispute-form-reasons
+      description: REST surface for v3-spend-profiles-profileId-dispute-form-reasons.
+      operations:
+      - method: GET
+        name: disputereasonsget
+        description: Retrieve dispute reasons
+        call: platform-disputes.disputereasonsget
+        with:
+          profileId: rest.profileId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/disputes
+      name: v3-spend-profiles-profileid-disputes
+      description: REST surface for v3-spend-profiles-profileId-disputes.
+      operations:
+      - method: GET
+        name: disputelist
+        description: List disputes
+        call: platform-disputes.disputelist
+        with:
+          profileId: rest.profileId
+          status: rest.status
+          transactionId: rest.transactionId
+          pageSize: rest.pageSize
+          pageNumber: rest.pageNumber
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/disputes/{disputeid}
+      name: v3-spend-profiles-profileid-disputes-disputeid
+      description: REST surface for v3-spend-profiles-profileId-disputes-disputeId.
+      operations:
+      - method: GET
+        name: disputeget
+        description: Get dispute
+        call: platform-disputes.disputeget
+        with:
+          profileId: rest.profileId
+          disputeId: rest.disputeId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v3/spend/profiles/{profileid}/disputes/{disputeid}/status
+      name: v3-spend-profiles-profileid-disputes-disputeid-status
+      description: REST surface for v3-spend-profiles-profileId-disputes-disputeId-status.
+      operations:
+      - method: PUT
+        name: disputewithdraw
+        description: Withdraw dispute
+        call: platform-disputes.disputewithdraw
+        with:
+          profileId: rest.profileId
+          disputeId: rest.disputeId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v4/spend/profiles/{profileid}/dispute-form/file
+      name: v4-spend-profiles-profileid-dispute-form-file
+      description: REST surface for v4-spend-profiles-profileId-dispute-form-file.
+      operations:
+      - method: POST
+        name: disputefileupload
+        description: Upload dispute file
+        call: platform-disputes.disputefileupload
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-disputes-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — disputes. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: upload-dispute-file-v3
+      description: Upload dispute file (v3)
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-disputes.disputefileuploadv3
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: dispute-dynamic-flow-entry-point
+      description: Dispute dynamic flow entry point
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-disputes.disputedynamicflowstep
+      with:
+        profileId: tools.profileId
+        scheme: tools.scheme
+        reason: tools.reason
+        transactionId: tools.transactionId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: submit-dispute
+      description: Submit dispute
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-disputes.disputesubmit
+      with:
+        profileId: tools.profileId
+        scheme: tools.scheme
+        reason: tools.reason
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-dispute-reasons
+      description: Retrieve dispute reasons
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-disputes.disputereasonsget
+      with:
+        profileId: tools.profileId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-disputes
+      description: List disputes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-disputes.disputelist
+      with:
+        profileId: tools.profileId
+        status: tools.status
+        transactionId: tools.transactionId
+        pageSize: tools.pageSize
+        pageNumber: tools.pageNumber
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-dispute
+      description: Get dispute
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-disputes.disputeget
+      with:
+        profileId: tools.profileId
+        disputeId: tools.disputeId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: withdraw-dispute
+      description: Withdraw dispute
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: platform-disputes.disputewithdraw
+      with:
+        profileId: tools.profileId
+        disputeId: tools.disputeId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: upload-dispute-file
+      description: Upload dispute file
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-disputes.disputefileupload
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

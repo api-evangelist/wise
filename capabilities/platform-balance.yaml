@@ -1,0 +1,641 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Wise Platform API — balance
+  description: 'Wise Platform API — balance. 12 operations. Lead operation: Get account balance (v1). Self-contained Naftiko
+    capability covering one Wise business surface.'
+  tags:
+  - Wise
+  - balance
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WISE_API_KEY: WISE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: platform-balance
+    baseUri: https://api.wise.com
+    description: Wise Platform API — balance business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-borderless-accounts
+      path: /v1/borderless-accounts
+      operations:
+      - name: balancegetv1
+        method: GET
+        description: Get account balance (v1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: query
+          type: integer
+          description: Your profile ID.
+          required: true
+    - name: v1-borderless-accounts-borderlessAccountId-conversions
+      path: /v1/borderless-accounts/{borderlessAccountId}/conversions
+      operations:
+      - name: balanceconvertv1
+        method: POST
+        description: Convert currencies between balances (v1)
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: borderlessAccountId
+          in: path
+          type: integer
+          description: Your borderless account ID.
+          required: true
+        - name: X-idempotence-uuid
+          in: header
+          type: string
+          description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical
+            reasons then you can use the same value again for ma
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-profiles-profileId-balance-capacity
+      path: /v1/profiles/{profileId}/balance-capacity
+      operations:
+      - name: balancecapacity
+        method: GET
+        description: Retrieve Deposit Limits
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: currency
+          in: query
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code). The deposit limit will be returned in this currency.
+          required: true
+    - name: v1-profiles-profileId-balances-hold-limit-breach
+      path: /v1/profiles/{profileId}/balances/hold-limit-breach
+      operations:
+      - name: holdlimitbreachlist
+        method: POST
+        description: List hold limit breaches
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: state
+          in: query
+          type: string
+          description: Filter by breach state. One of `OPEN`, `CLOSED`
+        - name: closingReason
+          in: query
+          type: string
+          description: Filter by closing reason. One of `AUTOMATICALLY_RESOLVED`, `MANUALLY_RESOLVED`
+    - name: v1-profiles-profileId-balances-hold-limit-breach-holdLimitBreachId
+      path: /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}
+      operations:
+      - name: holdlimitbreachclose
+        method: POST
+        description: Close a hold limit breach
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: holdLimitBreachId
+          in: path
+          type: integer
+          description: The hold limit breach ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-profiles-profileId-excess-money-account
+      path: /v1/profiles/{profileId}/excess-money-account
+      operations:
+      - name: excessmoneyaccount
+        method: POST
+        description: Add an Excess Money Account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-profiles-profileId-total-funds-currency
+      path: /v1/profiles/{profileId}/total-funds/{currency}
+      operations:
+      - name: totalfunds
+        method: GET
+        description: Get Total Funds
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: currency
+          in: path
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code). All values will be converted to this currency.
+          required: true
+    - name: v2-profiles-profileId-balance-movements
+      path: /v2/profiles/{profileId}/balance-movements
+      operations:
+      - name: balancemovement
+        method: POST
+        description: Convert or Move Money Between Balances
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: X-idempotence-uuid
+          in: header
+          type: string
+          description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical
+            reasons then you can use the same value again for ma
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v4-profiles-profileId-balances
+      path: /v4/profiles/{profileId}/balances
+      operations:
+      - name: balancecreate
+        method: POST
+        description: Create a Balance Account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: X-idempotence-uuid
+          in: header
+          type: string
+          description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical
+            reasons then you can use the same value again for ma
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: balancelist
+        method: GET
+        description: List Balances for a Profile
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: types
+          in: query
+          type: string
+          description: Comma-separated list of balance types to return. Acceptable values are `STANDARD` and `SAVINGS`.
+          required: true
+    - name: v4-profiles-profileId-balances-balanceId
+      path: /v4/profiles/{profileId}/balances/{balanceId}
+      operations:
+      - name: balanceget
+        method: GET
+        description: Retrieve a Balance by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: balanceId
+          in: path
+          type: integer
+          description: The balance ID.
+          required: true
+      - name: balancedelete
+        method: DELETE
+        description: Remove a Balance Account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: profileId
+          in: path
+          type: integer
+          description: The profile ID.
+          required: true
+        - name: balanceId
+          in: path
+          type: integer
+          description: The balance ID.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WISE_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: platform-balance-rest
+    port: 8080
+    description: REST adapter for Wise Platform API — balance. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/borderless-accounts
+      name: v1-borderless-accounts
+      description: REST surface for v1-borderless-accounts.
+      operations:
+      - method: GET
+        name: balancegetv1
+        description: Get account balance (v1)
+        call: platform-balance.balancegetv1
+        with:
+          profileId: rest.profileId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/borderless-accounts/{borderlessaccountid}/conversions
+      name: v1-borderless-accounts-borderlessaccountid-conversions
+      description: REST surface for v1-borderless-accounts-borderlessAccountId-conversions.
+      operations:
+      - method: POST
+        name: balanceconvertv1
+        description: Convert currencies between balances (v1)
+        call: platform-balance.balanceconvertv1
+        with:
+          borderlessAccountId: rest.borderlessAccountId
+          X-idempotence-uuid: rest.X-idempotence-uuid
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/balance-capacity
+      name: v1-profiles-profileid-balance-capacity
+      description: REST surface for v1-profiles-profileId-balance-capacity.
+      operations:
+      - method: GET
+        name: balancecapacity
+        description: Retrieve Deposit Limits
+        call: platform-balance.balancecapacity
+        with:
+          profileId: rest.profileId
+          currency: rest.currency
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/balances/hold-limit-breach
+      name: v1-profiles-profileid-balances-hold-limit-breach
+      description: REST surface for v1-profiles-profileId-balances-hold-limit-breach.
+      operations:
+      - method: POST
+        name: holdlimitbreachlist
+        description: List hold limit breaches
+        call: platform-balance.holdlimitbreachlist
+        with:
+          profileId: rest.profileId
+          state: rest.state
+          closingReason: rest.closingReason
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/balances/hold-limit-breach/{holdlimitbreachid}
+      name: v1-profiles-profileid-balances-hold-limit-breach-holdlimitbreachid
+      description: REST surface for v1-profiles-profileId-balances-hold-limit-breach-holdLimitBreachId.
+      operations:
+      - method: POST
+        name: holdlimitbreachclose
+        description: Close a hold limit breach
+        call: platform-balance.holdlimitbreachclose
+        with:
+          profileId: rest.profileId
+          holdLimitBreachId: rest.holdLimitBreachId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/excess-money-account
+      name: v1-profiles-profileid-excess-money-account
+      description: REST surface for v1-profiles-profileId-excess-money-account.
+      operations:
+      - method: POST
+        name: excessmoneyaccount
+        description: Add an Excess Money Account
+        call: platform-balance.excessmoneyaccount
+        with:
+          profileId: rest.profileId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/profiles/{profileid}/total-funds/{currency}
+      name: v1-profiles-profileid-total-funds-currency
+      description: REST surface for v1-profiles-profileId-total-funds-currency.
+      operations:
+      - method: GET
+        name: totalfunds
+        description: Get Total Funds
+        call: platform-balance.totalfunds
+        with:
+          profileId: rest.profileId
+          currency: rest.currency
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/profiles/{profileid}/balance-movements
+      name: v2-profiles-profileid-balance-movements
+      description: REST surface for v2-profiles-profileId-balance-movements.
+      operations:
+      - method: POST
+        name: balancemovement
+        description: Convert or Move Money Between Balances
+        call: platform-balance.balancemovement
+        with:
+          profileId: rest.profileId
+          X-idempotence-uuid: rest.X-idempotence-uuid
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v4/profiles/{profileid}/balances
+      name: v4-profiles-profileid-balances
+      description: REST surface for v4-profiles-profileId-balances.
+      operations:
+      - method: POST
+        name: balancecreate
+        description: Create a Balance Account
+        call: platform-balance.balancecreate
+        with:
+          profileId: rest.profileId
+          X-idempotence-uuid: rest.X-idempotence-uuid
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: balancelist
+        description: List Balances for a Profile
+        call: platform-balance.balancelist
+        with:
+          profileId: rest.profileId
+          types: rest.types
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v4/profiles/{profileid}/balances/{balanceid}
+      name: v4-profiles-profileid-balances-balanceid
+      description: REST surface for v4-profiles-profileId-balances-balanceId.
+      operations:
+      - method: GET
+        name: balanceget
+        description: Retrieve a Balance by ID
+        call: platform-balance.balanceget
+        with:
+          profileId: rest.profileId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: balancedelete
+        description: Remove a Balance Account
+        call: platform-balance.balancedelete
+        with:
+          profileId: rest.profileId
+          balanceId: rest.balanceId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: platform-balance-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Wise Platform API — balance. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-account-balance-v1
+      description: Get account balance (v1)
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance.balancegetv1
+      with:
+        profileId: tools.profileId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: convert-currencies-between-balances-v1
+      description: Convert currencies between balances (v1)
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-balance.balanceconvertv1
+      with:
+        borderlessAccountId: tools.borderlessAccountId
+        X-idempotence-uuid: tools.X-idempotence-uuid
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-deposit-limits
+      description: Retrieve Deposit Limits
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance.balancecapacity
+      with:
+        profileId: tools.profileId
+        currency: tools.currency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-hold-limit-breaches
+      description: List hold limit breaches
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: platform-balance.holdlimitbreachlist
+      with:
+        profileId: tools.profileId
+        state: tools.state
+        closingReason: tools.closingReason
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: close-hold-limit-breach
+      description: Close a hold limit breach
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-balance.holdlimitbreachclose
+      with:
+        profileId: tools.profileId
+        holdLimitBreachId: tools.holdLimitBreachId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-excess-money-account
+      description: Add an Excess Money Account
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-balance.excessmoneyaccount
+      with:
+        profileId: tools.profileId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-total-funds
+      description: Get Total Funds
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance.totalfunds
+      with:
+        profileId: tools.profileId
+        currency: tools.currency
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: convert-move-money-between-balances
+      description: Convert or Move Money Between Balances
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-balance.balancemovement
+      with:
+        profileId: tools.profileId
+        X-idempotence-uuid: tools.X-idempotence-uuid
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-balance-account
+      description: Create a Balance Account
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: platform-balance.balancecreate
+      with:
+        profileId: tools.profileId
+        X-idempotence-uuid: tools.X-idempotence-uuid
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-balances-profile
+      description: List Balances for a Profile
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance.balancelist
+      with:
+        profileId: tools.profileId
+        types: tools.types
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-balance-id
+      description: Retrieve a Balance by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: platform-balance.balanceget
+      with:
+        profileId: tools.profileId
+        balanceId: tools.balanceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-balance-account
+      description: Remove a Balance Account
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: platform-balance.balancedelete
+      with:
+        profileId: tools.profileId
+        balanceId: tools.balanceId
+      outputParameters:
+      - type: object
+        mapping: $.
