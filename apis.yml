@@ -13,7 +13,7 @@ tags:
   - Banking
   - Multi-Currency
 created: '2026-05-08'
-modified: '2026-05-19'
+modified: '2026-05-30'
 specificationVersion: '0.19'
 apis:
   - aid: wise:profiles
@@ -252,6 +252,8 @@ apis:
       url: https://docs.wise.com/api-docs/api-reference/subscription
     - type: OpenAPI
       url: openapi/wise-platform-openapi.yml
+    - type: AsyncAPI
+      url: asyncapi/wise-webhooks-asyncapi.yml
   - aid: wise:simulation
     name: Wise Simulation API
     description: Sandbox-only endpoints for advancing the lifecycle of test transfers (simulating funding, processing, completion,

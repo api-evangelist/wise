@@ -1,0 +1,1462 @@
+asyncapi: 2.6.0
+info:
+  title: Wise Platform Webhooks
+  version: '2.0.0'
+  description: |
+    AsyncAPI 2.6 description of the Wise Platform webhook surface. Wise pushes
+    HTTP `POST` notifications to subscriber-defined HTTPS endpoints when events
+    occur against profiles, transfers, balances, cards, multi-currency account
+    details, batches, settlements, holds, disputes and partner support cases.
+
+    Each delivery is signed with an RSA-SHA256 signature over the raw HTTP
+    request body. The signature is Base64-encoded and transmitted in the
+    `X-Signature-SHA256` header. Subscribers verify the signature using Wise's
+    published RSA public keys (separate keys for production and sandbox) and
+    must reject any request whose signature does not validate.
+
+    Subscribers must respond with a `2xx` HTTP status within 5 seconds.
+    Failed deliveries are retried up to 25 times with increasing back-off
+    over a two-week window. Events may arrive out of order; consumers should
+    use the event-specific ordering fields (typically `data.occurred_at`).
+
+    Sources:
+      - https://docs.wise.com/guides/developer/webhooks/event-handling
+      - https://docs.wise.com/guides/developer/webhooks/event-types
+      - https://github.com/transferwise/digital-signatures-examples/tree/main/verify-webhook-signature
+  contact:
+    name: Wise Platform Developer Support
+    url: https://docs.wise.com/
+  license:
+    name: Wise Platform API Terms
+    url: https://wise.com/legal/
+
+defaultContentType: application/json
+
+servers:
+  production:
+    url: https://{subscriberHost}
+    protocol: https
+    description: |
+      The subscriber's HTTPS endpoint that receives Wise webhook notifications
+      in production. Signatures are verified using the production RSA public key.
+    variables:
+      subscriberHost:
+        description: Host name of the subscriber's webhook endpoint.
+        default: example.com
+  sandbox:
+    url: https://{subscriberHost}
+    protocol: https
+    description: |
+      Sandbox subscriber endpoint. Notifications originate from
+      api.sandbox.transferwise.tech and are signed with the sandbox RSA public key.
+    variables:
+      subscriberHost:
+        description: Host name of the subscriber's sandbox webhook endpoint.
+        default: example.com
+
+channels:
+  'transfers#state-change':
+    description: |
+      Triggered whenever a transfer's state changes. Available at both profile
+      and application subscription levels.
+    subscribe:
+      operationId: onTransferStateChange
+      summary: Receive transfer state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/TransferStateChangeEvent'
+
+  'transfers#active-cases':
+    description: |
+      Triggered when the list of active cases on a transfer is updated.
+    subscribe:
+      operationId: onTransferActiveCases
+      summary: Receive transfer active cases notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/TransferActiveCasesEvent'
+
+  'transfers#refund':
+    description: |
+      Triggered when a transfer becomes `funds_refunded`, providing refund
+      amount and currency information.
+    subscribe:
+      operationId: onTransferRefund
+      summary: Receive transfer refund notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/TransferRefundEvent'
+
+  'transfers#payout-failure':
+    description: |
+      Triggered when a transfer payout fails, including failure reason codes.
+    subscribe:
+      operationId: onTransferPayoutFailure
+      summary: Receive transfer payout failure notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/TransferPayoutFailureEvent'
+
+  'balances#update':
+    description: |
+      Primary balance event. Triggered for credit or debit transactions on
+      a multi-currency balance. Supersedes `balances#credit`.
+    subscribe:
+      operationId: onBalanceUpdate
+      summary: Receive balance credit/debit notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/BalanceUpdateEvent'
+
+  'balances#credit':
+    description: |
+      Profile-level event triggered every time a multi-currency balance is
+      credited. Deprecated in favour of `balances#update`.
+    subscribe:
+      operationId: onBalanceCredit
+      summary: Receive (deprecated) balance credit notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/BalanceCreditEvent'
+
+  'balances#account-state-change':
+    description: |
+      Application-level event triggered when a balance account is activated
+      or deactivated.
+    subscribe:
+      operationId: onBalanceAccountStateChange
+      summary: Receive balance account state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/BalanceAccountStateChangeEvent'
+
+  'profiles#verification-state-change':
+    description: |
+      Triggered when the verification state of a connected profile changes
+      between `verified` and `not_verified`.
+    subscribe:
+      operationId: onProfileVerificationStateChange
+      summary: Receive profile verification state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/ProfileVerificationStateChangeEvent'
+
+  'profiles#state-change':
+    description: |
+      Triggered every time a profile's state is updated.
+    subscribe:
+      operationId: onProfileStateChange
+      summary: Receive profile state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/ProfileStateChangeEvent'
+
+  'profiles#cdd-check-state-change':
+    description: |
+      Triggered when a Customer Due Diligence check state changes, including
+      required evidences and review outcome.
+    subscribe:
+      operationId: onProfileCddCheckStateChange
+      summary: Receive CDD check state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/ProfileCddCheckStateChangeEvent'
+
+  'profiles#overdraft-limit-threshold':
+    description: |
+      Triggered when overdraft usage reaches the 70% threshold (rate-limited
+      to a maximum of once per hour per profile).
+    subscribe:
+      operationId: onProfileOverdraftLimitThreshold
+      summary: Receive overdraft limit threshold notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/ProfileOverdraftLimitThresholdEvent'
+
+  'users#state-change':
+    description: |
+      Application-level event triggered when a user's state changes
+      (ACTIVE, WITHDRAW_ONLY, DEACTIVATED).
+    subscribe:
+      operationId: onUserStateChange
+      summary: Receive user state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/UserStateChangeEvent'
+
+  'cards#card-status-change':
+    description: |
+      Triggered for initial and subsequent card status updates.
+    subscribe:
+      operationId: onCardStatusChange
+      summary: Receive card status change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/CardStatusChangeEvent'
+
+  'cards#card-production-status-change':
+    description: |
+      Triggered for physical cards using `KIOSK_COLLECTION` delivery.
+    subscribe:
+      operationId: onCardProductionStatusChange
+      summary: Receive card production status notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/CardProductionStatusChangeEvent'
+
+  'cards#3ds-challenge':
+    description: |
+      Triggered for 3D Secure push notifications during card transactions.
+    subscribe:
+      operationId: onCard3dsChallenge
+      summary: Receive 3DS challenge notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/Card3dsChallengeEvent'
+
+  'cards#manual-provisioning-verification':
+    description: |
+      Triggered for manual wallet provisioning verification.
+    subscribe:
+      operationId: onCardManualProvisioningVerification
+      summary: Receive manual provisioning verification notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/CardManualProvisioningVerificationEvent'
+
+  'cards#transaction-state-change':
+    description: |
+      Triggered when a card transaction state changes. Includes merchant,
+      fees, debits and credits.
+    subscribe:
+      operationId: onCardTransactionStateChange
+      summary: Receive card transaction state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/CardTransactionStateChangeEvent'
+
+  'cards#card-order-status-change':
+    description: |
+      Triggered when a card order status changes.
+    subscribe:
+      operationId: onCardOrderStatusChange
+      summary: Receive card order status notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/CardOrderStatusChangeEvent'
+
+  'account-details-order#order-state-change':
+    description: |
+      Application-level event triggered when a multi-currency account details
+      order state changes (PENDING_USER, PENDING_TW, REQUIREMENTS_FULFILLED, DONE).
+    subscribe:
+      operationId: onAccountDetailsOrderStateChange
+      summary: Receive account details order state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/AccountDetailsOrderStateChangeEvent'
+
+  'account-details-payment#state-change':
+    description: |
+      Triggered every time a pay-in is made into the specified account details.
+    subscribe:
+      operationId: onAccountDetailsPaymentStateChange
+      summary: Receive account details pay-in state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/AccountDetailsPaymentStateChangeEvent'
+
+  'hold-limit-breach#update':
+    description: |
+      Triggered whenever a regulatory hold limit breach is opened or closed.
+    subscribe:
+      operationId: onHoldLimitBreachUpdate
+      summary: Receive hold limit breach notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/HoldLimitBreachUpdateEvent'
+
+  'batch-payment-initiations#state-change':
+    description: |
+      Application-level event triggered when a batch payment initiation state
+      changes (NEW, PROCESSING, COMPLETED, FAILED, CHARGED_BACK).
+    subscribe:
+      operationId: onBatchPaymentInitiationStateChange
+      summary: Receive batch payment initiation state change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/BatchPaymentInitiationStateChangeEvent'
+
+  'bulk-settlement#payment-received':
+    description: |
+      Application-level event triggered when bulk settlement funds arrive.
+    subscribe:
+      operationId: onBulkSettlementPaymentReceived
+      summary: Receive bulk settlement payment notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/BulkSettlementPaymentReceivedEvent'
+
+  'transaction-disputes#update':
+    description: |
+      Application-level event triggered when a transaction dispute is submitted
+      or updated.
+    subscribe:
+      operationId: onTransactionDisputeUpdate
+      summary: Receive transaction dispute update notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/TransactionDisputeUpdateEvent'
+
+  'partner-support#case-changed':
+    description: |
+      Application-level beta event triggered when a partner support case
+      updates, including comments or status changes.
+    subscribe:
+      operationId: onPartnerSupportCaseChanged
+      summary: Receive partner support case change notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/PartnerSupportCaseChangedEvent'
+
+  'swift-in#credit':
+    description: |
+      Triggered when a SWIFT inbound credit is received, including UETR,
+      sender, recipient, exchange rate, and fee breakdown.
+    subscribe:
+      operationId: onSwiftInCredit
+      summary: Receive SWIFT inbound credit notifications.
+      bindings:
+        http:
+          type: request
+          method: POST
+          bindingVersion: '0.3.0'
+      message:
+        $ref: '#/components/messages/SwiftInCreditEvent'
+
+components:
+  messages:
+    TransferStateChangeEvent:
+      name: TransferStateChangeEvent
+      title: Transfer State Change
+      summary: Transfer status was updated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'transfers#state-change'
+              data:
+                $ref: '#/components/schemas/TransferStateChangeData'
+
+    TransferActiveCasesEvent:
+      name: TransferActiveCasesEvent
+      title: Transfer Active Cases
+      summary: Active case list on the transfer was updated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'transfers#active-cases'
+              data:
+                $ref: '#/components/schemas/TransferActiveCasesData'
+
+    TransferRefundEvent:
+      name: TransferRefundEvent
+      title: Transfer Refund
+      summary: Transfer status became funds_refunded.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'transfers#refund'
+              data:
+                $ref: '#/components/schemas/TransferRefundData'
+
+    TransferPayoutFailureEvent:
+      name: TransferPayoutFailureEvent
+      title: Transfer Payout Failure
+      summary: A transfer payout failed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'transfers#payout-failure'
+              data:
+                $ref: '#/components/schemas/TransferPayoutFailureData'
+
+    BalanceUpdateEvent:
+      name: BalanceUpdateEvent
+      title: Balance Update
+      summary: A credit or debit posted to a multi-currency balance.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'balances#update'
+              data:
+                $ref: '#/components/schemas/BalanceUpdateData'
+
+    BalanceCreditEvent:
+      name: BalanceCreditEvent
+      title: Balance Credit (deprecated)
+      summary: Deprecated profile-level balance credit event.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'balances#credit'
+              data:
+                $ref: '#/components/schemas/BalanceCreditData'
+
+    BalanceAccountStateChangeEvent:
+      name: BalanceAccountStateChangeEvent
+      title: Balance Account State Change
+      summary: Balance account was activated or deactivated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'balances#account-state-change'
+              data:
+                $ref: '#/components/schemas/BalanceAccountStateChangeData'
+
+    ProfileVerificationStateChangeEvent:
+      name: ProfileVerificationStateChangeEvent
+      title: Profile Verification State Change
+      summary: A connected profile's verification state changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'profiles#verification-state-change'
+              data:
+                $ref: '#/components/schemas/ProfileVerificationStateChangeData'
+
+    ProfileStateChangeEvent:
+      name: ProfileStateChangeEvent
+      title: Profile State Change
+      summary: Profile state was updated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'profiles#state-change'
+              data:
+                $ref: '#/components/schemas/ProfileStateChangeData'
+
+    ProfileCddCheckStateChangeEvent:
+      name: ProfileCddCheckStateChangeEvent
+      title: Profile CDD Check State Change
+      summary: Customer Due Diligence check state changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'profiles#cdd-check-state-change'
+              data:
+                $ref: '#/components/schemas/ProfileCddCheckStateChangeData'
+
+    ProfileOverdraftLimitThresholdEvent:
+      name: ProfileOverdraftLimitThresholdEvent
+      title: Profile Overdraft Limit Threshold
+      summary: Overdraft usage reached the configured threshold.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'profiles#overdraft-limit-threshold'
+
+    UserStateChangeEvent:
+      name: UserStateChangeEvent
+      title: User State Change
+      summary: User account state changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'users#state-change'
+
+    CardStatusChangeEvent:
+      name: CardStatusChangeEvent
+      title: Card Status Change
+      summary: Card status was updated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#card-status-change'
+
+    CardProductionStatusChangeEvent:
+      name: CardProductionStatusChangeEvent
+      title: Card Production Status Change
+      summary: Physical card production status changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#card-production-status-change'
+
+    Card3dsChallengeEvent:
+      name: Card3dsChallengeEvent
+      title: Card 3DS Challenge
+      summary: A 3D Secure challenge was issued.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#3ds-challenge'
+
+    CardManualProvisioningVerificationEvent:
+      name: CardManualProvisioningVerificationEvent
+      title: Card Manual Provisioning Verification
+      summary: Manual wallet provisioning verification event.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#manual-provisioning-verification'
+
+    CardTransactionStateChangeEvent:
+      name: CardTransactionStateChangeEvent
+      title: Card Transaction State Change
+      summary: A card transaction state changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#transaction-state-change'
+              data:
+                $ref: '#/components/schemas/CardTransactionStateChangeData'
+
+    CardOrderStatusChangeEvent:
+      name: CardOrderStatusChangeEvent
+      title: Card Order Status Change
+      summary: Card order status changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'cards#card-order-status-change'
+              data:
+                $ref: '#/components/schemas/CardOrderStatusChangeData'
+
+    AccountDetailsOrderStateChangeEvent:
+      name: AccountDetailsOrderStateChangeEvent
+      title: Account Details Order State Change
+      summary: Multi-currency account details order state changed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'account-details-order#order-state-change'
+
+    AccountDetailsPaymentStateChangeEvent:
+      name: AccountDetailsPaymentStateChangeEvent
+      title: Account Details Payment State Change
+      summary: A pay-in to an account-details set was processed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'account-details-payment#state-change'
+
+    HoldLimitBreachUpdateEvent:
+      name: HoldLimitBreachUpdateEvent
+      title: Hold Limit Breach Update
+      summary: Regulatory hold limit breach opened or closed.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'hold-limit-breach#update'
+              data:
+                $ref: '#/components/schemas/HoldLimitBreachData'
+
+    BatchPaymentInitiationStateChangeEvent:
+      name: BatchPaymentInitiationStateChangeEvent
+      title: Batch Payment Initiation State Change
+      summary: Batch payment initiation moved through its lifecycle.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'batch-payment-initiations#state-change'
+
+    BulkSettlementPaymentReceivedEvent:
+      name: BulkSettlementPaymentReceivedEvent
+      title: Bulk Settlement Payment Received
+      summary: Bulk settlement funds arrived.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'bulk-settlement#payment-received'
+              data:
+                $ref: '#/components/schemas/BulkSettlementData'
+
+    TransactionDisputeUpdateEvent:
+      name: TransactionDisputeUpdateEvent
+      title: Transaction Dispute Update
+      summary: A transaction dispute was submitted or updated.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'transaction-disputes#update'
+
+    PartnerSupportCaseChangedEvent:
+      name: PartnerSupportCaseChangedEvent
+      title: Partner Support Case Changed
+      summary: Partner support case updated (beta).
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'partner-support#case-changed'
+
+    SwiftInCreditEvent:
+      name: SwiftInCreditEvent
+      title: SWIFT Inbound Credit
+      summary: A SWIFT inbound credit was received.
+      contentType: application/json
+      headers:
+        $ref: '#/components/schemas/WebhookHeaders'
+      payload:
+        allOf:
+          - $ref: '#/components/schemas/EventEnvelope'
+          - type: object
+            properties:
+              event_type:
+                type: string
+                const: 'swift-in#credit'
+              data:
+                $ref: '#/components/schemas/SwiftInCreditData'
+
+  schemas:
+    EventEnvelope:
+      type: object
+      description: |
+        Standard envelope for all Wise webhook notifications.
+      required:
+        - subscription_id
+        - event_type
+        - schema_version
+        - sent_at
+        - data
+      properties:
+        subscription_id:
+          type: string
+          format: uuid
+          description: Identifier of the webhook subscription that delivered this event.
+          example: '01234567-89ab-cdef-0123-456789abcdef'
+        event_type:
+          type: string
+          description: Event identifier (e.g. `transfers#state-change`).
+        schema_version:
+          type: string
+          description: Notification schema version.
+          example: '2.0.0'
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp at which Wise dispatched the notification.
+          example: '2020-01-01T12:34:56Z'
+        data:
+          type: object
+          description: Event-specific payload. Shape depends on `event_type`.
+
+    WebhookHeaders:
+      type: object
+      description: |
+        HTTP request headers Wise sends with every webhook delivery.
+      required:
+        - X-Signature-SHA256
+        - X-Delivery-Id
+      properties:
+        X-Signature-SHA256:
+          type: string
+          description: |
+            Base64-encoded RSA-SHA256 signature of the raw HTTP request body.
+            Verify using the relevant (production or sandbox) Wise public key.
+          example: 'M3o3z6sV...base64...=='
+        X-Delivery-Id:
+          type: string
+          format: uuid
+          description: Unique delivery UUID assigned to each notification attempt.
+          example: 'abcd1234-5678-90ab-cdef-1234567890ab'
+        X-Test-Notification:
+          type: string
+          enum: ['true']
+          description: Present and equal to `true` for test notifications sent during subscription setup.
+
+    Resource:
+      type: object
+      description: Generic Wise resource reference embedded in event data.
+      properties:
+        type:
+          type: string
+          description: Resource type (e.g. `transfer`, `balance`, `profile`).
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          description: Resource identifier.
+        profile_id:
+          type: integer
+          description: Owning profile identifier.
+        account_id:
+          type: integer
+          description: Owning account identifier where applicable.
+
+    TransferStateChangeData:
+      type: object
+      description: Payload for `transfers#state-change`.
+      required:
+        - resource
+        - current_state
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        current_state:
+          type: string
+          description: Current transfer state (e.g. `incoming_payment_waiting`, `processing`, `funds_converted`, `outgoing_payment_sent`, `cancelled`, `funds_refunded`, `bounced_back`, `charged_back`).
+        previous_state:
+          type: string
+          description: Previous transfer state.
+        occurred_at:
+          type: string
+          format: date-time
+          description: When the state change occurred (use for ordering).
+
+    TransferActiveCasesData:
+      type: object
+      description: Payload for `transfers#active-cases`.
+      required:
+        - resource
+        - active_cases
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        active_cases:
+          type: array
+          description: Identifiers of cases currently active against the transfer.
+          items:
+            type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    TransferRefundData:
+      type: object
+      description: Payload for `transfers#refund`.
+      required:
+        - resource
+        - current_state
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        current_state:
+          type: string
+          description: Always `funds_refunded` for this event.
+        previous_state:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    TransferPayoutFailureData:
+      type: object
+      description: Payload for `transfers#payout-failure`.
+      required:
+        - transfer_id
+        - profile_id
+        - occurred_at
+      properties:
+        transfer_id:
+          type: integer
+        profile_id:
+          type: integer
+        failure_reason_code:
+          type: string
+          description: Machine-readable failure code.
+        failure_description:
+          type: string
+          description: Human-readable failure description.
+        occurred_at:
+          type: string
+          format: date-time
+
+    BalanceUpdateData:
+      type: object
+      description: Payload for `balances#update`.
+      required:
+        - resource
+        - transaction_type
+        - amount
+        - currency
+        - occurred_at
+      properties:
+        resource:
+          allOf:
+            - $ref: '#/components/schemas/Resource'
+            - type: object
+              properties:
+                type:
+                  type: string
+                  const: balance
+        transaction_type:
+          type: string
+          enum: [credit, debit]
+        amount:
+          type: number
+          description: Signed transaction amount in the balance currency.
+        currency:
+          type: string
+          description: ISO 4217 currency code.
+        post_transaction_balance_amount:
+          type: number
+          description: Balance available amount after this transaction.
+        transfer_reference:
+          type: string
+          description: Reference text associated with the underlying transfer (when present).
+        balance_id:
+          type: integer
+          description: Affected balance identifier.
+        channel_name:
+          type: string
+          description: Channel that produced the transaction (e.g. `bank_transfer`).
+        step_id:
+          type: string
+          description: Step identifier inside the underlying activity, when applicable.
+        occurred_at:
+          type: string
+          format: date-time
+
+    BalanceCreditData:
+      type: object
+      description: Payload for the deprecated `balances#credit` event.
+      required:
+        - resource
+        - amount
+        - currency
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        amount:
+          type: number
+        currency:
+          type: string
+        post_transaction_balance_amount:
+          type: number
+        transaction_type:
+          type: string
+          const: credit
+        channel_name:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    BalanceAccountStateChangeData:
+      type: object
+      description: Payload for `balances#account-state-change`.
+      required:
+        - resource
+        - current_state
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        current_state:
+          type: string
+          description: New balance account state.
+        previous_state:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    ProfileVerificationStateChangeData:
+      type: object
+      description: Payload for `profiles#verification-state-change`.
+      required:
+        - resource
+        - current_state
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        current_state:
+          type: string
+          enum: [verified, not_verified]
+        previous_state:
+          type: string
+          enum: [verified, not_verified]
+        occurred_at:
+          type: string
+          format: date-time
+
+    ProfileStateChangeData:
+      type: object
+      description: Payload for `profiles#state-change`.
+      required:
+        - resource
+        - current_state
+        - occurred_at
+      properties:
+        resource:
+          $ref: '#/components/schemas/Resource'
+        current_state:
+          type: string
+          description: Current profile state.
+        previous_state:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    ProfileCddCheckStateChangeData:
+      type: object
+      description: Payload for `profiles#cdd-check-state-change`.
+      required:
+        - current_state
+        - occurred_at
+      properties:
+        current_state:
+          type: string
+          enum: [VERIFIED, EVIDENCE_REQUIRED]
+        review_outcome:
+          type: string
+          description: Outcome of the review, when available.
+        required_evidences:
+          type: array
+          description: List of evidences required from the customer.
+          items:
+            type: string
+        source_of_income:
+          type: string
+        source_of_funding:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    CardTransactionStateChangeData:
+      type: object
+      description: Payload for `cards#transaction-state-change`.
+      required:
+        - resource
+        - transaction_id
+        - transaction_state
+        - occurred_at
+      properties:
+        resource:
+          type: object
+          properties:
+            profile_id:
+              type: integer
+            card_token:
+              type: string
+            card_last_digits:
+              type: string
+        transaction_id:
+          type: string
+        transaction_type:
+          type: string
+        transaction_state:
+          type: string
+        transaction_amount:
+          type: object
+          properties:
+            value:
+              type: number
+            currency:
+              type: string
+        fees:
+          type: array
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+              currency:
+                type: string
+              fee_type:
+                type: string
+        merchant:
+          type: object
+          properties:
+            name:
+              type: string
+            location:
+              type: string
+            category:
+              type: string
+        debits:
+          type: array
+          items:
+            type: object
+        credits:
+          type: array
+          items:
+            type: object
+        creation_time:
+          type: string
+          format: date-time
+        occurred_at:
+          type: string
+          format: date-time
+
+    CardOrderStatusChangeData:
+      type: object
+      description: Payload for `cards#card-order-status-change`.
+      required:
+        - order_id
+        - order_status
+        - occurred_at
+      properties:
+        order_id:
+          type: string
+        order_status:
+          type: string
+        delivery_vendor:
+          type: string
+          description: Present for physical cards only.
+        occurred_at:
+          type: string
+          format: date-time
+
+    HoldLimitBreachData:
+      type: object
+      description: Payload for `hold-limit-breach#update`.
+      required:
+        - state
+        - occurred_at
+      properties:
+        state:
+          type: string
+          description: New breach state (e.g. opened, closed).
+        closing_reason:
+          type: string
+          description: Reason populated when the breach is closed.
+        occurred_at:
+          type: string
+          format: date-time
+
+    BulkSettlementData:
+      type: object
+      description: Payload for `bulk-settlement#payment-received`.
+      properties:
+        amount_matched:
+          type: boolean
+          description: Whether the source and target amounts matched the expected settlement.
+        source_amount:
+          type: object
+          properties:
+            value:
+              type: number
+            currency:
+              type: string
+        target_amount:
+          type: object
+          properties:
+            value:
+              type: number
+            currency:
+              type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+    SwiftInCreditData:
+      type: object
+      description: Payload for `swift-in#credit`.
+      properties:
+        action:
+          type: object
+          properties:
+            type:
+              type: string
+            id:
+              type: integer
+            profile_id:
+              type: integer
+            account_id:
+              type: integer
+        resource:
+          type: object
+          properties:
+            uetr:
+              type: string
+              description: SWIFT Unique End-to-End Transaction Reference.
+            reference:
+              type: string
+            recipient:
+              type: object
+            sender:
+              type: object
+        exchange_rate:
+          type: number
+        instructed_amount:
+          type: object
+          properties:
+            value:
+              type: number
+            currency:
+              type: string
+        settled_amount:
+          type: object
+          properties:
+            value:
+              type: number
+            currency:
+              type: string
+        fee:
+          type: object
+          properties:
+            wise:
+              type: array
+              items:
+                type: object
+                properties:
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+            correspondent:
+              type: array
+              items:
+                type: object
+                properties:
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+        occurred_at:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    WiseWebhookSignature:
+      type: httpApiKey
+      in: header
+      name: X-Signature-SHA256
+      description: |
+        Wise signs every webhook delivery using RSA-SHA256 over the raw HTTP
+        request body. The Base64-encoded signature is sent in
+        `X-Signature-SHA256`. Subscribers verify the signature with Wise's
+        published RSA public key for the relevant environment.
+
+        Production public key (PEM):
+        ```
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvO8vXV+JksBzZAY6GhSO
+        XdoTCfhXaaiZ+qAbtaDBiu2AGkGVpmEygFmWP4Li9m5+Ni85BhVvZOodM9epgW3F
+        bA5Q1SexvAF1PPjX4JpMstak/QhAgl1qMSqEevL8cmUeTgcMuVWCJmlge9h7B1CS
+        D4rtlimGZozG39rUBDg6Qt2K+P4wBfLblL0k4C4YUdLnpGYEDIth+i8XsRpFlogx
+        CAFyH9+knYsDbR43UJ9shtc42Ybd40Afihj8KnYKXzchyQ42aC8aZ/h5hyZ28yVy
+        Oj3Vos0VdBIs/gAyJ/4yyQFCXYte64I7ssrlbGRaco4nKF3HmaNhxwyKyJafz19e
+        HwIDAQAB
+        -----END PUBLIC KEY-----
+        ```
+
+        Sandbox public key (PEM):
+        ```
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwpb91cEYuyJNQepZAVfP
+        ZIlPZfNUefH+n6w9SW3fykqKu938cR7WadQv87oF2VuT+fDt7kqeRziTmPSUhqPU
+        ys/V2Q1rlfJuXbE+Gga37t7zwd0egQ+KyOEHQOpcTwKmtZ81ieGHynAQzsn1We3j
+        wt760MsCPJ7GMT141ByQM+yW1Bx+4SG3IGjXWyqOWrcXsxAvIXkpUD/jK/L958Cg
+        nZEgz0BSEh0QxYLITnW1lLokSx/dTianWPFEhMC9BgijempgNXHNfcVirg1lPSyg
+        z7KqoKUN0oHqWLr2U1A+7kqrl6O2nx3CKs1bj1hToT1+p4kcMoHXA7kA+VBLUpEs
+        VwIDAQAB
+        -----END PUBLIC KEY-----
+        ```
+
+        Reference implementations:
+        https://github.com/transferwise/digital-signatures-examples/tree/main/verify-webhook-signature
+
+security:
+  - WiseWebhookSignature: []
+
+tags:
+  - name: Webhooks
+    description: HTTP push notifications from Wise to subscriber endpoints.
+  - name: Transfers
+    description: Transfer lifecycle and case events.
+  - name: Balances
+    description: Multi-currency balance credit, debit and account state events.
+  - name: Profiles
+    description: Profile state, verification and compliance events.
+  - name: Cards
+    description: Card status, production, 3DS, transaction and order events.
+  - name: AccountDetails
+    description: Multi-currency receiving account events.
+  - name: Batches
+    description: Batch payment initiation lifecycle events.
+  - name: Settlements
+    description: Bulk settlement events.
+  - name: Disputes
+    description: Card and transaction dispute events.
+  - name: Support
+    description: Partner support case events.
+  - name: SWIFT
+    description: SWIFT inbound credit events.
+
+externalDocs:
+  description: Wise Platform webhook documentation
+  url: https://docs.wise.com/guides/developer/webhooks
