@@ -2,292 +2,211 @@ aid: wise
 url: https://raw.githubusercontent.com/api-evangelist/wise/refs/heads/main/apis.yml
 name: Wise
 kind: company
-description: Wise (formerly TransferWise) provides cross-border payments and multi-currency accounts for personal and business
-  customers. The Wise Platform API exposes profiles, balances, transfers, recipients, quotes, multi-currency accounts, cards,
-  statements, and webhooks.
+description: Wise (formerly TransferWise) provides cross-border payments and multi-currency
+  accounts for personal and business customers. The Wise Platform API exposes profiles,
+  balances, transfers, recipients, quotes, multi-currency accounts, cards, statements,
+  and webhooks.
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Payments
-  - FX
-  - Cross-Border
-  - Banking
-  - Multi-Currency
+- Payments
+- FX
+- Cross-Border
+- Banking
+- Multi-Currency
 created: '2026-05-08'
 modified: '2026-05-30'
 specificationVersion: '0.19'
 apis:
-  - aid: wise:profiles
-    name: Wise Profiles API
-    description: Manages Wise user identity records. A profile represents either a personal or business entity that owns balances,
-      can send and receive money, and can hold recipients. Profiles are the root resource that other Wise Platform API calls
-      are scoped against.
-    humanURL: https://docs.wise.com/api-docs/api-reference/profile
-    baseURL: https://api.wise.com/v2
-    tags:
-    - Profiles
-    - Identity
-    - KYC
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/profile
-    - type: Sandbox
-      url: https://api.sandbox.transferwise.tech
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-    - type: NaftikoCapability
-      url: capabilities/platform-3ds.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-activity.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-address.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-balance.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-balance-statement.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-bank-account-details.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-batch-group.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-bulk-settlement.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-card.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-card-kiosk-collection.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-card-order.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-card-sensitive-details.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-card-transaction.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-case.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-claim-account.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-comparison.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-contact.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-currencies.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-delivery-estimate.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-digital-wallet.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-direct-debit-account.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-disputes.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-facetec.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-jose.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-kyc-review.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-multi-currency-account.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-oauth-token.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-payin-deposit-detail.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-payins.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-profile.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-quote.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-rate.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-recipient.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-device-fingerprints.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-facemaps.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-otp.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-ott.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-pin.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-sca-sessions.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-simulation.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-spend-controls.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-spend-limits.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-transfer.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-user.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-user-security.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-verification.yaml
-    - type: NaftikoCapability
-      url: capabilities/platform-webhook.yaml
-  - aid: wise:recipients
-    name: Wise Recipients API
-    description: Manages beneficiary bank account records. Recipients store the destination account details (name, currency,
-      account number, routing/IBAN/SWIFT details) used as the target of a transfer. The API supports creating, retrieving, listing,
-      and deleting recipient accounts across 70+ supported currencies.
-    humanURL: https://docs.wise.com/api-docs/api-reference/recipient
-    baseURL: https://api.wise.com/v1
-    tags:
-    - Recipients
-    - Beneficiaries
-    - Bank Accounts
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/recipient
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:quotes
-    name: Wise Quotes API
-    description: Calculates the exchange rate, fees, and estimated delivery time for a prospective transfer between two currencies.
-      A quote pins the FX rate for a short window and is a required prerequisite to creating a transfer. Supports source-amount,
-      target-amount, and pay-in option variations.
-    humanURL: https://docs.wise.com/api-docs/api-reference/quote
-    baseURL: https://api.wise.com/v3
-    tags:
-    - Quotes
-    - FX
-    - Pricing
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/quote
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:transfers
-    name: Wise Transfers API
-    description: Creates and tracks cross-border money movements. A transfer ties a quote to a recipient and is funded from
-      a source balance or pay-in method. The API exposes create, fund, cancel, list, and detail operations along with status
-      events.
-    humanURL: https://docs.wise.com/api-docs/api-reference/transfer
-    baseURL: https://api.wise.com/v1
-    tags:
-    - Transfers
-    - Payments
-    - Cross-Border
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/transfer
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:balances
-    name: Wise Balances API
-    description: Manages multi-currency balances held inside a profile. Supports listing balances, retrieving the available
-      and reserved amounts per currency, opening and closing currency balances, and moving funds between balances within the
-      same profile.
-    humanURL: https://docs.wise.com/api-docs/api-reference/balance
-    baseURL: https://api.wise.com/v4
-    tags:
-    - Balances
-    - Multi-Currency
-    - Wallets
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/balance
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:multi-currency-account
-    name: Wise Multi-Currency Account API
-    description: Provisions local bank account details (account number / routing / IBAN / SWIFT) for a profile across the supported
-      receiving currencies, allowing a customer to receive money like a local in 56+ currencies.
-    humanURL: https://docs.wise.com/api-docs/api-reference/multi-currency-account
-    baseURL: https://api.wise.com/v1
-    tags:
-    - Multi-Currency Account
-    - Receive Money
-    - Local Bank Details
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:statements
-    name: Wise Statements API
-    description: Generates and downloads transaction statements for a balance over an arbitrary date range. Output formats include
-      JSON, CSV, PDF, and MT940, supporting reconciliation and accounting workflows.
-    humanURL: https://docs.wise.com/api-docs/api-reference/balance-statement
-    baseURL: https://api.wise.com/v1
-    tags:
-    - Statements
-    - Reporting
-    - Accounting
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/balance-statement
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:cards
-    name: Wise Cards API
-    description: Issues, lists, and manages Wise debit cards linked to a profile balance. Includes operations for retrieving
-      card details, freezing/unfreezing, replacing cards, and managing spending controls.
-    humanURL: https://docs.wise.com/api-docs/api-reference/card
-    baseURL: https://api.wise.com/v3
-    tags:
-    - Cards
-    - Issuing
-    - Spending Controls
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/card
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-  - aid: wise:webhooks
-    name: Wise Webhooks API
-    description: Subscribes a partner application to event notifications for transfers, balances, cards, and profile-state changes.
-      Supports creating, listing, and deleting webhook subscriptions and verifying signed payloads.
-    humanURL: https://docs.wise.com/api-docs/api-reference/subscription
-    baseURL: https://api.wise.com/v3
-    tags:
-    - Webhooks
-    - Events
-    - Notifications
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/subscription
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-    - type: AsyncAPI
-      url: asyncapi/wise-webhooks-asyncapi.yml
-  - aid: wise:simulation
-    name: Wise Simulation API
-    description: Sandbox-only endpoints for advancing the lifecycle of test transfers (simulating funding, processing, completion,
-      and failure paths) without moving real money. Used to exercise integration logic end-to-end against api.sandbox.transferwise.tech.
-    humanURL: https://docs.wise.com/api-docs/api-reference/simulation
-    baseURL: https://api.sandbox.transferwise.tech
-    tags:
-    - Simulation
-    - Sandbox
-    - Testing
-    properties:
-    - type: Documentation
-      url: https://docs.wise.com/api-docs/api-reference/simulation
-    - type: OpenAPI
-      url: openapi/wise-platform-openapi.yml
-common:
-  - type: GitHubOrganization
-    url: https://github.com/transferwise
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/wiseaccount
-  - type: Website
-    url: https://wise.com/
+- aid: wise:profiles
+  name: Wise Profiles API
+  description: Manages Wise user identity records. A profile represents either a personal
+    or business entity that owns balances, can send and receive money, and can hold
+    recipients. Profiles are the root resource that other Wise Platform API calls
+    are scoped against.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - Profiles
+  - Identity
+  - KYC
+  properties:
   - type: Documentation
-    url: https://docs.wise.com/
+    url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: Plans
-    url: plans/wise-plans-pricing.yml
-  - type: RateLimits
-    url: rate-limits/wise-rate-limits.yml
-  - type: FinOps
-    url: finops/wise-finops.yml
-  - type: LLMsTxt
-    url: https://docs.wise.com/llms.txt
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+  - url: graphql/wise-graphql.md
+    type: GraphQL
+- aid: wise:recipients
+  name: Wise Recipients API
+  description: Manages beneficiary bank account records. Recipients store the destination
+    account details (name, currency, account number, routing/IBAN/SWIFT details) used
+    as the target of a transfer. The API supports creating, retrieving, listing, and
+    deleting recipient accounts across 70+ supported currencies.
+  humanURL: https://docs.wise.com/api-docs/api-reference/recipient
+  baseURL: https://api.wise.com/v1
+  tags:
+  - Recipients
+  - Beneficiaries
+  - Bank Accounts
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:quotes
+  name: Wise Quotes API
+  description: Calculates the exchange rate, fees, and estimated delivery time for
+    a prospective transfer between two currencies. A quote pins the FX rate for a
+    short window and is a required prerequisite to creating a transfer. Supports source-amount,
+    target-amount, and pay-in option variations.
+  humanURL: https://docs.wise.com/api-docs/api-reference/quote
+  baseURL: https://api.wise.com/v3
+  tags:
+  - Quotes
+  - FX
+  - Pricing
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:transfers
+  name: Wise Transfers API
+  description: Creates and tracks cross-border money movements. A transfer ties a
+    quote to a recipient and is funded from a source balance or pay-in method. The
+    API exposes create, fund, cancel, list, and detail operations along with status
+    events.
+  humanURL: https://docs.wise.com/api-docs/api-reference/transfer
+  baseURL: https://api.wise.com/v1
+  tags:
+  - Transfers
+  - Payments
+  - Cross-Border
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:balances
+  name: Wise Balances API
+  description: Manages multi-currency balances held inside a profile. Supports listing
+    balances, retrieving the available and reserved amounts per currency, opening
+    and closing currency balances, and moving funds between balances within the same
+    profile.
+  humanURL: https://docs.wise.com/api-docs/api-reference/balance
+  baseURL: https://api.wise.com/v4
+  tags:
+  - Balances
+  - Multi-Currency
+  - Wallets
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:multi-currency-account
+  name: Wise Multi-Currency Account API
+  description: Provisions local bank account details (account number / routing / IBAN
+    / SWIFT) for a profile across the supported receiving currencies, allowing a customer
+    to receive money like a local in 56+ currencies.
+  humanURL: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  baseURL: https://api.wise.com/v1
+  tags:
+  - Multi-Currency Account
+  - Receive Money
+  - Local Bank Details
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:statements
+  name: Wise Statements API
+  description: Generates and downloads transaction statements for a balance over an
+    arbitrary date range. Output formats include JSON, CSV, PDF, and MT940, supporting
+    reconciliation and accounting workflows.
+  humanURL: https://docs.wise.com/api-docs/api-reference/balance-statement
+  baseURL: https://api.wise.com/v1
+  tags:
+  - Statements
+  - Reporting
+  - Accounting
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:cards
+  name: Wise Cards API
+  description: Issues, lists, and manages Wise debit cards linked to a profile balance.
+    Includes operations for retrieving card details, freezing/unfreezing, replacing
+    cards, and managing spending controls.
+  humanURL: https://docs.wise.com/api-docs/api-reference/card
+  baseURL: https://api.wise.com/v3
+  tags:
+  - Cards
+  - Issuing
+  - Spending Controls
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+- aid: wise:webhooks
+  name: Wise Webhooks API
+  description: Subscribes a partner application to event notifications for transfers,
+    balances, cards, and profile-state changes. Supports creating, listing, and deleting
+    webhook subscriptions and verifying signed payloads.
+  humanURL: https://docs.wise.com/api-docs/api-reference/subscription
+  baseURL: https://api.wise.com/v3
+  tags:
+  - Webhooks
+  - Events
+  - Notifications
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+- aid: wise:simulation
+  name: Wise Simulation API
+  description: Sandbox-only endpoints for advancing the lifecycle of test transfers
+    (simulating funding, processing, completion, and failure paths) without moving
+    real money. Used to exercise integration logic end-to-end against api.sandbox.transferwise.tech.
+  humanURL: https://docs.wise.com/api-docs/api-reference/simulation
+  baseURL: https://api.sandbox.transferwise.tech
+  tags:
+  - Simulation
+  - Sandbox
+  - Testing
+  properties:
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+  - type: OpenAPI
+    url: openapi/wise-platform-openapi.yml
+common:
+- type: GitHubOrganization
+  url: https://github.com/transferwise
+- type: LinkedIn
+  url: https://www.linkedin.com/company/wiseaccount
+- type: Website
+  url: https://wise.com/
+- type: Documentation
+  url: https://docs.wise.com/
+- type: Sandbox
+  url: https://api.sandbox.transferwise.tech
+- type: Plans
+  url: plans/wise-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/wise-rate-limits.yml
+- type: FinOps
+  url: finops/wise-finops.yml
+- type: LLMsTxt
+  url: https://docs.wise.com/llms.txt
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com

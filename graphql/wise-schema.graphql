@@ -1,0 +1,773 @@
+# Wise (TransferWise) GraphQL Schema
+# Source: https://docs.wise.com/api-docs/api-reference/
+# GitHub: https://github.com/transferwise
+# Conceptual GraphQL translation of the Wise Platform REST API.
+
+scalar DateTime
+scalar Date
+scalar JSON
+
+# ─────────────────────────────────────────────
+# Enums
+# ─────────────────────────────────────────────
+
+enum ProfileType {
+  PERSONAL
+  BUSINESS
+}
+
+enum TransferStatus {
+  INCOMING_PAYMENT_WAITING
+  INCOMING_PAYMENT_INITIATED
+  PROCESSING
+  FUNDS_CONVERTED
+  OUTGOING_PAYMENT_SENT
+  CANCELLED
+  FUNDS_REFUNDED
+  BOUNCED_BACK
+  UNKNOWN
+}
+
+enum RecipientType {
+  BANK_ACCOUNT
+  EMAIL
+  IBAN
+  SORT_CODE
+  ACH_ROUTING
+  SWIFT
+  BSB_CODE
+  IFSC
+  CLABE
+}
+
+enum PaymentMethod {
+  BALANCE
+  BANK_TRANSFER
+  DEBIT_CARD
+  CREDIT_CARD
+  BANK_DEBIT_ACH
+  BANK_DEBIT_BACS
+  BANK_DEBIT_SEPA
+  SWIFT
+  IDEAL
+  SOFORT
+}
+
+enum TransactionType {
+  TRANSFER
+  CONVERSION
+  DEPOSIT
+  CASHBACK
+  CARD
+  FEE
+  REFUND
+}
+
+enum MandateStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  FAILED
+  EXPIRED
+}
+
+enum OAuthScope {
+  TRANSFERS_READ
+  TRANSFERS_WRITE
+  BALANCES_READ
+  BALANCES_WRITE
+  PROFILE_READ
+  EMAIL
+  OFFLINE_ACCESS
+}
+
+enum WebhookEventType {
+  TRANSFER_STATE_CHANGE
+  BALANCE_CREDIT
+  BALANCE_DEBIT
+  PROFILE_VERIFICATION_DECISION
+  CARD_TRANSACTION
+  MANDATE_CREATED
+  MANDATE_CANCELLED
+}
+
+# ─────────────────────────────────────────────
+# Profile Domain
+# ─────────────────────────────────────────────
+
+type Profile {
+  id: ID!
+  type: ProfileType!
+  details: ProfileDetails
+  address: ProfileAddress
+  phones: [ProfilePhone!]
+  emails: [ProfileEmail!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+union ProfileDetails = PersonalProfile | BusinessProfile
+
+type PersonalProfile {
+  firstName: String!
+  lastName: String!
+  dateOfBirth: Date
+  nationality: String
+  occupation: String
+  primaryCurrency: String
+}
+
+type BusinessProfile {
+  name: String!
+  registrationNumber: String
+  acn: String
+  abn: String
+  arbn: String
+  companyType: String
+  companyRole: String
+  descriptionOfBusiness: String
+  webpage: String
+  primaryCurrency: String
+}
+
+type ProfileAddress {
+  addressFirstLine: String
+  city: String
+  postCode: String
+  stateCode: String
+  countryCode: String!
+}
+
+type ProfilePhone {
+  phoneNumber: String!
+  primary: Boolean!
+  verified: Boolean!
+}
+
+type ProfileEmail {
+  email: String!
+  primary: Boolean!
+  verified: Boolean!
+}
+
+# ─────────────────────────────────────────────
+# Balance Domain
+# ─────────────────────────────────────────────
+
+type Balance {
+  id: ID!
+  profileId: ID!
+  balanceType: String!
+  currency: String!
+  amount: CurrencyBalance!
+  reservedAmount: CurrencyBalance!
+  cashAmount: CurrencyBalance!
+  totalWorth: CurrencyBalance!
+  createdAt: DateTime!
+  modificationTime: DateTime!
+  visible: Boolean!
+}
+
+type CurrencyBalance {
+  value: Float!
+  currency: String!
+}
+
+type BalanceStatement {
+  accountId: ID!
+  profileId: ID!
+  currency: String!
+  transactions: [Transaction!]!
+  interval: StatementInterval!
+  endOfStatementBalance: CurrencyBalance!
+  query: JSON
+}
+
+type StatementInterval {
+  start: DateTime!
+  end: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Account Domain
+# ─────────────────────────────────────────────
+
+type Account {
+  id: ID!
+  profileId: ID!
+  currency: String!
+  type: String!
+  details: AccountDetails
+  createdAt: DateTime!
+}
+
+type WiseBankAccount {
+  id: ID!
+  currency: String!
+  country: String!
+  iban: IBAN
+  sortCode: SortCode
+  achRouting: ACHRouting
+  bankCode: BankCode
+  accountNumber: String
+  swift: String
+  createdAt: DateTime!
+}
+
+type IBAN {
+  iban: String!
+  bic: String!
+}
+
+type AccountDetails {
+  currency: String!
+  country: String!
+  accountNumber: String
+  routingNumber: String
+  iban: String
+  bic: String
+  sortCode: String
+  ifsc: String
+  clabe: String
+  bsbCode: String
+  bankName: String
+  bankAddress: String
+}
+
+type BankCode {
+  code: String!
+  type: String!
+}
+
+type SortCode {
+  sortCode: String!
+  accountNumber: String!
+}
+
+type ACHRouting {
+  routingNumber: String!
+  accountNumber: String!
+  accountType: String!
+}
+
+# ─────────────────────────────────────────────
+# Currency and Exchange Rate Domain
+# ─────────────────────────────────────────────
+
+type Currency {
+  code: String!
+  name: String!
+  symbol: String
+  countryCode: String
+  decimalDigits: Int!
+  maxInvoiceAmount: Float
+}
+
+type SupportedCurrency {
+  currency: Currency!
+  payIn: Boolean!
+  payOut: Boolean!
+  fixedTargetPaymentAllowed: Boolean!
+}
+
+type CurrencyPair {
+  source: String!
+  target: String!
+}
+
+type ExchangeRate {
+  source: String!
+  target: String!
+  rate: Float!
+  time: DateTime!
+  rateType: String
+}
+
+type ExchangeRateHistory {
+  source: String!
+  target: String!
+  dataPoints: [ExchangeRate!]!
+  from: DateTime!
+  to: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Quote Domain
+# ─────────────────────────────────────────────
+
+type Quote {
+  id: ID!
+  sourceCurrency: String!
+  targetCurrency: String!
+  sourceAmount: Float
+  targetAmount: Float
+  paymentOptions: [PaymentOption!]!
+  rate: Float!
+  createdTime: DateTime!
+  expirationTime: DateTime!
+  rateType: String!
+  rateExpirationTime: DateTime
+  guaranteed: Boolean!
+  profile: ID!
+}
+
+type PaymentOption {
+  disabled: Boolean!
+  estimatedDelivery: DateTime
+  formattedEstimatedDelivery: String
+  estimatedDeliveryDelays: [String!]
+  fee: FeeSummary!
+  price: FeeSummary!
+  sourceAmount: Float!
+  targetAmount: Float!
+  sourceCurrency: String!
+  targetCurrency: String!
+  payIn: PaymentMethod!
+  payOut: String!
+  allowedProfileTypes: [ProfileType!]!
+  payInProduct: String
+  feePercentage: Float
+}
+
+type FeeSummary {
+  transferwise: Float!
+  payIn: Float!
+  discount: Float!
+  partner: Float!
+  total: Float!
+  currency: String!
+}
+
+type FeeBreakdown {
+  type: String!
+  name: String!
+  amount: Float!
+  currency: String!
+  percent: Float
+}
+
+type Delivery {
+  estimatedDeliveryTime: DateTime
+  estimatedDeliveryDate: Date
+  shouldDeliverByMidnight: Boolean!
+}
+
+type DeliveryEstimate {
+  date: Date!
+  dateTime: DateTime
+  businessDays: Int
+}
+
+# ─────────────────────────────────────────────
+# Transfer Domain
+# ─────────────────────────────────────────────
+
+type Transfer {
+  id: ID!
+  user: ID!
+  targetAccount: ID!
+  sourceAccount: ID
+  quote: ID
+  quoteUuid: ID
+  status: TransferStatus!
+  reference: String
+  rate: Float!
+  created: DateTime!
+  business: ID
+  transferRequest: ID
+  details: TransferDetails!
+  hasActiveIssues: Boolean!
+  sourceCurrency: String!
+  sourceValue: Float!
+  targetCurrency: String!
+  targetValue: Float!
+  customerTransactionId: String
+  fees: FeeSummary
+}
+
+type TransferDetails {
+  reference: String
+  transferPurpose: String
+  transferPurposeSubTransferPurpose: String
+  sourceOfFunds: String
+}
+
+type TransferRequest {
+  id: ID!
+  status: String!
+  requestedAmount: Float!
+  requestedCurrency: String!
+  createdAt: DateTime!
+}
+
+type BatchTransfer {
+  id: ID!
+  profileId: ID!
+  status: String!
+  items: [BatchTransferItem!]!
+  createdAt: DateTime!
+  completedAt: DateTime
+}
+
+type BatchTransferItem {
+  id: ID!
+  transferId: ID
+  status: String!
+  error: String
+}
+
+# ─────────────────────────────────────────────
+# Transaction Domain
+# ─────────────────────────────────────────────
+
+interface Transaction {
+  id: ID!
+  type: TransactionType!
+  date: DateTime!
+  amount: CurrencyBalance!
+  totalFees: CurrencyBalance!
+  details: JSON
+  exchangeDetails: JSON
+  runningBalance: CurrencyBalance
+}
+
+type TransferTransaction implements Transaction {
+  id: ID!
+  type: TransactionType!
+  date: DateTime!
+  amount: CurrencyBalance!
+  totalFees: CurrencyBalance!
+  details: JSON
+  exchangeDetails: JSON
+  runningBalance: CurrencyBalance
+  transferId: ID!
+  recipient: String
+  reference: String
+}
+
+type ConversionTransaction implements Transaction {
+  id: ID!
+  type: TransactionType!
+  date: DateTime!
+  amount: CurrencyBalance!
+  totalFees: CurrencyBalance!
+  details: JSON
+  exchangeDetails: JSON
+  runningBalance: CurrencyBalance
+  sourceCurrency: String!
+  targetCurrency: String!
+  rate: Float!
+}
+
+type DepositTransaction implements Transaction {
+  id: ID!
+  type: TransactionType!
+  date: DateTime!
+  amount: CurrencyBalance!
+  totalFees: CurrencyBalance!
+  details: JSON
+  exchangeDetails: JSON
+  runningBalance: CurrencyBalance
+  sender: String
+  senderAccount: String
+}
+
+type CashbackTransaction implements Transaction {
+  id: ID!
+  type: TransactionType!
+  date: DateTime!
+  amount: CurrencyBalance!
+  totalFees: CurrencyBalance!
+  details: JSON
+  exchangeDetails: JSON
+  runningBalance: CurrencyBalance
+  cashbackType: String
+}
+
+type Statement {
+  profileId: ID!
+  balanceId: ID!
+  currency: String!
+  transactions: [Transaction!]!
+  interval: StatementInterval!
+}
+
+# ─────────────────────────────────────────────
+# Recipient Domain
+# ─────────────────────────────────────────────
+
+type Recipient {
+  id: ID!
+  profile: ID!
+  accountHolderName: String!
+  currency: String!
+  country: String
+  type: RecipientType!
+  details: RecipientBankAccount!
+  active: Boolean!
+  ownedByCustomer: Boolean!
+  commonFieldMap: JSON
+}
+
+type RecipientBankAccount {
+  accountNumber: String
+  sortCode: String
+  iban: String
+  bic: String
+  routingNumber: String
+  ifsc: String
+  clabe: String
+  bankName: String
+  bankCode: String
+  branchCode: String
+  address: RecipientAddress
+  email: RecipientEmail
+}
+
+type RecipientAddress {
+  firstLine: String
+  city: String
+  postCode: String
+  country: String!
+  state: String
+}
+
+type RecipientEmail {
+  email: String!
+}
+
+# ─────────────────────────────────────────────
+# Payment Domain
+# ─────────────────────────────────────────────
+
+type Payment {
+  id: ID!
+  transferId: ID!
+  status: String!
+  method: PaymentMethod!
+  amount: CurrencyBalance!
+  createdAt: DateTime!
+  completedAt: DateTime
+}
+
+type BankDebit {
+  id: ID!
+  type: String!
+  mandateId: ID
+  accountNumber: String
+  routingNumber: String
+  iban: String
+  bic: String
+  status: String!
+}
+
+type CardPayment {
+  id: ID!
+  cardType: String!
+  last4: String!
+  expiryMonth: Int!
+  expiryYear: Int!
+  status: String!
+}
+
+type Mandate {
+  id: ID!
+  profileId: ID!
+  status: MandateStatus!
+  currency: String!
+  createdAt: DateTime!
+  cancelledAt: DateTime
+}
+
+# ─────────────────────────────────────────────
+# Auth Domain
+# ─────────────────────────────────────────────
+
+type APIKey {
+  id: ID!
+  profileId: ID!
+  name: String!
+  key: String
+  createdAt: DateTime!
+  expiresAt: DateTime
+}
+
+type Token {
+  accessToken: String!
+  tokenType: String!
+  expiresIn: Int!
+}
+
+type OAuthToken {
+  accessToken: String!
+  refreshToken: String
+  tokenType: String!
+  expiresIn: Int!
+  scope: String!
+}
+
+# ─────────────────────────────────────────────
+# Webhook Domain
+# ─────────────────────────────────────────────
+
+type WebhookEvent {
+  subscriptionId: ID!
+  profileId: ID!
+  resourceId: ID!
+  resourceType: String!
+  eventType: WebhookEventType!
+  sentAt: DateTime!
+  data: JSON
+}
+
+type WebhookSubscription {
+  id: ID!
+  name: String!
+  deliveryUrl: String!
+  triggerOn: WebhookEventType!
+  profileId: ID!
+  active: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─────────────────────────────────────────────
+# Input Types
+# ─────────────────────────────────────────────
+
+input QuoteRequestInput {
+  sourceCurrency: String!
+  targetCurrency: String!
+  sourceAmount: Float
+  targetAmount: Float
+  payOut: String
+  preferredPayIn: PaymentMethod
+}
+
+input TransferInput {
+  targetAccount: ID!
+  quoteUuid: ID!
+  customerTransactionId: String!
+  details: TransferDetailsInput
+}
+
+input TransferDetailsInput {
+  reference: String
+  transferPurpose: String
+  sourceOfFunds: String
+}
+
+input RecipientInput {
+  profile: ID!
+  accountHolderName: String!
+  currency: String!
+  type: RecipientType!
+  details: RecipientDetailsInput!
+}
+
+input RecipientDetailsInput {
+  accountNumber: String
+  sortCode: String
+  iban: String
+  bic: String
+  routingNumber: String
+  ifsc: String
+  clabe: String
+  bankName: String
+  email: String
+  address: RecipientAddressInput
+}
+
+input RecipientAddressInput {
+  firstLine: String
+  city: String
+  postCode: String
+  country: String!
+  state: String
+}
+
+input WebhookSubscriptionInput {
+  name: String!
+  triggerOn: WebhookEventType!
+  deliveryUrl: String!
+}
+
+input StatementIntervalInput {
+  start: DateTime!
+  end: DateTime!
+}
+
+input BatchTransferInput {
+  items: [TransferInput!]!
+}
+
+# ─────────────────────────────────────────────
+# Root Query
+# ─────────────────────────────────────────────
+
+type Query {
+  # Profiles
+  profiles: [Profile!]!
+  profile(id: ID!): Profile
+
+  # Balances
+  balances(profileId: ID!): [Balance!]!
+  balance(profileId: ID!, balanceId: ID!): Balance
+  balanceStatement(profileId: ID!, balanceId: ID!, currency: String!, interval: StatementIntervalInput!): BalanceStatement
+
+  # Accounts
+  accounts(profileId: ID!): [WiseBankAccount!]!
+  account(profileId: ID!, accountId: ID!): WiseBankAccount
+
+  # Currencies
+  currencies: [SupportedCurrency!]!
+  exchangeRate(source: String!, target: String!): ExchangeRate
+  exchangeRateHistory(source: String!, target: String!, from: DateTime!, to: DateTime!): ExchangeRateHistory
+
+  # Quotes
+  quote(id: ID!): Quote
+
+  # Transfers
+  transfers(profileId: ID!, status: TransferStatus, limit: Int, offset: Int): [Transfer!]!
+  transfer(id: ID!): Transfer
+
+  # Recipients
+  recipients(profileId: ID!, currency: String): [Recipient!]!
+  recipient(id: ID!): Recipient
+
+  # Statements
+  statement(profileId: ID!, balanceId: ID!, interval: StatementIntervalInput!): Statement
+
+  # Webhooks
+  webhookSubscriptions(profileId: ID!): [WebhookSubscription!]!
+  webhookSubscription(id: ID!): WebhookSubscription
+
+  # Batch Transfers
+  batchTransfer(id: ID!): BatchTransfer
+}
+
+# ─────────────────────────────────────────────
+# Root Mutation
+# ─────────────────────────────────────────────
+
+type Mutation {
+  # Quotes
+  createQuote(profileId: ID!, input: QuoteRequestInput!): Quote!
+
+  # Transfers
+  createTransfer(profileId: ID!, input: TransferInput!): Transfer!
+  fundTransfer(profileId: ID!, transferId: ID!): Transfer!
+  cancelTransfer(transferId: ID!): Transfer!
+  createBatchTransfer(profileId: ID!, input: BatchTransferInput!): BatchTransfer!
+
+  # Recipients
+  createRecipient(input: RecipientInput!): Recipient!
+  deleteRecipient(id: ID!): Boolean!
+
+  # Webhooks
+  createWebhookSubscription(profileId: ID!, input: WebhookSubscriptionInput!): WebhookSubscription!
+  deleteWebhookSubscription(id: ID!): Boolean!
+
+  # Balance operations
+  convertCurrency(profileId: ID!, sourceBalanceId: ID!, targetBalanceId: ID!, quoteId: ID!): Balance!
+}
