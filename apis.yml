@@ -205,7 +205,7 @@ common:
   url: rate-limits/wise-rate-limits.yml
 - type: FinOps
   url: finops/wise-finops.yml
-- type: LLMsTxt
+- type: LlmsText
   url: https://docs.wise.com/llms.txt
 maintainers:
 - FN: Kin Lane
