@@ -1,0 +1,30 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/wise-platform-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: UserToken
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: |-
+    User Access Token for making API calls on behalf of a Wise user.
+
+    Can be obtained via two OAuth 2.0 flows:
+    - **registration_code grant**: For partners creating users via API
+    - **authorization_code grant**: For partners using Wise's authorization page
+
+    Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+  sources:
+  - openapi/wise-platform-openapi.yml
+- name: BasicAuth
+  type: http
+  scheme: basic
+  description: |-
+    Basic Authentication using your Client ID and Client Secret as the username and password.
+
+    Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+  sources:
+  - openapi/wise-platform-openapi.yml

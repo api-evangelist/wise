@@ -189,6 +189,12 @@ apis:
   - type: OpenAPI
     url: openapi/wise-platform-openapi.yml
 common:
+- type: VulnerabilityDisclosure
+  url: security/wise-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/wise-domain-security.yml
+- type: Authentication
+  url: authentication/wise-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/transferwise
 - type: LinkedIn
