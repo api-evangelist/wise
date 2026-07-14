@@ -1,0 +1,87 @@
+generated: '2026-07-14'
+method: searched
+source: https://docs.wise.com/guides/developer/environments
+description: >-
+  Wise Platform's sandbox / test-data surface — the environment, credentials,
+  and simulation endpoints a partner needs to exercise the API end-to-end
+  without moving real money. Wise separates test and live by a dedicated
+  sandbox host (no key-prefix scheme); the sandbox is pre-funded and no real
+  KYC/fincrime checks run. Wise does not publish magic card numbers or amounts;
+  instead it exposes a Simulation API that drives transfer state, card
+  authorisations, top-ups, KYC, and incoming payments. Captured verbatim from
+  the Wise developer docs.
+docs:
+  - https://docs.wise.com/guides/developer/environments
+  - https://docs.wise.com/guides/product/receive-money/test-and-go-live
+  - https://docs.wise.com/guides/product/issue-cards/card-testing
+  - https://docs.wise.com/api-reference/simulation
+
+environments:
+  - name: sandbox
+    tls_host: https://api.wise-sandbox.com
+    mtls_host: https://api-mtls.wise-sandbox.com
+    ui: https://wise-sandbox.com
+    legacy_host: https://api.sandbox.transferwise.tech
+    notes: >-
+      Testing environment. Does not support real money transfers, actual
+      financial controls, or all production currency routes. Sandbox URLs were
+      migrated to the wise-sandbox.com domain (changelog 24 Nov 2025); older
+      integrations used api.sandbox.transferwise.tech.
+  - name: production
+    tls_host: https://api.wise.com
+    mtls_host: https://api-mtls.transferwise.com
+
+separation:
+  mechanism: Separate host (no test/live key prefix). Credentials are issued per environment.
+  credentials: >-
+    Partner accounts receive a Client ID and Client Secret for each environment,
+    used for Basic auth and to complete the OAuth 2.0 authorization_code /
+    registration_code grants. Personal sandbox accounts need only an email and
+    password.
+
+sandbox_characteristics:
+  pre_funded: ~1,000,000 GBP of test credit provisioned on new sandbox environments
+  verification: Real verification / onboarding / fincrime (KYC) checks are disabled
+  supported_scope: Personal accounts limited to GBP, USD, EUR and UK region; limited business support (UK Sole Trader only)
+  performance: No load/performance testing supported; higher latency than production
+
+simulation_api:
+  description: >-
+    Sandbox-only endpoints that advance the lifecycle of test objects and mock
+    inbound events (the only way to exercise webhooks). No real money moves.
+  base: https://api.wise-sandbox.com
+  transfer_state:
+    endpoint: /v1/simulation/transfers/{transferId}/{status}
+    operation: simulationTransferStateChange
+    statuses:
+      - {status: processing, from: incoming_payment_waiting}
+      - {status: funds_converted, from: processing}
+      - {status: outgoing_payment_sent, from: funds_converted}
+      - {status: bounced_back, from: outgoing_payment_sent}
+      - {status: funds_refunded, from: bounced_back, note: Will not trigger a real refund}
+    note: The processing endpoint must be called even after funding auto-moves the transfer to processing.
+  balance_topup:
+    endpoint: /v1/simulation/balance/topup
+    operation: simulationBalanceTopup
+    note: Adds test funds to a balance.
+  cards:
+    - {endpoint: '/v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/authorisation', simulates: card authorisation}
+    - {endpoint: '/v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/clearing', simulates: card clearing}
+    - {endpoint: '/v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/reversal', simulates: card authorisation reversal}
+    - {endpoint: '/v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions', simulates: full card transaction}
+    - {endpoint: '/v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/production', simulates: card production/issuance}
+  kyc:
+    - {endpoint: '/v1/simulation/profiles/{profileId}/verifications', simulates: profile verification}
+    - {endpoint: '/v1/simulation/verify-profile', simulates: verify a profile by id}
+    - {endpoint: '/v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements', simulates: KYC requirements}
+    - {endpoint: '/v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/verify', simulates: KYC review verification}
+  incoming_payments:
+    - {endpoint: '/v1/simulation/profiles/{profileId}/bank-transactions/import', simulates: inbound bank transaction to account details}
+    - {endpoint: '/v1/simulation/profiles/{profileId}/swift-in', simulates: inbound SWIFT message to your connected BIC}
+
+test_values:
+  note: >-
+    Wise does not publish magic card numbers, IBANs, or amounts that force
+    specific outcomes. Card-testing docs use 4242424242424242 and an MCC (e.g.
+    5499) only as illustrative payload examples, not as behavior triggers.
+    Outcomes are driven by the Simulation API endpoints above, not by input values.

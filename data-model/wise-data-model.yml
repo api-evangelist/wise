@@ -1,0 +1,45 @@
+generated: '2026-07-14'
+method: derived
+source: >-
+  Derived from the resources and id-reference fields in
+  openapi/wise-platform-openapi.yml and the Wise Platform API object reference
+  (docs.wise.com/api-reference). Captures the core entity-relationship graph
+  behind the cross-border payments / multi-currency-account domain.
+docs: https://docs.wise.com/api-reference
+notation: >-
+  relationships use has_one / has_many / belongs_to with the foreign-key field
+  name; direction is from the entity that owns the reference.
+
+entities:
+  - {name: Profile, domain: identity, description: A personal or business entity that owns balances and can send/receive money. Root scope for most calls.}
+  - {name: Recipient, domain: beneficiaries, description: A saved beneficiary bank account (account/IBAN/SWIFT details) used as a transfer target.}
+  - {name: Quote, domain: pricing, description: A priced FX offer (rate, fee, delivery estimate) pinned for a short window; prerequisite to a transfer.}
+  - {name: Transfer, domain: payments, description: A cross-border money movement binding a quote to a recipient, funded from a balance or pay-in.}
+  - {name: Balance, domain: multi-currency, description: A per-currency balance held inside a profile (available and reserved amounts).}
+  - {name: MultiCurrencyAccount, domain: receive-money, description: Local bank account details (account number/routing/IBAN/SWIFT) provisioned per receiving currency.}
+  - {name: Statement, domain: reporting, description: A transaction statement for a balance over a date range (JSON/CSV/PDF/MT940).}
+  - {name: Card, domain: issuing, description: A Wise debit card linked to a profile balance, with spending controls.}
+  - {name: WebhookSubscription, domain: events, description: A partner subscription to event notifications (transfers, balances, cards, profile state).}
+  - {name: Payin, domain: money-movement, description: A pay-in / deposit funding a transfer or balance.}
+
+relationships:
+  - {from: Profile, to: Balance, kind: has_many, via: profileId}
+  - {from: Profile, to: Recipient, kind: has_many, via: profileId}
+  - {from: Profile, to: MultiCurrencyAccount, kind: has_one, via: profileId}
+  - {from: Profile, to: Card, kind: has_many, via: profileId}
+  - {from: Profile, to: WebhookSubscription, kind: has_many, via: profileId}
+  - {from: Quote, to: Profile, kind: belongs_to, via: profileId}
+  - {from: Transfer, to: Quote, kind: belongs_to, via: quoteUuid}
+  - {from: Transfer, to: Recipient, kind: belongs_to, via: targetAccount}
+  - {from: Transfer, to: Profile, kind: belongs_to, via: profileId}
+  - {from: Transfer, to: Payin, kind: has_one, via: transferId}
+  - {from: Balance, to: Profile, kind: belongs_to, via: profileId}
+  - {from: Balance, to: Statement, kind: has_many, via: balanceId}
+  - {from: Card, to: Balance, kind: belongs_to, via: balanceId}
+  - {from: MultiCurrencyAccount, to: Profile, kind: belongs_to, via: profileId}
+  - {from: WebhookSubscription, to: Profile, kind: belongs_to, via: profileId}
+
+interchange_hubs: [Profile, Transfer, Balance]
+notes: >-
+  Wise identifiers are numeric (many int64) or UUIDs (quoteUuid); there is no
+  Stripe-style typed id_prefix scheme.

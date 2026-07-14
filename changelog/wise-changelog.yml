@@ -1,0 +1,34 @@
+generated: '2026-07-14'
+method: searched
+source: https://docs.wise.com/changelog
+description: >-
+  Structured capture of Wise Platform's dated API changelog. Wise versions each
+  resource by URI path (v1..v4) and ships additive changes without a version
+  bump; breaking changes increment the affected endpoint's version. This
+  artifact records the recent window; the live changelog is the source of truth.
+docs:
+  - https://docs.wise.com/changelog
+  - https://docs.wise.com/changelog/changelog-2025
+  - https://docs.wise.com/guides/developer/versioning
+versioning:
+  scheme: URI path, per-resource (v1, v2, v3, v4)
+  additive_policy: New resources/fields/relationships added without a version bump or notification.
+  breaking_policy: Removing/renaming a field or resource increments the affected endpoint version.
+  detail: conventions/wise-conventions.yml
+entries:
+  - {date: '2025-11-24', breaking: false, highlight: Updated all sandbox URLs to point to the new sandbox environment (wise-sandbox.com).}
+  - {date: '2025-11-18', breaking: false, highlight: Added creationTime and modificationTime fields in the Payment Token list.}
+  - {date: '2025-11-05', breaking: false, highlight: Added missing fields in Payin Deposit details.}
+  - {date: '2025-10-29', breaking: false, highlight: Updated Open Banking Transactions endpoint description and KYC Requirement Submit details.}
+  - {date: '2025-10-21', breaking: false, highlight: Added new webhook event type transfers#transfer-suspension.}
+  - {date: '2025-10-10', breaking: true, highlight: Added new strong customer authentication (SCA) endpoints; deprecated SCA enrolment and verification endpoints.}
+  - {date: '2025-10-03', breaking: false, highlight: Updated recipient confirmation API guide.}
+  - {date: '2025-09-11', breaking: false, highlight: Added simulation endpoint to simulate verify-profile by id.}
+  - {date: '2025-09-09', breaking: false, highlight: Added simulation endpoint to simulate bank transaction import.}
+  - {date: '2025-09-08', breaking: false, highlight: Added originatorLegalEntityType field for transfer-requirements and a payinSessionId field.}
+  - {date: '2025-09-02', breaking: false, highlight: Updated Open Banking documentation from v3.1 to v3.1.11.}
+  - {date: '2025-08-26', breaking: false, highlight: Added replacementDetails field in Card Order creation.}
+notable_platform_changes:
+  - Introduced 429 Too Many Requests responses with Retry-After and X-Rate-Limited-By headers on all operations.
+  - New webhook event schema version 4.0.0 with consistent millisecond-precision timestamps.
+  - Multiple ID fields now explicitly documented as int64 (64-bit integer).

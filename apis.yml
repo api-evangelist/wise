@@ -195,6 +195,16 @@ common:
   url: security/wise-domain-security.yml
 - type: Authentication
   url: authentication/wise-authentication.yml
+- type: TrustCenter
+  url: security/wise-trust-center.yml
+- type: Sandbox
+  url: sandbox/wise-sandbox.yml
+- type: Conventions
+  url: conventions/wise-conventions.yml
+- type: ChangeLog
+  url: changelog/wise-changelog.yml
+- type: DataModel
+  url: data-model/wise-data-model.yml
 - type: GitHubOrganization
   url: https://github.com/transferwise
 - type: LinkedIn

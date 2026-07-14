@@ -1,0 +1,24 @@
+generated: '2026-07-14'
+method: searched
+source: https://wise.com/us/blog/is-wise-business-safe
+description: >-
+  Wise's named security certifications and regulatory posture, captured from
+  Wise's own published statements. Wise is a regulated money-transmission /
+  e-money institution that safeguards client funds separately from operating
+  capital and holds cardholder-data and information-security certifications.
+probe: false
+certifications: [SOC 1 Type 2, SOC 2 Type 2, PCI DSS, ISO 27001, GDPR]
+regulators:
+  - {name: Financial Conduct Authority (FCA), region: UK}
+  - {name: National Bank of Belgium (NBB), region: Europe}
+  - {name: FinCEN, region: US, detail: Wise US Inc. is registered and renews annually}
+  - {name: Consumer Financial Protection Bureau (CFPB), region: US}
+  - {name: US state money-transmitter regulators, region: US, detail: licensed/supervised across states (48 state regulators)}
+  - {name: Office of the Comptroller of the Currency (OCC), region: US, detail: supervises partner bank Community Federal Savings Bank}
+safeguarding: >-
+  Client funds are held separately from Wise's own capital in top-tier banks and
+  government bonds (~60% liquid assets / ~40% cash), per safeguarding rules.
+security_measures: [two-step verification (2FA), encryption, real-time fraud prevention/monitoring]
+evidence:
+  - {source: https://wise.com/us/blog/is-wise-business-safe, keywords: [SOC 1 type 2, SOC 2 type 2, PCI DSS, ISO 27001, FCA, FinCEN, safeguarding]}
+  - {source: https://docs.wise.com/guides/developer/auth-and-security, keywords: [mTLS, JOSE, SCA, 2FA]}

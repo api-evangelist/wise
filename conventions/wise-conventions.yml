@@ -1,0 +1,98 @@
+generated: '2026-07-14'
+method: searched
+source: >-
+  https://docs.wise.com/guides/developer — the cross-cutting request/response
+  conventions that apply across every Wise Platform endpoint (not any single
+  operation), captured from the Wise developer guides and derived from
+  openapi/wise-platform-openapi.yml.
+description: >-
+  How the Wise Platform API behaves across every operation: authentication
+  style, idempotency, pagination, versioning, error envelope, and rate-limit
+  signaling. These are the developer-experience / runtime-semantics conventions
+  that OpenAPI does not fully express.
+
+base_url: https://api.wise.com
+sandbox_url: https://api.wise-sandbox.com
+api_style: REST over HTTPS, JSON requests and responses. Per-resource path versions (v1..v4).
+
+authentication:
+  scheme: >-
+    Bearer token (User Access Token, JWT) for calls on behalf of a Wise user;
+    HTTP Basic (Client ID / Client Secret) for partner/app-level calls.
+  oauth2: >-
+    User tokens are obtained via OAuth 2.0 — registration_code grant (partners
+    creating users via API) or authorization_code grant (Wise-hosted
+    authorization page). Access tokens are valid for 12 hours and refreshable.
+  enhanced: mTLS, JOSE (signed requests), SCA & 2FA available for partner accounts.
+  docs: https://docs.wise.com/guides/developer/auth-and-security
+  detail: authentication/wise-authentication.yml
+
+idempotency:
+  supported: true
+  mechanism: X-idempotence-uuid request header (client-generated UUID)
+  scope: >-
+    Applies to specific POST operations where safe retry matters — creating
+    profiles, funding/creating transfers, converting or moving money between
+    balances, and creating card orders. Reuse the same value on a retry of a
+    failed POST to avoid duplicate side effects.
+  alternate: >-
+    Create-transfer additionally uses the request-body field
+    customerTransactionId as its idempotency key.
+  note: Review the API reference per operation — not every endpoint supports idempotency.
+  docs: https://docs.wise.com/guides/developer
+
+pagination:
+  style: offset/limit on list endpoints (e.g. statements, activities); Wise does not document a single uniform cursor scheme
+  note: >-
+    Pagination parameters vary per resource; consult the individual endpoint
+    reference. Wise does not publish a global pagination convention.
+
+versioning:
+  scheme: URI path, per-resource (v1, v2, v3, v4 coexist across products)
+  policy: >-
+    Additive changes (new resources, fields, relationships) ship without a
+    version bump or notification. Breaking changes (removing/renaming a field or
+    resource) increment the version of the affected endpoint(s).
+  docs: https://docs.wise.com/guides/developer/versioning
+  changelog: changelog/wise-changelog.yml
+
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shapes:
+    system_error: '{ "error": "string", "error_description": "string" }'
+    client_error: '{ "errors": [ { "code", "message", "path", "arguments" } ] }'
+    fund_transfer_error: '{ "type", "status", "errorCode", "errorMessage" }'
+  categories:
+    - {name: system, meaning: Not caused by end users; typically require developer intervention.}
+    - {name: client, meaning: Resolvable by the end user or by application design improvements.}
+  note: >-
+    code is non-unique — use it together with path (the unique error name) and
+    the payload body to map errors. Example codes — transfer.cancellation.not.allowed,
+    balance.payment-option-unavailable, invalid_token.
+  docs: https://docs.wise.com/guides/developer/errors
+
+rate_limits:
+  signal_status: 429
+  retry_after_header: retry-after
+  rate_limited_by_header: X-Rate-Limited-By
+  limits:
+    partner_client: 100 requests/second, 1000 requests/minute per client owned by the partner
+    business_personal_token: per-user — Android/Web 100/s, 900/min; iOS 150/s, 1500/min
+  note: Service-level limits also apply to specific operations.
+  detail: rate-limits/wise-rate-limits.yml
+  docs: https://docs.wise.com/guides/developer
+
+webhooks:
+  mechanism: Subscriptions deliver signed event payloads; verify the signature before trusting.
+  event_schema_version: '4.0.0 (millisecond-precision timestamps)'
+  detail: asyncapi/wise-webhooks-asyncapi.yml
+  docs: https://docs.wise.com/api-reference/subscription
+
+other_conventions:
+  - name: Test vs live
+    detail: Separated by host (api.wise-sandbox.com vs api.wise.com), not key prefix; see sandbox/wise-sandbox.yml.
+  - name: Amounts
+    detail: Decimal major-unit amounts with an explicit ISO-4217 currency (unlike minor-unit integer schemes).
+  - name: Money movement
+    detail: Quote → recipient → transfer → fund is the canonical send-money sequence.
