@@ -189,6 +189,8 @@ apis:
   - type: OpenAPI
     url: openapi/wise-platform-openapi.yml
 common:
+- type: AgenticAccess
+  url: agentic-access/wise-agentic-access.yml
 - type: VulnerabilityDisclosure
   url: security/wise-vulnerability-disclosure.yml
 - type: DomainSecurity
