@@ -1,0 +1,639 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds balance-statement API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: balance-statement
+  x-displayName: Balance Statements
+  description: 'Balance statements contain transactional activities on a Wise Multi-Currency Account, including deposits, withdrawals, conversions, card transactions, and fees.
+
+
+    Statements can be retrieved in multiple formats: JSON, CSV, PDF, XLSX, CAMT.053, MT940, or QIF.
+
+    '
+paths:
+  /v1/profiles/{profileId}/balance-statements/{balanceId}/statement.json:
+    get:
+      tags:
+      - balance-statement
+      summary: Get Balance Statement
+      operationId: balanceStatementGet
+      description: 'Retrieve a statement for the specified balance account.
+
+
+        The response format depends on the URL path:
+
+        - `statement.json` - JSON format
+
+        - `statement.csv` - CSV format
+
+        - `statement.pdf` - PDF format (includes Wise branding)
+
+        - `statement.xlsx` - Excel format
+
+        - `statement.xml` - CAMT.053 XML format
+
+        - `statement.mt940` - MT940 format
+
+        - `statement.qif` - QIF format
+
+
+        The period between `intervalStart` and `intervalEnd` cannot exceed 469 days (around 1 year 3 months).
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is SCA protected when it applies. If your profile is registered within the UK and/or EEA, SCA most likely applies to you.
+
+        The additional authentication is only required once every 90 days, viewing the statement on the website or in the mobile app counts towards that as well.
+
+
+        [Learn more](/guides/developer/auth-and-security/sca-and-2fa)
+
+        {% /admonition %}
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+        example: 12345
+      - name: balanceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The balance ID to get the statement for.
+        example: 64
+      - name: currency
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Currency of the balance statement requested (ISO 4217 Alphabetic Code).
+        example: EUR
+      - name: intervalStart
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+        description: Statement start time in UTC.
+        example: '2025-03-01T00:00:00.000Z'
+      - name: intervalEnd
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+        description: Statement end time in UTC.
+        example: '2025-04-30T23:59:59.999Z'
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - COMPACT
+          - FLAT
+        description: 'Statement type:
+
+          - `COMPACT` - Single statement line per transaction
+
+          - `FLAT` - Accounting statements where transaction fees are on a separate line
+
+          '
+        example: COMPACT
+      - name: statementLocale
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Language for the statement. Supports 2 character language codes.
+        example: en
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved balance statement.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Balance statement containing transactional activities.
+                properties:
+                  accountHolder:
+                    type: object
+                    description: Account holder information.
+                    properties:
+                      type:
+                        type: string
+                        description: Account holder type.
+                        enum:
+                        - PERSONAL
+                        - BUSINESS
+                        example: PERSONAL
+                      address:
+                        type: object
+                        description: Account holder address.
+                        properties:
+                          addressFirstLine:
+                            type: string
+                            description: Street address.
+                            example: Veerenni 24
+                          city:
+                            type: string
+                            description: City.
+                            example: Tallinn
+                          postCode:
+                            type: string
+                            description: Postal/ZIP code.
+                            example: '12112'
+                          stateCode:
+                            type: string
+                            description: State code.
+                            example: ''
+                          countryName:
+                            type: string
+                            description: Country name.
+                            example: Estonia
+                      firstName:
+                        type: string
+                        description: Account holder first name.
+                        example: Oliver
+                      lastName:
+                        type: string
+                        description: Account holder last name.
+                        example: Wilson
+                  issuer:
+                    type: object
+                    description: Account issuer information.
+                    properties:
+                      name:
+                        type: string
+                        description: Issuer name.
+                        example: TransferWise Ltd.
+                      firstLine:
+                        type: string
+                        description: Street address.
+                        example: 56 Shoreditch High Street
+                      city:
+                        type: string
+                        description: City.
+                        example: London
+                      postCode:
+                        type: string
+                        description: Postal/ZIP code.
+                        example: E1 6JJ
+                      stateCode:
+                        type: string
+                        description: State code.
+                        example: ''
+                      country:
+                        type: string
+                        description: Country.
+                        example: United Kingdom
+                  bankDetails:
+                    type:
+                    - object
+                    - 'null'
+                    description: Local bank details for the account.
+                  transactions:
+                    type: array
+                    description: List of transactions in the statement period.
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Transaction direction.
+                          enum:
+                          - DEBIT
+                          - CREDIT
+                          example: DEBIT
+                        date:
+                          type: string
+                          format: date-time
+                          description: Date when transaction was created.
+                          example: '2018-04-30T08:47:05.832Z'
+                        amount:
+                          type: object
+                          description: Transaction amount.
+                          properties:
+                            value:
+                              type: number
+                              description: Amount value (negative for debits).
+                              example: -7.76
+                            currency:
+                              type: string
+                              description: Currency code.
+                              example: EUR
+                        totalFees:
+                          type: object
+                          description: Transaction fees.
+                          properties:
+                            value:
+                              type: number
+                              description: Fee amount.
+                              example: 0.04
+                            currency:
+                              type: string
+                              description: Currency code.
+                              example: EUR
+                        details:
+                          type: object
+                          description: Transaction details.
+                          properties:
+                            type:
+                              type: string
+                              description: Transaction type.
+                              enum:
+                              - CARD
+                              - CONVERSION
+                              - DEPOSIT
+                              - TRANSFER
+                              - MONEY_ADDED
+                              - INCOMING_CROSS_BALANCE
+                              - OUTGOING_CROSS_BALANCE
+                              - DIRECT_DEBIT
+                              - BALANCE_INTEREST
+                              - BALANCE_ADJUSTMENT
+                              - UNKNOWN
+                              - ACCRUAL_CHARGE
+                              - INVESTMENT_TRADE_ORDER
+                              - ACQUIRING_PAYMENT
+                              - CARD_CASHBACK
+                              - CARD_ORDER_CHECKOUT
+                              example: CARD
+                            description:
+                              type: string
+                              description: Human readable explanation about the transaction.
+                              example: Card transaction of 6.80 GBP issued by Tfl.gov.uk/cp TFL TRAVEL CH
+                            amount:
+                              type: object
+                              description: Amount in original currency (for card transactions abroad).
+                              properties:
+                                value:
+                                  type: number
+                                  example: 6.8
+                                currency:
+                                  type: string
+                                  example: GBP
+                            senderName:
+                              type: string
+                              description: Deposit sender name.
+                              example: HEIN LAURI
+                            senderAccount:
+                              type: string
+                              description: Deposit sender bank account details.
+                              example: EE76 1700 0170 0049 6704
+                            paymentReference:
+                              type: string
+                              description: Deposit payment reference text.
+                              example: SVWZ+topup card
+                            category:
+                              type: string
+                              description: Card transaction category.
+                              example: Transportation Suburban and Loca
+                            merchant:
+                              type: object
+                              description: Card transaction merchant details.
+                              properties:
+                                name:
+                                  type: string
+                                  description: Merchant name.
+                                  example: Tfl.gov.uk/cp
+                                firstLine:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Merchant address street.
+                                postCode:
+                                  type: string
+                                  description: Merchant address postal code.
+                                  example: SW1H 0TL
+                                city:
+                                  type: string
+                                  description: Merchant address city.
+                                  example: TFL TRAVEL CH
+                                state:
+                                  type: string
+                                  description: Merchant address state.
+                                  example: ''
+                                country:
+                                  type: string
+                                  description: Merchant address country.
+                                  example: GB
+                                category:
+                                  type: string
+                                  description: Merchant category.
+                                  example: Transportation Suburban and Loca
+                            sourceAmount:
+                              type: object
+                              description: Source amount for conversions.
+                              properties:
+                                value:
+                                  type: number
+                                  example: 8.69
+                                currency:
+                                  type: string
+                                  example: GBP
+                            targetAmount:
+                              type: object
+                              description: Target amount for conversions.
+                              properties:
+                                value:
+                                  type: number
+                                  example: 9.94
+                                currency:
+                                  type: string
+                                  example: EUR
+                            fee:
+                              type: object
+                              description: Conversion fee.
+                              properties:
+                                value:
+                                  type: number
+                                  example: 0.03
+                                currency:
+                                  type: string
+                                  example: GBP
+                            rate:
+                              type: number
+                              description: Conversion exchange rate.
+                              example: 1.147806
+                        exchangeDetails:
+                          type:
+                          - object
+                          - 'null'
+                          description: Exchange details for card transactions abroad.
+                          properties:
+                            forAmount:
+                              type: object
+                              properties:
+                                value:
+                                  type: number
+                                  example: 6.8
+                                currency:
+                                  type: string
+                                  example: GBP
+                            rate:
+                              type:
+                              - number
+                              - 'null'
+                              description: Exchange rate applied.
+                        runningBalance:
+                          type: object
+                          description: Running balance after the transaction.
+                          properties:
+                            value:
+                              type: number
+                              example: 16.01
+                            currency:
+                              type: string
+                              example: EUR
+                        referenceNumber:
+                          type: string
+                          description: Wise assigned unique transaction reference number. Can be used to map refunds to the original transfer.
+                          example: CARD-249281
+                  endOfStatementBalance:
+                    type: object
+                    description: Closing balance for the specified time period.
+                    properties:
+                      value:
+                        type: number
+                        description: Balance value.
+                        example: 9.94
+                      currency:
+                        type: string
+                        description: Currency code.
+                        example: EUR
+                  query:
+                    type: object
+                    description: Query parameters used for the request.
+                    properties:
+                      intervalStart:
+                        type: string
+                        format: date-time
+                        description: Statement start time.
+                        example: '2018-03-01T00:00:00Z'
+                      intervalEnd:
+                        type: string
+                        format: date-time
+                        description: Statement end time.
+                        example: '2018-04-30T23:59:59.999Z'
+                      currency:
+                        type: string
+                        description: Currency code.
+                        example: EUR
+                      accountId:
+                        type: integer
+                        format: int64
+                        description: Balance account ID.
+                        example: 64
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

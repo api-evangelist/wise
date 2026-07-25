@@ -1,0 +1,2124 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds transfer API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: transfer
+  x-displayName: Transfers
+  description: 'A transfer is a payment order to a [recipient account](/api-reference/recipient) based on a [quote](/api-reference/quote).
+
+
+    Once created, a transfer usually needs to be funded within fourteen days. Otherwise, it will be automatically cancelled.
+
+
+    There are 2 types of transfer resources: standard transfer resource and originator transfer resource. Please see below for differences between the two.
+
+
+    Standard Transfer {% #standard-transfer .title-3 .m-t-5 %}
+
+
+    The standard transfer object is returned by the [create transfer](/api-reference/transfer/transfercreate), [get transfer](/api-reference/transfer/transferget), [list transfers](/api-reference/transfer/transferlist), and [cancel transfer](/api-reference/transfer/transfercancel) endpoints.
+
+
+    Originator Transfer {% #originator-transfer .title-3 .m-t-5 %}
+
+
+    The originator transfer object is returned by the [create third party transfer](/api-reference/transfer/transferthirdpartycreate) and [get third party transfer](/api-reference/transfer/transferthirdpartyget) endpoints. It includes an additional `originator` data block with details about the payment originator.
+
+    '
+paths:
+  /v1/transfers:
+    post:
+      operationId: transferCreate
+      summary: Create a transfer
+      description: 'Create a transfer to a recipient account based on a quote.
+
+
+        Some fields are conditionally required depending on the currency route and transfer amount. Always call the [transfer requirements](/api-reference/transfer/transferrequirementsvalidate) endpoint to determine which fields are needed, and submit values accordingly. These requirements may change over time.
+
+
+        #### Avoiding duplicate transfers
+
+
+        The `customerTransactionId` field is used to avoid duplicate transfer requests. If your initial call to create a transfer fails (error or timeout), retry the call using the same `customerTransactionId` value. Subsequent retry messages are treated as repeat messages and will not create duplicate transfers. Use a sensible retry limit, ideally with a back-off approach.
+
+
+        #### Payment Approvals
+
+
+        {% admonition type="warning" %}
+
+        Business Payment Approvals created on your wise.com settings page are not compatible with creating transfers over the API.
+
+        {% /admonition %}
+
+
+        If you use personal tokens and do not use client credentials, and if your business account has payment approvals, your application will receive this error when attempting to create a transfer: `Quote cannot be accepted with this request due to missing approval.`
+
+
+        Consider removing the payment rule if you are going to use the API to create transfers.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetAccount
+              - quoteUuid
+              - customerTransactionId
+              properties:
+                sourceAccount:
+                  type: integer
+                  format: int64
+                  description: Refund recipient account ID
+                targetAccount:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID. You can create multiple transfers to same recipient account
+                quoteUuid:
+                  type: string
+                  format: uuid
+                  description: V2 quote ID. You can only create one transfer per one quote. You cannot use same quote ID to create multiple transfers
+                customerTransactionId:
+                  type: string
+                  format: uuid
+                  description: Required to perform idempotency check to avoid duplicate transfers in case of network failures or timeouts
+                details:
+                  type: object
+                  properties:
+                    reference:
+                      type: string
+                      description: Recipient will see this reference text in their bank statement. Maximum allowed characters depends on the currency route. See [Business Payments Tips](https://wise.com/help/articles/2932870/tips-for-paying-invoices) for a full list
+                    transferPurpose:
+                      type: string
+                      description: Conditionally required. For example when target currency is THB. See [Transfer Requirements](/api-reference/transfer/transferrequirementsvalidate) for conditions
+                    transferPurposeSubTransferPurpose:
+                      type: string
+                      description: Conditionally required. For example when target currency is CNY. See [Transfer Requirements](/api-reference/transfer/transferrequirementsvalidate) for conditions
+                    transferPurposeInvoiceNumber:
+                      type: string
+                      description: Conditionally required. For example when target currency is INR. See [Transfer Requirements](/api-reference/transfer/transferrequirementsvalidate) for conditions
+                    sourceOfFunds:
+                      type: string
+                      description: Conditionally required. For example when target currency is USD and transfer amount exceeds 80k. See [Transfer Requirements](/api-reference/transfer/transferrequirementsvalidate) for conditions
+            examples:
+              basic:
+                summary: Basic transfer
+                value:
+                  targetAccount: 8692237
+                  quoteUuid: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  customerTransactionId: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+                  details:
+                    reference: Invoice 2026-001
+              with-transfer-requirements:
+                summary: With conditionally required fields
+                value:
+                  targetAccount: 8692237
+                  quoteUuid: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  customerTransactionId: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+                  details:
+                    reference: Invoice 2026-001
+                    transferPurpose: verification.transfers.purpose.pay.bills
+                    transferPurposeSubTransferPurpose: INTERPRETATION_SERVICE
+                    sourceOfFunds: verification.source.of.funds.salary
+      responses:
+        '200':
+          description: Transfer successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+    get:
+      operationId: transferList
+      summary: List transfers
+      description: 'Get the list of transfers for a given user''s profile (defaults to user''s personal profile).
+
+
+        You can add query parameters to specify user''s profile (personal or business), time period and/or payment status. For example, you can query all failed payments created since last week, or all completed payments created since yesterday.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profile
+        in: query
+        required: false
+        description: User profile ID. If parameter is omitted, defaults to user's personal profile
+        schema:
+          type: integer
+          format: int64
+      - name: status
+        in: query
+        required: false
+        description: Comma separated list of one or more status codes to filter transfers. See [Tracking Transfers](/guides/product/send-money/tracking-transfers) for complete list of statuses
+        schema:
+          type: string
+      - name: sourceCurrency
+        in: query
+        required: false
+        description: Source currency code
+        schema:
+          type: string
+      - name: targetCurrency
+        in: query
+        required: false
+        description: Target currency code
+        schema:
+          type: string
+      - name: createdDateStart
+        in: query
+        required: false
+        description: Starting date to filter transfers, inclusive of the provided date
+        schema:
+          type: string
+          format: date-time
+      - name: createdDateEnd
+        in: query
+        required: false
+        description: Ending date to filter transfers, inclusive of the provided date
+        schema:
+          type: string
+          format: date-time
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of records to be returned in response
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        required: false
+        description: Starting record number
+        schema:
+          type: integer
+          format: int32
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns an array of transfer objects, with or without an `originator` block depending on the type of each transfer.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                  - $ref: '#/components/schemas/transfer'
+                  - $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}:
+    get:
+      operationId: transferGet
+      summary: Get a transfer by ID
+      description: 'Get transfer info by ID. To receive dynamic updates as the state of the transfer changes, see the [webhooks documentation](/guides/developer/webhooks).
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the transfer object, with or without an `originator` block depending on the type of transfer.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/transfer'
+                - $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}/cancel:
+    put:
+      operationId: transferCancel
+      summary: Cancel a transfer
+      description: 'Transfers may be cancelled up until the transfer has been processed and funds converted. Cancellation is final — it cannot be undone.
+
+
+        {% admonition type="info" name="When can a transfer be cancelled?" %}
+
+        A transfer can only be cancelled programmatically via the API if it meets **all** of the following criteria:
+
+
+        - The transfer is not in `funds_converted` or later state.
+
+        - There are no processing problems with the transfer.
+
+
+        If the transfer does not meet these criteria, the API will return a **409 Conflict** error with the code `transfer.cancellation.not.allowed`.
+
+
+        For more information about transfer states, see [Tracking Transfers](/guides/product/send-money/tracking-transfers#transfer-statuses).
+
+        {% /admonition %}
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the cancelled transfer object, with or without an `originator` block depending on the type of transfer.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/transfer'
+                - $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: Transfer cannot be cancelled because it is in a non-cancellable state or has other restrictions. The error response will include the code `transfer.cancellation.not.allowed`.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfer-requirements:
+    post:
+      operationId: transferRequirementsValidate
+      summary: Validate transfer requirements
+      description: 'Exposes transfer-specific requirements based on the sender, quote, and target recipient account. Requirements vary by currency route, transfer amount, and regulatory region.
+
+
+        For example, the maximum allowed length of reference text varies — the US payment system (ACH) supports 10 characters only, but transfers within Mexico allow up to 100 characters. Similarly, depending on the chosen currencies and the amount to be transferred, Wise may require additional details such as source of funds or transfer purpose.
+
+
+        We highly recommend verifying transfer requirements before submitting any transfer to avoid delays caused by missing details.
+
+
+        {% admonition type="success" name="Integration guide" %}
+
+        See the [Transfer Requirements guide](/guides/developer/api-guides/transfer-requirements) for step-by-step integration instructions and a list of common requirement fields.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetAccount
+              - quoteUuid
+              properties:
+                targetAccount:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                quoteUuid:
+                  type: string
+                  format: uuid
+                  description: V2 quote ID
+                customerTransactionId:
+                  type: string
+                  format: uuid
+                  description: Unique identifier for the transfer request
+                originatorLegalEntityType:
+                  type: string
+                  enum:
+                  - PRIVATE
+                  - BUSINESS
+                  description: Type of sender. Required from March 2026 for Correspondent Send integrations
+                details:
+                  type: object
+                  properties:
+                    reference:
+                      type: string
+                    sourceOfFunds:
+                      type: string
+                    sourceOfFundsOther:
+                      type: string
+                    transferPurpose:
+                      type: string
+                    transferPurposeSubTransferPurpose:
+                      type: string
+                    transferPurposeInvoiceNumber:
+                      type: string
+                    transferNature:
+                      type: string
+            example:
+              targetAccount: 8692237
+              quoteUuid: 8fa9be20-ba43-4b15-abbb-9424e1481050
+              originatorLegalEntityType: PRIVATE
+              details:
+                reference: Invoice 2026-001
+                sourceOfFunds: verification.source.of.funds.salary
+                transferPurpose: verification.transfers.purpose.pay.bills
+      responses:
+        '200':
+          description: Returns a list of transfer requirement objects describing the dynamic form fields.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/transfer-requirement'
+              example:
+              - type: transfer
+                fields:
+                - name: Transfer reference
+                  group:
+                  - key: reference
+                    name: Transfer reference
+                    type: text
+                    refreshRequirementsOnChange: false
+                    required: false
+                    displayFormat: null
+                    example: null
+                    minLength: null
+                    maxLength: 10
+                    validationRegexp: '[a-zA-Z0-9- ]*'
+                    validationAsync: null
+                    valuesAllowed: null
+                - name: Transfer purpose
+                  group:
+                  - key: transferPurpose
+                    name: Transfer purpose
+                    type: select
+                    refreshRequirementsOnChange: true
+                    required: true
+                    displayFormat: null
+                    example: null
+                    minLength: null
+                    maxLength: null
+                    validationRegexp: null
+                    validationAsync: null
+                    valuesAllowed:
+                    - key: verification.transfers.purpose.purchase.property
+                      name: Buying property abroad
+                    - key: verification.transfers.purpose.pay.bills
+                      name: Rent or other property expenses
+                    - key: verification.transfers.purpose.mortgage
+                      name: Mortgage payment
+                    - key: verification.transfers.purpose.pay.tuition
+                      name: Tuition fees or studying expenses
+                    - key: verification.transfers.purpose.send.to.family
+                      name: Sending money home to family
+                    - key: verification.transfers.purpose.living.expenses
+                      name: General monthly living expenses
+                    - key: verification.transfers.purpose.other
+                      name: Other
+                  - key: transferPurposeSubTransferPurpose
+                    name: Please select a specific reason for your transfer
+                    type: select
+                    refreshRequirementsOnChange: true
+                    required: true
+                    displayFormat: null
+                    example: null
+                    minLength: null
+                    maxLength: null
+                    validationRegexp: null
+                    validationAsync: null
+                    valuesAllowed:
+                    - key: INTERPRETATION_SERVICE
+                      name: Interpretation service
+                    - key: TRANSLATION_SERVICE
+                      name: Translation service
+                    - key: HUMAN_RESOURCE_SERVICE
+                      name: Human resource service
+                    - key: SOFTWARE_DEVELOPMENT_SERVICE
+                      name: Software development service
+                - name: Source of funds
+                  group:
+                  - key: sourceOfFunds
+                    name: Source of funds
+                    type: select
+                    refreshRequirementsOnChange: true
+                    required: true
+                    displayFormat: null
+                    example: null
+                    minLength: null
+                    maxLength: null
+                    validationRegexp: null
+                    validationAsync: null
+                    valuesAllowed:
+                    - key: verification.source.of.funds.salary
+                      name: Salary
+                    - key: verification.source.of.funds.investment
+                      name: Investments (stocks, properties, etc.)
+                    - key: verification.source.of.funds.inheritance
+                      name: Inheritance
+                    - key: verification.source.of.funds.loan
+                      name: Loan
+                    - key: verification.source.of.funds.other
+                      name: Other
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v2/profiles/{profileId}/third-party-transfers:
+    post:
+      operationId: transferThirdPartyCreate
+      summary: Create a third party transfer
+      description: 'Create a transfer on behalf of a third party.
+
+
+        When creating a third party transfer:
+
+        - The `originator` datablock is **required**. This details the ultimate sender of funds in the transfer.
+
+        - Depending on the legal entity type of the originator (`PRIVATE` or `BUSINESS`), the required fields vary.
+
+        - `originalTransferId` field must be used. This is your own ID for the transfer.
+
+
+        You need to save the transfer ID for tracking its status later via webhooks.
+
+
+        #### Avoiding duplicate transfers
+
+
+        The `originalTransferId` field is used to avoid duplicate transfer requests. If your initial call fails (error or timeout), retry the call using the same `originalTransferId` value. Subsequent retry messages are treated as repeat messages and will not create duplicate transfers.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Private originator
+                type: object
+                required:
+                - targetAccount
+                - quote
+                - originalTransferId
+                - originator
+                properties:
+                  targetAccount:
+                    type: integer
+                    format: int64
+                    description: Recipient account ID. You can create multiple transfers to same recipient account
+                    example: 12345678
+                  quote:
+                    type: string
+                    description: V2 quote ID. You can only create one transfer per one quote. You cannot use same quote ID to create multiple transfers
+                    example: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  originalTransferId:
+                    type: string
+                    description: Unique transfer ID in your system. Also used to perform idempotency check to avoid duplicate transfers. You can only submit one transfer with same originalTransferId
+                    example: unique-transfer-id-in-your-system
+                  details:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                        description: Recipient will see this reference text in their bank statement. Maximum allowed characters depends on the currency route. See [Business Payments Tips](https://wise.com/help/articles/2932870/tips-for-paying-invoices) for a full list
+                        example: Ski trip
+                  originator:
+                    type: object
+                    required:
+                    - legalEntityType
+                    - reference
+                    - name
+                    - dateOfBirth
+                    - address
+                    - accountDetails
+                    description: Data block to capture payment originator details
+                    properties:
+                      legalEntityType:
+                        type: string
+                        enum:
+                        - PRIVATE
+                        description: Payment originator legal type
+                        example: PRIVATE
+                      reference:
+                        type: string
+                        description: Unique customer ID in your system. This allows Wise to uniquely identify each originator
+                        example: CST-2991992
+                      name:
+                        type: object
+                        required:
+                        - givenName
+                        - familyName
+                        properties:
+                          givenName:
+                            type: string
+                            description: Payment originator first name
+                            example: John
+                          middleNames:
+                            type: array
+                            items:
+                              type: string
+                            description: Payment originator middle name(s)
+                            example:
+                            - Ryan
+                          familyName:
+                            type: string
+                            description: Payment originator family name
+                            example: Godspeed
+                          patronymicName:
+                            type: string
+                            description: Payment originator patronymic name
+                      dateOfBirth:
+                        type: string
+                        format: date
+                        description: Payment originator date of birth
+                        example: '1977-07-01'
+                      nationality:
+                        type: string
+                        description: Payment originator nationality. Required for certain routes (e.g. to `UGX`)
+                      address:
+                        type: object
+                        required:
+                        - firstLine
+                        - city
+                        - countryCode
+                        properties:
+                          firstLine:
+                            type: string
+                            description: Payment originator address first line
+                            example: Salu tee 100, Apt 4B
+                          city:
+                            type: string
+                            description: Payment originator address city
+                            example: Tallinn
+                          stateCode:
+                            type: string
+                            description: Payment originator address state code. Required if address country code in (US, CA, BR, AU)
+                          countryCode:
+                            type: string
+                            description: Payment originator address country code ISO 3166-1 alpha-2
+                            minLength: 2
+                            maxLength: 2
+                            example: EE
+                          postCode:
+                            type: string
+                            description: Originator address zip code
+                            example: '12112'
+                      accountDetails:
+                        type: string
+                        description: Originator account number
+              - title: Business originator
+                type: object
+                required:
+                - targetAccount
+                - quote
+                - originalTransferId
+                - originator
+                properties:
+                  targetAccount:
+                    type: integer
+                    format: int64
+                    description: Recipient account ID. You can create multiple transfers to same recipient account
+                    example: 12345678
+                  quote:
+                    type: string
+                    description: V2 quote ID. You can only create one transfer per one quote. You cannot use same quote ID to create multiple transfers
+                    example: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  originalTransferId:
+                    type: string
+                    description: Unique transfer ID in your system. Also used to perform idempotency check to avoid duplicate transfers. You can only submit one transfer with same originalTransferId
+                    example: unique-transfer-id-in-your-system
+                  details:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                        description: Recipient will see this reference text in their bank statement. Maximum allowed characters depends on the currency route. See [Business Payments Tips](https://wise.com/help/articles/2932870/tips-for-paying-invoices) for a full list
+                        example: Payment for invoice 22092
+                  originator:
+                    type: object
+                    required:
+                    - legalEntityType
+                    - reference
+                    - name
+                    - businessRegistrationCode
+                    - address
+                    description: Data block to capture payment originator details
+                    properties:
+                      legalEntityType:
+                        type: string
+                        enum:
+                        - BUSINESS
+                        description: Payment originator legal type
+                        example: BUSINESS
+                      reference:
+                        type: string
+                        description: Unique customer ID in your system. This allows Wise to uniquely identify each originator
+                        example: BIZ-2991992
+                      name:
+                        type: object
+                        required:
+                        - fullName
+                        properties:
+                          fullName:
+                            type: string
+                            description: Payment originator full legal name
+                            example: Hot Air Balloon Services Ltd
+                      businessRegistrationCode:
+                        type: string
+                        description: Payment originator business registry number / incorporation number
+                        example: '1999212'
+                      businessRegistrationDate:
+                        type: string
+                        format: date
+                        description: Payment originator business registration date. Required for certain routes (e.g. to `UGX`)
+                      address:
+                        type: object
+                        required:
+                        - firstLine
+                        - city
+                        - countryCode
+                        properties:
+                          firstLine:
+                            type: string
+                            description: Payment originator address first line
+                            example: Aiandi tee 1431
+                          city:
+                            type: string
+                            description: Payment originator address city
+                            example: Tallinn
+                          stateCode:
+                            type: string
+                            description: Payment originator address state code. Required if address country code in (US, CA, BR, AU)
+                          countryCode:
+                            type: string
+                            description: Payment originator address country code ISO 3166-1 alpha-2
+                            minLength: 2
+                            maxLength: 2
+                            example: EE
+                          postCode:
+                            type: string
+                            description: Originator address zip code
+                            example: '12112'
+                      accountDetails:
+                        type: string
+                        description: Originator account number
+      responses:
+        '200':
+          description: Third party transfer successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/third-party-transfers/{transferId}:
+    get:
+      operationId: transferThirdPartyGetV1
+      summary: Get a third party transfer by ID (V1)
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use [Get a third party transfer by ID](transferthirdpartyget) (V2) instead.
+
+        {% /admonition %}
+
+
+        Get third party transfer info by ID. To receive dynamic updates as the state of the transfer changes, see the [webhooks documentation](/api-reference/webhook).
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID
+        schema:
+          type: integer
+          format: int64
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the originator transfer object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/third-party-transfers/{transferId}:
+    get:
+      operationId: transferThirdPartyGet
+      summary: Get a third party transfer by ID
+      description: 'Get third party transfer info by ID. To receive dynamic updates as the state of the transfer changes, see the [webhooks documentation](/api-reference/webhook).
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID
+        schema:
+          type: integer
+          format: int64
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the originator transfer object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/transfers/{transferId}/payments:
+    post:
+      operationId: transferFund
+      summary: Fund a transfer
+      description: '{% admonition type="warning" %}
+
+        This endpoint is SCA protected when it applies. If your profile is registered within the UK and/or EEA, SCA most likely applies to you.
+
+        Please read more about [implementing SCA](/guides/developer/auth-and-security/sca-and-2fa).
+
+        {% /admonition %}
+
+
+        This API call is the final step for executing payouts when using a balance with Wise. Upon calling the endpoint, Wise will begin the processing of the transfer, depending on the status of funds.
+
+
+        When using the transfer by transfer settlement model, the following funding type(s) must be used:
+
+
+        - **BALANCE** — Funds are pulled from a multi-currency account held with Wise.
+
+        - **BANK_TRANSFER** — Manually send funds from your business bank account to pay for any transfers. Only applicable when using the [Batch Group API](/api-reference/batch-group/).
+
+
+        When funding through the Bulk Settlement model, the following funding type(s) must be used:
+
+
+        - **TRUSTED_PRE_FUND_BULK** — Funds for the transfer will be settled through a bulk payment at a later date. This method is not applicable for First Party partner account transfers.
+
+
+        If funding from `BALANCE`, and your multi-currency account does not have the required funds to complete the action, then this call will fail with an "insufficient funds" error. Once funds are added and available, you must call this endpoint again.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID that created the transfer. Can be either your personal or business profile ID
+        schema:
+          type: integer
+          format: int64
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  description: The type of funding to apply to the transfer
+                  example: BALANCE
+                partnerReference:
+                  type: string
+                  description: The transaction/payment identifier in your system, uniquely identifies the transfer in your platform. Required for the Cross Currency Bulk Settlement model
+      responses:
+        '200':
+          description: Transfer funding result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: The type of funding applied to the transfer
+                    example: BALANCE
+                  status:
+                    type: string
+                    enum:
+                    - COMPLETED
+                    - REJECTED
+                    description: Funding status
+                    example: COMPLETED
+                  errorCode:
+                    type:
+                    - string
+                    - 'null'
+                    description: Failure reason
+                    example: null
+              examples:
+                completed:
+                  summary: Balance - Completed
+                  value:
+                    type: BALANCE
+                    status: COMPLETED
+                    errorCode: null
+                insufficient-funds:
+                  summary: Balance - Insufficient Funds
+                  value:
+                    type: BALANCE
+                    status: REJECTED
+                    errorCode: transfer.insufficient_funds
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}/payments:
+    get:
+      operationId: transferPaymentsList
+      summary: List completed payments
+      description: 'Fetch completed payments used to fund the transfer.
+
+
+        In most cases there should only be a single payment associated with the transfer. There are rare occasions that a transfer can be funded with multiple payment methods and when this occurs the first completed payment method would be used to calculate the fees provided on the quote.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns a list of completed payment objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/payment'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/transfers/{transferId}/invoices/bankingpartner:
+    get:
+      operationId: transferPayoutInfoGet
+      summary: Get payout information
+      description: 'Fetch banking reference information for transfers that are in `outgoing_payment_sent` status, enabling you to track transfers with the transfer recipient''s bank.
+
+
+        It may take up to 3 days to get the correct information through this endpoint, as some partners don''t share the information until 3 days later.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns payout information for the transfer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  processorName:
+                    type: string
+                    description: The legal entity that processed the transfer on behalf of the customer
+                    example: Acme Bank Ltd.
+                  deliveryMode:
+                    type: string
+                    description: The delivery mode for the payment (e.g. SWIFT)
+                    example: SWIFT
+                  bankingPartnerReference:
+                    type: string
+                    description: The reference used by the partner bank to identify and track the transfer
+                    example: ABCD1234
+                  bankingPartnerName:
+                    type: string
+                    description: The name of the sending bank to the recipient's bank
+                    example: Global Bank Corp.
+                  mt103:
+                    type:
+                    - string
+                    - 'null'
+                    description: The MT103 of the transfer, if available
+              example:
+                processorName: Acme Bank Ltd.
+                deliveryMode: SWIFT
+                bankingPartnerReference: ABCD1234
+                bankingPartnerName: Global Bank Corp.
+                mt103: '{1:F01XXXXGBXXAXXX0000000000}{2:I103XXXXGBXXXXXXN}{3:{108:1234567}{111:001}{121:00000000-0000-0000-0000-000000000000}}{4:
+
+                  :20:1234567
+
+                  :23B:CRED
+
+                  :32A:221212USD12345,
+
+                  :33B:USD12345,
+
+                  :50K:/11111111
+
+                  SOME COMPANY INC.
+
+                  1 SOME STREET MIAMI 33132 US
+
+                  :59:/GB00000000000000
+
+                  COMPANY NAME LTD
+
+                  UK LONDON 1234 GB
+
+                  :70:REFERENCE
+
+                  :71A:OUR
+
+                  :71G:USD11,
+
+                  -}
+
+                  '
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}/receipt.pdf:
+    get:
+      operationId: transferReceiptGet
+      summary: Get a transfer receipt
+      description: 'Download transfer confirmation receipt in PDF format for transfers that are in status `outgoing_payment_sent`.
+
+        There''s also the [transfer state change webhook](/api-reference/webhook-event/eventtransfersstatechange).
+
+
+        {% admonition type="info" %}
+
+        If you service US retail consumers you must use the [US combined receipt](/api-reference/transfer/transferuscombinedreceiptget) endpoint instead.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Transfer confirmation receipt in Wise branded PDF format.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}/us-combined-receipt.pdf:
+    get:
+      operationId: transferUsCombinedReceiptGet
+      summary: Get a US combined disclosure receipt
+      description: 'Download US combined receipt in PDF format for transfers that are in status `incoming_payment_initiated` and again when the status is updated to `outgoing_payment_sent`.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: The US Combined Receipt in Wise branded PDF format.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/transfers/{transferId}/documents/noc:
+    get:
+      operationId: transferNocGet
+      summary: Get a non objection certificate (INR)
+      description: 'Download transfer non objection certificate in PDF format for transfers that are in status `outgoing_payment_sent`.
+
+
+        This document can be used to obtain a Foreign Inward Remittance Certificate (FIRC) from the bank that paid out the transfer.
+
+
+        This is only applicable to INR payments with either a business sender or recipient.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The transfer ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Non objection certificate in PDF format.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Transfer not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/partner-licence-transfers:
+    post:
+      operationId: transferPartnerLicenceCreate
+      summary: Create a partner licence transfer
+      deprecated: true
+      description: '{% admonition type="warning" name="Deprecated" %}
+
+        This endpoint is deprecated and only maintained for existing legacy integrations. Do not use it for new integrations. Use [Create a transfer](/api-reference/transfer/transfercreate) or [Create a third party transfer](/api-reference/transfer/transferthirdpartycreate) instead.
+
+        {% /admonition %}
+
+
+        This is similar to the [Create a transfer](/api-reference/transfer/transfercreate) endpoint, but the `originator` datablock is additionally required.
+
+
+        You need to save the transfer ID for tracking its status later via webhooks.
+
+
+        #### Avoiding duplicate transfers
+
+
+        The `customerTransactionId` field is used to avoid duplicate transfer requests. If your initial call fails (error or timeout), retry the call using the same `customerTransactionId` value. Subsequent retry messages are treated as repeat messages and will not create duplicate transfers.
+
+        '
+      tags:
+      - transfer
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetAccount
+              - quote
+              - customerTransactionId
+              - originator
+              properties:
+                sourceAccount:
+                  type: integer
+                  format: int64
+                  description: Refund recipient account ID
+                targetAccount:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID. You can create multiple transfers to same recipient account
+                quote:
+                  type: string
+                  description: V2 quote ID. You can only create one transfer per one quote. You cannot use same quote ID to create multiple transfers
+                customerTransactionId:
+                  type: string
+                  description: Unique transfer ID in your system. Also used to perform idempotency check to avoid duplicate transfers. You can only submit one transfer with same customerTransactionId
+                details:
+                  type: object
+                  properties:
+                    reference:
+                      type: string
+                      description: Recipient will see this reference text in their bank statement. Maximum allowed characters depends on the currency route. See [Business Payments Tips](https://wise.com/help/articles/2932870/tips-for-paying-invoices) for a full list
+                originator:
+                  type: object
+                  required:
+                  - legalEntityType
+                  - externalId
+                  - address
+                  description: Data block to capture payment originator details
+                  properties:
+                    legalEntityType:
+                      type: string
+                      enum:
+                      - PRIVATE
+                      - BUSINESS
+                      description: Payment originator legal type
+                    externalId:
+                      type: string
+                      description: Unique customer ID in your system. This allows Wise to uniquely identify each originator
+                    name:
+                      type: object
+                      description: 'Originator name details. Required fields depend on the legal entity type: `givenName` and `familyName` are required for `PRIVATE`, `fullName` is required for `BUSINESS`'
+                      properties:
+                        givenName:
+                          type: string
+                          description: Payment originator first name. Required if `legalEntityType = PRIVATE`
+                        middleNames:
+                          type: array
+                          items:
+                            type: string
+                          description: Payment originator middle name(s). Used only if `legalEntityType = PRIVATE`
+                        familyName:
+                          type: string
+                          description: Payment originator family name. Required if `legalEntityType = PRIVATE`
+                        patronymicName:
+                          type: string
+                          description: Payment originator patronymic name. Used only if `legalEntityType = PRIVATE`
+                        fullName:
+                          type: string
+                          description: Payment originator full legal name. Required if `legalEntityType = BUSINESS`
+                    dateOfBirth:
+                      type: string
+                      format: date
+                      description: Payment originator date of birth. Required if `legalEntityType = PRIVATE`
+                    businessRegistrationCode:
+                      type: string
+                      description: Payment originator business registry number / incorporation number. Required if `legalEntityType = BUSINESS`
+                    address:
+                      type: object
+                      required:
+                      - firstLine
+                      - city
+                      - countryCode
+                      properties:
+                        firstLine:
+                          type: string
+                          description: Payment originator address first line
+                        city:
+                          type: string
+                          description: Payment originator address city
+                        stateCode:
+                          type: string
+                          description: Payment originator address state code. Required if address country code in (US, CA, BR, AU)
+                        countryCode:
+                          type: string
+                          description: Payment originator address country code ISO 3166-1 alpha-2
+                          minLength: 2
+                          maxLength: 2
+                        postCode:
+                          type: string
+                          description: Originator address zip code
+                    accountDetails:
+                      type: string
+                      description: Originator account number
+            examples:
+              personal:
+                summary: Personal originator
+                value:
+                  sourceAccount: 12345678
+                  targetAccount: 87654321
+                  quote: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  customerTransactionId: unique-transfer-id-in-your-system
+                  details:
+                    reference: Ski trip
+                  originator:
+                    legalEntityType: PRIVATE
+                    externalId: CST-2991992
+                    name:
+                      givenName: John
+                      middleNames:
+                      - Ryan
+                      familyName: Godspeed
+                    dateOfBirth: '1977-07-01'
+                    address:
+                      firstLine: Salu tee 100, Apt 4B
+                      city: Tallinn
+                      countryCode: EE
+                      postCode: '12112'
+                    accountDetails: the unique account number of the customer
+              business:
+                summary: Business originator
+                value:
+                  sourceAccount: 12345678
+                  targetAccount: 87654321
+                  quote: 8fa9be20-ba43-4b15-abbb-9424e1481050
+                  customerTransactionId: unique-transfer-id-in-your-system
+                  details:
+                    reference: Payment for invoice 22092
+                  originator:
+                    legalEntityType: BUSINESS
+                    externalId: BIZ-2991992
+                    name:
+                      fullName: Hot Air Balloon Services Ltd
+                    businessRegistrationCode: '1999212'
+                    address:
+                      firstLine: Aiandi tee 1431
+                      city: Tallinn
+                      countryCode: EE
+                      postCode: '12112'
+                    accountDetails: the unique account number of the customer
+      responses:
+        '200':
+          description: Partner licence transfer successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/originator-transfer'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  schemas:
+    transfer:
+      title: Standard Transfer
+      x-tags:
+      - transfer
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Transfer ID
+          example: 16521632
+        user:
+          type: integer
+          format: int64
+          description: Your user ID
+          example: 4342275
+        targetAccount:
+          type: integer
+          format: int64
+          description: Recipient account ID
+          example: 8692237
+        sourceAccount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Refund recipient account ID
+          example: null
+        quote:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: V1 quote ID
+          example: null
+        quoteUuid:
+          type: string
+          format: uuid
+          description: V2 quote ID
+          example: 8fa9be20-ba43-4b15-abbb-9424e1481050
+        status:
+          type: string
+          description: Transfer current status. See [Tracking Transfers](/guides/product/send-money/tracking-transfers) for all possible statuses.
+          example: incoming_payment_waiting
+        reference:
+          type: string
+          description: Deprecated, use `details.reference` instead
+          deprecated: true
+          example: reference text
+        rate:
+          type: number
+          description: Exchange rate value
+          example: 0.89
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when transfer was created
+          example: '2017-11-24 10:47:49'
+        business:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Your business profile ID
+          example: null
+        transferRequest:
+          type:
+          - integer
+          - 'null'
+          description: Deprecated
+          deprecated: true
+          example: null
+        details:
+          type: object
+          properties:
+            reference:
+              type: string
+              description: Payment reference text
+              example: Testing
+        hasActiveIssues:
+          type: boolean
+          description: Are there any pending issues which stop executing the transfer?
+          example: false
+        sourceCurrency:
+          type: string
+          description: Source currency code
+          example: EUR
+        sourceValue:
+          type: number
+          description: Transfer amount in source currency
+          example: 0
+        targetCurrency:
+          type: string
+          description: Target currency code
+          example: GBP
+        targetValue:
+          type: number
+          description: Transfer amount in target currency
+          example: 150
+        customerTransactionId:
+          type: string
+          format: uuid
+          description: Unique identifier randomly generated per transfer request by the calling client
+          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+        payinSessionId:
+          type: string
+          format: uuid
+          description: ID of the Payin Session generated for the transfer, which can be used for certain payin methods when funding the transfer
+          example: 23330542-8e9e-419f-95eb-312b880f92ad
+    payment:
+      title: Payment
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Payment ID
+          example: 50000000
+        method:
+          type: string
+          description: The payment method used to pay for the transfer
+          example: BANK_TRANSFER
+        pricingVariant:
+          type:
+          - string
+          - 'null'
+          description: The qualifier that allows to apply different pricing policy within the same payment method. Often the value might be the payment method itself
+          example: null
+        amount:
+          type: number
+          description: Transfer source amount
+          example: 1000
+        currency:
+          type: string
+          description: Transfer source currency
+          example: GBP
+        timeCreated:
+          type: string
+          format: date-time
+          description: Date of when payment was created
+          example: '2020-01-01T12:30:15.000Z'
+        timeUpdated:
+          type: string
+          format: date-time
+          description: Date of when payment was updated
+          example: '2020-01-01T12:30:15.000Z'
+    originator-transfer:
+      title: Originator Transfer
+      x-tags:
+      - transfer
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Transfer ID
+          example: 16521632
+        user:
+          type: integer
+          format: int64
+          description: Your user ID
+          example: 4342275
+        targetAccount:
+          type: integer
+          format: int64
+          description: Recipient account ID
+          example: 8692237
+        sourceAccount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Refund recipient account ID
+          example: null
+        quote:
+          type: string
+          description: Quote ID
+          example: 8fa9be20-ba43-4b15-abbb-9424e1481050
+        status:
+          type: string
+          description: Transfer current status. See [Tracking Transfers](/guides/product/send-money/tracking-transfers) for all possible statuses.
+          example: cancelled
+        reference:
+          type: string
+          description: Deprecated, use `details.reference` instead
+          deprecated: true
+          example: reference text
+        rate:
+          type: number
+          description: Exchange rate value
+          example: 0.89
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when transfer was created
+          example: '2025-10-29T12:28:16.000Z'
+        business:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Your business profile ID
+          example: null
+        transferRequest:
+          type:
+          - integer
+          - 'null'
+          description: Deprecated
+          deprecated: true
+          example: null
+        details:
+          type: object
+          properties:
+            reference:
+              type: string
+              description: Payment reference text
+              example: Testing
+        originator:
+          type: object
+          description: Data block to capture payment originator details
+          properties:
+            legalEntityType:
+              type: string
+              enum:
+              - PRIVATE
+              - BUSINESS
+              description: Payment originator legal type
+              example: PRIVATE
+            reference:
+              type: string
+              description: Unique customer ID in your system
+              example: CST-2991992
+            name:
+              type: object
+              properties:
+                givenName:
+                  type: string
+                  description: Payment originator first name
+                  example: John
+                middleNames:
+                  type: array
+                  items:
+                    type: string
+                  description: Payment originator middle name(s)
+                  example:
+                  - Ryan
+                familyName:
+                  type: string
+                  description: Payment originator family name
+                  example: Godspeed
+                patronymicName:
+                  type:
+                  - string
+                  - 'null'
+                  description: Payment originator patronymic name
+                  example: null
+                fullName:
+                  type: string
+                  description: Payment originator full legal name
+                  example: John Godspeed
+            dateOfBirth:
+              type: string
+              format: date
+              description: Payment originator date of birth
+              example: '1977-07-01'
+            businessRegistrationCode:
+              type:
+              - string
+              - 'null'
+              description: Payment originator business registry or incorporation number
+              example: null
+            address:
+              type: object
+              properties:
+                firstLine:
+                  type: string
+                  description: Payment originator address first line
+                  example: Salu tee 14
+                city:
+                  type: string
+                  description: Payment originator address city
+                  example: Tallinn
+                stateCode:
+                  type:
+                  - string
+                  - 'null'
+                  description: Payment originator address state code
+                  example: null
+                countryCode:
+                  type: string
+                  description: Payment originator address country code ISO 3166-1 alpha-2
+                  example: EE
+                postCode:
+                  type: string
+                  description: Payment originator address zip code
+                  example: '12112'
+            accountDetails:
+              type: string
+              description: Originator account number
+              example: '23456789'
+        hasActiveIssues:
+          type: boolean
+          description: Are there any pending issues which stop executing the transfer?
+          example: false
+        sourceCurrency:
+          type: string
+          description: Source currency code
+          example: EUR
+        sourceValue:
+          type: number
+          description: Transfer amount in source currency
+          example: 0
+        targetCurrency:
+          type: string
+          description: Target currency code
+          example: GBP
+        targetValue:
+          type: number
+          description: Transfer amount in target currency
+          example: 150
+        originalTransferId:
+          type: string
+          description: Unique identifier randomly generated per transfer request by the calling client
+          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+        payinSessionId:
+          type: string
+          format: uuid
+          description: ID of the Payin Session generated for the transfer, which can be used for certain payin methods when funding the transfer
+          example: 23330542-8e9e-419f-95eb-312b880f92ad
+    transfer-requirement:
+      title: Transfer Requirement
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type
+          example: transfer
+        fields:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Field description
+              group:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                      description: Name of the field to include in the JSON
+                    name:
+                      type: string
+                      description: Field description
+                    type:
+                      type: string
+                      description: Display type of field (e.g. text, select)
+                    refreshRequirementsOnChange:
+                      type: boolean
+                      description: Whether to call POST transfer-requirements again once the field value is set to discover required lower level fields
+                    required:
+                      type: boolean
+                      description: Indicates if the field is mandatory
+                    displayFormat:
+                      type:
+                      - string
+                      - 'null'
+                      description: Display format pattern
+                    example:
+                      type:
+                      - string
+                      - 'null'
+                      description: Example value
+                    minLength:
+                      type:
+                      - integer
+                      - 'null'
+                      format: int32
+                      description: Minimum valid length of field value
+                    maxLength:
+                      type:
+                      - integer
+                      - 'null'
+                      format: int32
+                      description: Maximum valid length of field value
+                    validationRegexp:
+                      type:
+                      - string
+                      - 'null'
+                      description: Regexp validation pattern
+                    validationAsync:
+                      type:
+                      - string
+                      - 'null'
+                      description: Deprecated. This validation will instead be performed when submitting the request
+                      deprecated: true
+                    valuesAllowed:
+                      type:
+                      - array
+                      - 'null'
+                      description: List of allowed values
+                      items:
+                        type: object
+                        properties:
+                          key:
+                            type: string
+                            description: Value key
+                          name:
+                            type: string
+                            description: Value name
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

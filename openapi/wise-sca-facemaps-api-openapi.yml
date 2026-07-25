@@ -1,0 +1,518 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds sca-facemaps API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: sca-facemaps
+  x-displayName: Facemaps
+  description: 'Facemaps are inherence-based (biometric) SCA challenge factors that use FaceTec''s 3D face recognition technology.
+
+
+    Facemaps should be exported from your FaceTec server using their SDK''s export API. Use Wise''s [FaceTec public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during export.'
+paths:
+  /v1/one-time-token/facemap/verify:
+    post:
+      deprecated: true
+      operationId: ottFacemapVerify
+      summary: Verify FaceMap
+      description: 'To clear a **FACE_MAP** challenge listed in a OTT.
+
+
+        Notes:
+
+        1. User is required to [enrol facemap](/api-reference/user-security/usersecurityfacemapenrol) before the verification can be successful.
+
+        2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.
+
+        '
+      tags:
+      - sca-facemaps
+      security:
+      - UserToken: []
+      parameters:
+      - name: One-Time-Token
+        in: header
+        required: true
+        description: Text value of a OTT.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                faceMap:
+                  type: string
+                  description: 'Base64-encoded binary data as a string.
+
+
+                    For more details how to get this binary, please read FaceTec''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap).
+
+
+                    To retrieve Wise''s FaceTec public key, please refer to our FaceTec''s [Get Public Key API](/api-reference/facetec/facetecpublickeyget).
+
+                    '
+                  example: <base64_encoded_string>
+      responses:
+        '200':
+          description: One time token status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ott-response'
+              example:
+                oneTimeTokenProperties:
+                  oneTimeToken: 9f5f5812-2609-4e48-8418-b64437c0c7cd
+                  challenges: []
+                  validity: 3600
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/facemaps:
+    post:
+      operationId: scaFacemapCreate
+      summary: Create a facemap
+      description: 'Creates a new facemap factor used to resolve a SCA inherence challenge type.
+
+
+        A facemap should be exported from your FaceTec server using the SDK''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise''s FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during the export process.
+
+        '
+      tags:
+      - sca-facemaps
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                faceMap:
+                  type: string
+                  description: A base64 encoded string.
+            example:
+              faceMap: <base64 encrypted facemap>
+      responses:
+        '204':
+          description: The facemap has been successfully created.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: A facemap has already been created for this profile.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    delete:
+      operationId: scaFacemapDelete
+      summary: Delete a facemap
+      description: 'Deletes a facemap associated to a profile.
+
+
+        To update a facemap for a profile, use this endpoint followed by [Create a facemap](/api-reference/sca-facemaps/scafacemapcreate).
+
+
+        {% admonition type="warning" %}
+
+        This operation is irreversible.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - sca-facemaps
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: The facemap has been deleted.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: No facemap has been set up for this profile.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/facemaps/verify:
+    post:
+      operationId: scaFacemapVerify
+      summary: Verify a facemap
+      description: 'Verifies a facemap challenge when calling a SCA-secured endpoint. Make sure to [create a facemap](/api-reference/sca-facemaps/scafacemapcreate) before using this endpoint.
+
+
+        A facemap should be exported from your FaceTec server using the SDK''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise''s FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt a facemap during the export process.
+
+        '
+      tags:
+      - sca-facemaps
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: One-Time-Token
+        in: header
+        required: true
+        description: A one-time token unique identifier.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                faceMap:
+                  type: string
+                  description: A base64 encoded string.
+            example:
+              faceMap: <base64 encoded string>
+      responses:
+        '200':
+          description: The facemap has been successfully verified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/one-time-token'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: The facemap verification failed.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    ott-response:
+      type: object
+      properties:
+        oneTimeTokenProperties:
+          type: object
+          description: Properties of the one time token.
+          properties:
+            oneTimeToken:
+              type: string
+              description: Unique identifier of a one time token.
+            challenges:
+              type: array
+              description: Array of challenge objects.
+              items:
+                type: object
+                description: Challenge object containing primary and alternative challenges.
+                properties:
+                  primaryChallenge:
+                    type: object
+                    description: Type of challenge user can do.
+                    properties:
+                      type:
+                        type: string
+                        description: Type of the challenge (PIN, FACE_MAP, SMS, WHATSAPP, VOICE, PARTNER_DEVICE_FINGERPRINT).
+                      viewData:
+                        type: object
+                        description: An object that provides data required to present a challenge window. It can be messages, IDs, or other attributes.
+                  alternatives:
+                    type: array
+                    description: Alternative challenges that user can do instead.
+                    items:
+                      type: object
+                  required:
+                    type: boolean
+                    description: Required (or not) to pass the OTT.
+                  passed:
+                    type: boolean
+                    description: Status of this challenge.
+            validity:
+              type: integer
+              format: int64
+              description: Seconds until the one time token becomes expired.
+            actionType:
+              type: string
+              description: The action bound to the one time token. For example, `BALANCE__GET_STATEMENT` when we want to [retrieve a balance account statement](/api-reference/balance-statement/balancestatementget).
+            userId:
+              type: integer
+              format: int64
+              description: Creator of this one time token.
+    one-time-token:
+      title: One-Time Token
+      x-tags:
+      - sca-ott
+      type: object
+      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
+
+
+        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
+
+        '
+      properties:
+        oneTimeToken:
+          type: string
+          format: uuid
+          description: A one-time token unique identifier.
+          example: 5932d5b5-ec13-452f-8688-308feade7834
+        challenges:
+          type: array
+          description: An array of challenges.
+          items:
+            type: object
+            properties:
+              primaryChallenge:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: A type of challenge.
+                    example: PIN
+              passed:
+                type: boolean
+                description: The status of a challenge.
+                example: false
+        validity:
+          type: integer
+          description: The One-Time Token expiration in seconds.
+          example: 3600
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

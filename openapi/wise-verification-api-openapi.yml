@@ -1,0 +1,842 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds verification API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: verification
+  x-displayName: Additional Verification
+  description: "In certain situations, additional evidence is required to verify customers and ensure we’re compliant with the KYC regulations.\n\nAdditional Verification APIs support a list of evidences that can be found in the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences).\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and your customers are primarily based in the EU,\nrefer to this [Onboarding EU customers](/guides/product/kyc/partner-kyc/additional-verification#onboarding-eu-customers) guide\nfor instructions on how to use these APIs.\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and you are onboarding high risk business customers\nbased primarily based in the US, refer to\nthis [Onboarding High Risk US Businesses](/guides/product/kyc/partner-kyc/additional-verification#onboarding-high-risk-us-businesses) guide for \ninstructions on how to use these APIs.\n"
+paths:
+  /v3/profiles/{profileId}/additional-verification/upload-evidences:
+    post:
+      deprecated: true
+      tags:
+      - verification
+      summary: Upload Evidences (v3)
+      operationId: verificationUploadEvidencesV3
+      description: 'Uploads verification evidence for a specific profile.
+
+
+        The request body varies significantly between **Personal** and **Business** profiles.
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The unique identifier of the profile.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Personal Profile
+                type: object
+                description: Payload for Personal profile verification.
+                example:
+                  accountPurpose: MOVING_SAVINGS
+                  intendedCountries:
+                  - deu
+                  - esp
+                  yearlyAnticipatedVolume: '0_2350'
+                  mainSourceOfIncome: SALARY
+                  annualIncome: '0_11500'
+                properties:
+                  accountPurpose:
+                    type: string
+                    description: The primary reason for using the account.
+                    enum:
+                    - MOVING_SAVINGS
+                    - SENDING_MONEY_TO_FRIENDS_OR_FAMILY
+                    - GENERAL_LIVING_EXPENSES
+                    - BUYING_GOODS_OR_SERVICES_ABROAD
+                    - PAYING_FOR_MORTGAGE_OR_LOAN
+                    - PAYING_BILLS
+                    - RECEIVING_SALARY_OR_PENSION
+                    - INVESTING
+                  accountPurposeExplanation:
+                    type: string
+                    description: Additional reasons and specific examples for using Wise account. This is a free-text field.
+                  intendedCountries:
+                    type: array
+                    description: 'List of ISO 3166-1 alpha-3 country codes.<br>
+
+                      Check the [lists of countries you can send money to with Wise](https://wise.com/help/articles/2571942/what-countries-can-i-send-to).
+
+                      '
+                    items:
+                      type: string
+                  yearlyAnticipatedVolume:
+                    type: string
+                    description: Expected yearly transaction volume in Euros.
+                    enum:
+                    - '0_2350'
+                    - '2351_6000'
+                    - '6001_11500'
+                    - '11501_60000'
+                    - '60001_175000'
+                    - 175001_+
+                  mainSourceOfIncome:
+                    type: string
+                    description: Primary source of income. Must be submitted with annualIncome.
+                    enum:
+                    - SALARY
+                    - INVESTMENTS
+                    - PENSION
+                    - INHERITANCE
+                    - LOAN
+                    - OTHER
+                  annualIncome:
+                    type: string
+                    description: Expected annual income in Euros. Must be submitted with mainSourceOfIncome.
+                    enum:
+                    - '0_11500'
+                    - '11501_19000'
+                    - '19001_28500'
+                    - '28501_47500'
+                    - '47501_75000'
+                    - 75001_+
+                  incomeExplanation:
+                    type: string
+                    description: Additional ways you earn money that were not identified in the provided documents. This is a free-text field.
+              - title: Business Profile
+                type: object
+                description: Payload for Business profile verification.
+                example:
+                  businessUseCase:
+                  - PAYING_SUPPLIERS_CONTRACTORS_OR_EMPLOYEES
+                  - PAYING_RENT_OR_UTILITIES
+                  intendedCountries:
+                  - deu
+                  - esp
+                  monthlyAnticipatedVolume: '0_1200'
+                  mainSourceOfFunding: BUSINESS_LOAN
+                properties:
+                  businessUseCase:
+                    type: array
+                    description: How the business intends to use the platform.
+                    items:
+                      type: string
+                      enum:
+                      - INVESTING_IN_FUNDS_STOCKS_BONDS_OR_SIMILAR
+                      - DISTRIBUTING_COMPANY_PROFITS_OR_PAYING_DIVIDENDS
+                      - PAYING_MORTGAGE_BANK_LOAN_INSURANCE_OR_CREDIT
+                      - PAYING_FOR_GOODS_PROPERTIES_OR_SERVICES_ABROAD
+                      - PAYING_RENT_OR_UTILITIES
+                      - PAYING_SUPPLIERS_CONTRACTORS_OR_EMPLOYEES
+                      - PAYING_TAX_ON_PROFIT_OR_PROPERTY
+                      - TRANSFER_WITHIN_COMPANY_OR_GROUP
+                      - RECEIVE_INVESTMENTS_OR_FUNDS
+                      - RECEIVE_PAYMENTS_FROM_CLIENTS
+                      - DONATION
+                      - OTHER
+                  intendedCountries:
+                    type: array
+                    description: 'List of ISO 3166-1 alpha-3 country codes.<br>
+
+                      Check the [lists of countries you can send money to with Wise](https://wise.com/help/articles/2571942/what-countries-can-i-send-to).
+
+                      '
+                    items:
+                      type: string
+                  mainSourceOfFunding:
+                    type: string
+                    description: Primary source of business funding.
+                    enum:
+                    - REVENUE
+                    - BUSINESS_LOAN
+                    - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                    - INVESTMENT_INCOME
+                    - DONATIONS
+                    - GRANTS
+                    - OTHER
+                  monthlyAnticipatedVolume:
+                    type: string
+                    description: Expected monthly transaction volume in Euros.
+                    enum:
+                    - '0_1200'
+                    - '1201_6000'
+                    - '6001_12000'
+                    - '12001_60000'
+                    - '60001_120000'
+                    - '120001_235000'
+                    - '235001_600000'
+                    - '600001_1200000'
+                    - '1200001_6000000'
+                    - '6000001_12000000'
+                    - 12000001_+
+      responses:
+        '204':
+          description: No Content - Evidence successfully uploaded.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: 'Bad Request - Invalid request payload (e.g. no evidence, misspelled evidence, unexpected value).
+
+            Invalid evidence is populated in the response message.
+
+            Note that correct evidence might be successfully uploaded.
+
+            '
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Forbidden - The client is not authorized to perform this request.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: 'Conflict - One or more evidences are already uploaded and can''t be re-submitted without an agent review.
+
+            Unacceptable evidence is populated in the response message.
+
+            '
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v5/profiles/{profileId}/additional-verification/upload-evidences:
+    post:
+      tags:
+      - verification
+      summary: Upload Evidences
+      operationId: verificationUploadEvidences
+      description: 'Uploads verification evidence for a specific profile.
+
+
+        The request body varies significantly between **Personal** and **Business** profiles.
+
+
+        Submitting an evidence that was already uploaded will result in an attempt to update the evidence.
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The unique identifier of the profile.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Personal Profile
+                type: object
+                description: Payload for Personal profile verification.
+                example:
+                  accountPurpose: MOVING_SAVINGS
+                  intendedCountries:
+                  - deu
+                  - esp
+                  yearlyAnticipatedVolume: '0_2350'
+                  mainSourceOfIncome: SALARY
+                  annualIncome: '0_11500'
+                properties:
+                  accountPurpose:
+                    type: string
+                    description: The primary reason for using the account.
+                    enum:
+                    - MOVING_SAVINGS
+                    - SENDING_MONEY_TO_FRIENDS_OR_FAMILY
+                    - GENERAL_LIVING_EXPENSES
+                    - BUYING_GOODS_OR_SERVICES_ABROAD
+                    - PAYING_FOR_MORTGAGE_OR_LOAN
+                    - PAYING_BILLS
+                    - RECEIVING_SALARY_OR_PENSION
+                    - INVESTING
+                  accountPurposeExplanation:
+                    type: string
+                    description: Additional reasons and specific examples for using Wise account. This is a free-text field.
+                  intendedCountries:
+                    type: array
+                    description: 'List of ISO 3166-1 alpha-3 country codes.<br>
+
+                      Check the [lists of countries you can send money to with Wise](https://wise.com/help/articles/2571942/what-countries-can-i-send-to).
+
+                      '
+                    items:
+                      type: string
+                  yearlyAnticipatedVolume:
+                    type: string
+                    description: Expected yearly transaction volume in Euros.
+                    enum:
+                    - '0_2350'
+                    - '2351_6000'
+                    - '6001_11500'
+                    - '11501_60000'
+                    - '60001_175000'
+                    - 175001_+
+                  mainSourceOfIncome:
+                    type: string
+                    description: Primary source of income. Must be submitted with annualIncome.
+                    enum:
+                    - SALARY
+                    - INVESTMENTS
+                    - PENSION
+                    - INHERITANCE
+                    - LOAN
+                    - OTHER
+                  annualIncome:
+                    type: string
+                    description: Expected annual income in Euros. Must be submitted with mainSourceOfIncome.
+                    enum:
+                    - '0_11500'
+                    - '11501_19000'
+                    - '19001_28500'
+                    - '28501_47500'
+                    - '47501_75000'
+                    - 75001_+
+                  incomeExplanation:
+                    type: string
+                    description: Additional ways you earn money that were not identified in the provided documents. This is a free-text field.
+              - title: Business Profile
+                type: object
+                description: Payload for Business profile verification.
+                example:
+                  businessUseCase:
+                  - PAYING_SUPPLIERS_CONTRACTORS_OR_EMPLOYEES
+                  - PAYING_RENT_OR_UTILITIES
+                  intendedCountries:
+                  - deu
+                  - esp
+                  monthlyAnticipatedVolume: '0_1200'
+                  mainSourceOfFunding: BUSINESS_LOAN
+                properties:
+                  businessUseCase:
+                    type: array
+                    description: How the business intends to use the platform.
+                    items:
+                      type: string
+                      enum:
+                      - INVESTING_IN_FUNDS_STOCKS_BONDS_OR_SIMILAR
+                      - DISTRIBUTING_COMPANY_PROFITS_OR_PAYING_DIVIDENDS
+                      - PAYING_MORTGAGE_BANK_LOAN_INSURANCE_OR_CREDIT
+                      - PAYING_FOR_GOODS_PROPERTIES_OR_SERVICES_ABROAD
+                      - PAYING_RENT_OR_UTILITIES
+                      - PAYING_SUPPLIERS_CONTRACTORS_OR_EMPLOYEES
+                      - PAYING_TAX_ON_PROFIT_OR_PROPERTY
+                      - TRANSFER_WITHIN_COMPANY_OR_GROUP
+                      - RECEIVE_INVESTMENTS_OR_FUNDS
+                      - RECEIVE_PAYMENTS_FROM_CLIENTS
+                      - DONATION
+                      - OTHER
+                  intendedCountries:
+                    type: array
+                    description: 'List of ISO 3166-1 alpha-3 country codes.<br>
+
+                      Check the [lists of countries you can send money to with Wise](https://wise.com/help/articles/2571942/what-countries-can-i-send-to).
+
+                      '
+                    items:
+                      type: string
+                  mainSourceOfFunding:
+                    type: string
+                    description: Primary source of business funding.
+                    enum:
+                    - REVENUE
+                    - BUSINESS_LOAN
+                    - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                    - INVESTMENT_INCOME
+                    - DONATIONS
+                    - GRANTS
+                    - OTHER
+                  monthlyAnticipatedVolume:
+                    type: string
+                    description: Expected monthly transaction volume in Euros.
+                    enum:
+                    - '0_1200'
+                    - '1201_6000'
+                    - '6001_12000'
+                    - '12001_60000'
+                    - '60001_120000'
+                    - '120001_235000'
+                    - '235001_600000'
+                    - '600001_1200000'
+                    - '1200001_6000000'
+                    - '6000001_12000000'
+                    - 12000001_+
+      responses:
+        '207':
+          description: Multi-Status - Evidence(s) successfully uploaded, fully or partially.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response payload for evidence upload result.
+                properties:
+                  overallStatus:
+                    type: string
+                    description: Status of the entire request.
+                    enum:
+                    - SUCCESS
+                    - PARTIAL_SUCCESS
+                    - FAIL
+                  results:
+                    type: array
+                    description: Results for each evidence.
+                    items:
+                      type: object
+                      properties:
+                        evidenceRequirementKey:
+                          type: string
+                          description: Name of the evidence.
+                        result:
+                          type: string
+                          description: Result for the evidence.
+                          enum:
+                          - SUCCESS
+                          - FAIL
+                        message:
+                          type: string
+                          description: Explanation of result for the evidence.
+              examples:
+                success:
+                  summary: Full success
+                  value:
+                    overallStatus: SUCCESS
+                    results:
+                    - evidenceRequirementKey: accountPurpose
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: annualIncome
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: intendedCountries
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: mainSourceOfIncome
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: yearlyAnticipatedVolume
+                      result: SUCCESS
+                      message: SUCCESS
+                partialSuccess:
+                  summary: Partial success
+                  value:
+                    overallStatus: PARTIAL_SUCCESS
+                    results:
+                    - evidenceRequirementKey: accountPurpose
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: annualIncome
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: intendedCountries
+                      result: FAIL
+                      message: Could not update verification requirement at the moment
+                    - evidenceRequirementKey: mainSourceOfIncome
+                      result: SUCCESS
+                      message: SUCCESS
+                    - evidenceRequirementKey: yearlyAnticipatedVolume
+                      result: SUCCESS
+                      message: SUCCESS
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad Request - Invalid request payload (e.g. no evidence, misspelled evidence, unexpected value).
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Forbidden - The client is not authorized to perform this request.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/verification-status/upload-document:
+    post:
+      tags:
+      - verification
+      summary: Upload Document
+      operationId: verificationUploadDocument
+      description: 'Uploads verification documents for review. You can upload multiple files at once.
+
+
+        A valid document must fulfil these requirements:
+
+
+        - The document must be clear.
+
+        - The document needs to be a .jpg, .png., or .pdf file type up to 10MB in size.
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID (personal or business).
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              description: Request payload for uploading documents for verification
+              properties:
+                files:
+                  type: string
+                  format: binary
+                  description: Path of the files to be uploaded.
+                  example: '@/Users/test/file.png'
+                documentType:
+                  type: string
+                  description: 'Type of document being uploaded.
+
+
+                    Read our guides on acceptable documents for each of the following:
+
+                    - Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)
+
+                    - Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)
+
+                    - Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)
+
+                    - Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)
+
+                    - Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)
+
+                    '
+                  enum:
+                  - SOURCE_OF_WEALTH
+                  - ID_PROOF
+                  - ADDRESS_PROOF
+                  - TRADING_ADDRESS_PROOF
+                  - BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER
+              required:
+              - files
+              - documentType
+      responses:
+        '204':
+          description: No Content - Document successfully uploaded.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad Request - Document cannot be uploaded in the current format. Check file size and extension.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Forbidden - The client is not authorized to perform this request.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: Conflict - Document is already uploaded and cannot be re-submitted before review.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '413':
+          description: Payload Too Large - Requested file size is too large.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '415':
+          description: Unsupported Media Type - Request payload is in an unsupported format.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/verification-status/required-evidences:
+    get:
+      tags:
+      - verification
+      summary: Required Evidences
+      operationId: verificationGetRequiredEvidences
+      description: 'Fetches the required evidences for a profile to complete additional customer verification.
+
+
+        If one or more evidences are returned, the customer should submit those evidences using the upload-evidences endpoint.
+
+
+        See the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences) for the list of possible evidence types and how to submit them.
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The unique identifier of the profile.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved required evidences.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response payload containing required evidences for a profile.
+                properties:
+                  required_evidences:
+                    type: array
+                    description: List of evidence types required to complete verification.
+                    items:
+                      type: string
+              example:
+                required_evidences:
+                - SOURCE_OF_WEALTH
+                - INCOME
+                - USE_CASE_COUNTRIES
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Forbidden - The client is not authorized to perform this request.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

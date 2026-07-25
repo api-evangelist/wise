@@ -1,0 +1,988 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds quote API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: quote
+  x-displayName: Quotes
+  description: 'The quote resource defines the basic information required for a Wise transfer - the currencies to send between, the amount to send and the profile who is sending the money. The profile _must_ be included when creating a quote.
+
+
+    Quote is one of the required resources to create a transfer, along with the recipient who is to receive the funds.
+
+
+    The quote response contains other information such as the exchange rate, the estimated delivery time and the methods the user can pay for the transfer. Not all of this information may apply to your use case.
+
+
+    Upon creating a quote the current mid-market exchange rate is locked and will be used for the transfer that is created from the quote. The rate will be locked for 30 minutes to give a user time to complete the transfer creation flow.
+
+    '
+paths:
+  /v3/quotes:
+    post:
+      operationId: quoteCreateUnauthenticated
+      summary: Create a quote (unauthenticated)
+      description: 'Use this endpoint to get example quotes for people to see the exchange rate and fees Wise offers before a user has created or linked an account. This can drive a version of the quote screen that shows the user what Wise offers before they sign up.
+
+        Note that this endpoint does not require a token to create the resource, however, since it is just an example, the returned quote has no ID so can''t be used later to create a transfer.
+
+
+        In order to get an accurate partner fee, we require a client credentials token to be provided. If you are a partner and would like your fee to be included in the quote returned, you must provide your auth token. If not, you do not require the Authorization header.
+
+
+        {% admonition type="info" %}
+
+        Unauthenticated quotes cannot be used to create transfers, they are meant for illustration purposes in partner interfaces only. Make sure to create an authenticated quote during the transfer creation flow.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - quote
+      security:
+      - ClientCredentialsToken: []
+      - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sourceCurrency
+              - targetCurrency
+              properties:
+                sourceCurrency:
+                  type: string
+                  description: Source (sending) currency code.
+                  example: GBP
+                targetCurrency:
+                  type: string
+                  description: Target (receiving) currency code.
+                  example: USD
+                sourceAmount:
+                  type:
+                  - number
+                  - 'null'
+                  description: Amount in source currency. Either sourceAmount or targetAmount is required, never both.
+                  example: null
+                targetAmount:
+                  type:
+                  - number
+                  - 'null'
+                  description: Amount in target currency.
+                  example: 110
+                pricingConfiguration:
+                  type: object
+                  description: Required when configured for your client ID. Includes a pricingConfiguration to be used for pricing calculations with the quote.
+                  properties:
+                    fee:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Identifies the type of fee that will be configured. Options include only `OVERRIDE`.
+                          example: OVERRIDE
+                        variable:
+                          type: number
+                          description: The selected variable percentage (in decimal format) that should be used in the pricingConfiguration.
+                          example: 0.011
+                        fixed:
+                          type: number
+                          description: The selected fixed fee that should be used in the pricingConfiguration. Always considered in source currency.
+                          example: 15.42
+      responses:
+        '200':
+          description: Returns a quote object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/quote'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v3/profiles/{profileId}/quotes:
+    post:
+      operationId: quoteCreate
+      summary: Create a quote (authenticated)
+      description: '{% admonition type="info" %}
+
+        You must use a user access token to authenticate this call and supply the profile with which the quote should be associated. This ensures that quote can be used to create a transfer.
+
+        {% /admonition %}
+
+
+        If you are funding the transfer from a Multi Currency Balance, you must set the `payIn` as `BALANCE` to get the correct pricing in the quote. Not doing so will default to `BANK_TRANSFER` and the fees will be inconsistent between quote and transfer.
+
+
+        {% admonition type="info" %}
+
+        When SWIFT_OUR is set as payOut value, it enables payment protection for swift recipients for global currency transfers. By using this payOut method, you can guarantee your customers that the fee will be charged to the sender and can ensure that the recipient gets the complete target amount.
+
+        {% /admonition %}
+
+
+        #### Response
+
+
+        The following describes the fields of the quote response that may be useful when building your integration.
+
+
+        The `payOut` field is used to select the correct entry in the `paymentOptions` array in order to know which fees to display to your customer. Find the paymentOption that matches the `payOut` field shown at the top level of the quote resource and `payIn` based on the settlement model the bank is using. By default, this is `BANK_TRANSFER`, unless you are using a prefunded or bulk settlement model. The `payOut` field will change based on the type of recipient you add to the quote in the `PATCH /quote` call, for example to-USD `swift_code` or to-CAD `interac` have different fees.
+
+
+        For example sending USD to a country other than the United States is supported but with different fees to domestic USD transfers.
+
+        Please see the later section on [Global Currencies](/guides/product/send-money/swift-network-transfers) to learn more about how to offer this useful feature.
+
+
+        For each paymentOption there is a price field. It gives a full breakdown of all the taxes, fees and discounts. It is preferable to refer to this structure to show breakdowns and totals, rather than the fee structure, found as well in each paymentOption element, that only gives a summary and is not able to surface important specifics such as taxes.
+
+
+        When showing the price of a transfer always show the ''price.total.value.amount'' of a payment option.
+
+
+        #### Disabled Payment Options
+
+
+        Each payment option is either enabled or disabled based on the `disabled` value. Disabled payment options should be shown to the user in a disabled state in most cases. This ensures users are given the options that they are familiar with regardless of their availability, as well as with options that can be beneficial to their accounts.
+
+
+        The `option.disabledReason` contains both the `code` and `message`, with the message being the user-friendly text to surface to the user if necessary.
+
+
+        #### Transfer Nature for BRL
+
+        When creating or updating a quote, the transfer nature can be set. This is a requirement for transfers to or from BRL and impacts the fees we charge on the quote, specifically the IOF.
+
+
+        Note that IOF is determined based on the transfer nature, sender information, and recipient information. The default IOF will be included in a quote until all relevant information has been included.
+
+
+        {% admonition type="info" %}
+
+        Omitting transfer nature will not prevent the transfer from being created or even funded. However, when attempting to process the transfer, it will be blocked and the money will be refunded to the sender.
+
+        {% /admonition %}
+
+
+        #### Pricing Configuration
+
+        When creating or updating a quote, partners that have flexible partner pricing enabled are able to override the pricing configuration dynamically.
+
+
+        To learn more on how to use this feature, please see the [Flexible Partner Pricing Guide](/guides/product/send-money/quotes/pricing)
+
+        '
+      tags:
+      - quote
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Personal or business profile ID of the sender.
+        schema:
+          type: integer
+          format: int64
+        example: 101
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sourceCurrency
+              - targetCurrency
+              properties:
+                sourceCurrency:
+                  type: string
+                  description: Source (sending) currency code.
+                  example: GBP
+                targetCurrency:
+                  type: string
+                  description: Target (receiving) currency code.
+                  example: USD
+                sourceAmount:
+                  type:
+                  - number
+                  - 'null'
+                  description: Amount in source currency. Either sourceAmount or targetAmount is required, never both.
+                  example: 100
+                targetAmount:
+                  type:
+                  - number
+                  - 'null'
+                  description: Amount in target currency.
+                  example: null
+                targetAccount:
+                  type: integer
+                  format: int64
+                  description: Optional. This is the ID of transfer recipient, found in response from POST v1/accounts (recipient creation). If provided can be used as an alternative to [updating the quote](/api-reference/quote/quoteupdate).
+                  example: 12345
+                payOut:
+                  type:
+                  - string
+                  - 'null'
+                  description: Optional. Preferred payout method. Default value is `BANK_TRANSFER`. Examples of other accepted values include `BALANCE`, `SWIFT`, `SWIFT_OUR`, `ALIPAY`, and `INTERAC`.
+                  example: null
+                preferredPayIn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Optional. Preferred payin method. Use `BANK_TRANSFER` to return this method at the top of the response's results.
+                  example: null
+                paymentMetadata:
+                  type: object
+                  description: Optional. Used to pass additional metadata about the intended transfer.
+                  properties:
+                    transferNature:
+                      type: string
+                      description: Optional. Used to pass transfer nature for calculating proper tax amounts (IOF) for transfers to and from BRL. Accepted values are shown dynamically in transfer requirements.
+                      example: MOVING_MONEY_BETWEEN_OWN_ACCOUNTS
+                pricingConfiguration:
+                  type: object
+                  description: Required when configured for your client ID. Includes a `pricingConfiguration` to be used for pricing calculations with the quote.
+                  properties:
+                    fee:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Identifies the type of fee that will be configured. Options include only `OVERRIDE`.
+                          example: OVERRIDE
+                        variable:
+                          type: number
+                          description: The selected variable percentage (in decimal format) that should be used in the pricingConfiguration.
+                          example: 0.011
+                        fixed:
+                          type: number
+                          description: The selected fixed fee that should be used in the pricingConfiguration. Always considered in source currency.
+                          example: 15.42
+      responses:
+        '200':
+          description: Returns a quote object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/quote'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/quotes/{quoteId}:
+    get:
+      operationId: quoteGet
+      summary: Retrieve a quote by ID
+      description: 'Get quote info by ID. If the quote has expired (not used to create a transfer within 30 minutes of quote creation), it will only be accessible for approximately 48 hours via this endpoint.
+
+        '
+      tags:
+      - quote
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Personal or business profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 101
+      - name: quoteId
+        in: path
+        required: true
+        description: The quote ID (GUID format).
+        schema:
+          type: string
+          format: uuid
+        example: 11144c35-9fe8-4c32-b7fd-d05c2a7734bf
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns a quote object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/quote'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    patch:
+      operationId: quoteUpdate
+      summary: Update a quote
+      description: 'You should update a quote using a `PATCH` call to add a recipient. This will update the saved quote''s data based on who and where the money will be sent to.
+
+
+        Updating the quote with a recipient may cause the available payment options, prices and estimated delivery times to change from the original quoted amounts. This is due to the fact that sending some currencies to some destinations costs a different amount based on the payment networks we use, for example sending USD to a country outside the USA uses international rather than domestic payment networks and as such costs more, or sending CAD over the Interac network is a more expensive operation.
+
+
+        When updating a quote the `payOut` field may change to denote the payment option you should select when sending to this recipient. For example sending USD to a `swift_code` recipient or CAD to an `interac` recipient will change `payOut` to `SWIFT` or `INTERAC` respectively. This field defaults to `BANK_TRANSFER` so it can be used in all cases to help select the correct `paymentOption` and hence show the correct pricing to users.
+
+
+        If you want to provide more transparency in terms of fees charged when your customers create quote with swift recipient for global currencies, you might consider to set payOut field with SWIFT_OUR value. This will ensure that the recipient receives complete target amount.
+
+
+        In this case, where pricing changes after a user selects recipient, you should show a message to your customer before confirming the transfer. Please see the section on [Global Currencies](/guides/product/send-money/swift-network-transfers) to learn more how and why this works and the messaging you need to display.
+
+
+        #### Transfer Nature for BRL
+
+        When creating or updating a quote, the transfer nature can be set. This is a requirement for transfers to or from BRL and impacts the fees we charge on the quote, specifically the IOF.
+
+
+        Note that IOF is determined based on the transfer nature, sender information, and recipient information. The default IOF will be included in a quote until all relevant information has been included.
+
+
+        {% admonition type="info" %}
+
+        Omitting transfer nature will not prevent the transfer from being created or even funded. However, when attempting to process the transfer, it will be blocked and the money will be refunded to the sender.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - quote
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Personal or business profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 101
+      - name: quoteId
+        in: path
+        required: true
+        description: The quote ID (GUID format).
+        schema:
+          type: string
+          format: uuid
+        example: 11144c35-9fe8-4c32-b7fd-d05c2a7734bf
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              type: object
+              properties:
+                targetAccount:
+                  type: integer
+                  format: int64
+                  description: ID of transfer recipient, found in response from POST v1/accounts (recipient creation).
+                  example: 12345
+                payOut:
+                  type: string
+                  description: Optional. Preferred payout method. Default value is `BANK_TRANSFER`. Examples of other accepted values include `BALANCE`, `SWIFT`, `SWIFT_OUR`, `ALIPAY`, and `INTERAC`.
+                  example: SWIFT_OUR
+                paymentMetadata:
+                  type: object
+                  description: Optional. Used to pass additional metadata about the intended transfer.
+                  properties:
+                    transferNature:
+                      type: string
+                      description: Optional. Used to pass transfer nature for calculating proper tax amounts (IOF) for transfers to and from BRL. Accepted values are shown dynamically in transfer requirements.
+                      example: MOVING_MONEY_BETWEEN_OWN_ACCOUNTS
+                pricingConfiguration:
+                  type: object
+                  description: Required when configured for your client ID. Includes a pricingConfiguration to be used for pricing calculations with the quote. If previously passed, the existing pricingConfiguration will remain and not be updated.
+                  properties:
+                    fee:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Identifies the type of fee that will be configured. Options include only `OVERRIDE`.
+                          example: OVERRIDE
+                        variable:
+                          type: number
+                          description: The selected variable percentage (in decimal format) that should be used in the pricingConfiguration.
+                          example: 0.011
+                        fixed:
+                          type: number
+                          description: The selected fixed fee (in source currency) that should be used in the pricingConfiguration.
+                          example: 15.42
+      responses:
+        '200':
+          description: Returns a quote object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/quote'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  schemas:
+    quote:
+      type: object
+      title: Quote
+      x-tags:
+      - quote
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of this quote (GUID format).
+          example: 11144c35-9fe8-4c32-b7fd-d05c2a7734bf
+        sourceCurrency:
+          type: string
+          description: Source (sending) currency code.
+          example: GBP
+        targetCurrency:
+          type: string
+          description: Target (receive) currency code.
+          example: USD
+        sourceAmount:
+          type: number
+          description: Amount in source currency to send.
+          example: 100
+        targetAmount:
+          type: number
+          description: Amount in target currency to be received by the recipient.
+          example: 129.24
+        payOut:
+          type: string
+          description: Mechanism we use to deliver the transfer. Not usually of interest to the user.
+          example: BANK_TRANSFER
+        preferredPayIn:
+          type: string
+          description: Preferred pay-in method.
+          example: BANK_TRANSFER
+        rate:
+          type: number
+          description: Exchange rate value used for the conversion.
+          example: 1.30445
+        createdTime:
+          type: string
+          format: date-time
+          description: Quote created timestamp.
+          example: '2019-04-05T13:18:58Z'
+        user:
+          type: integer
+          format: int64
+          description: User ID who created the quote.
+          example: 55
+        profile:
+          type: integer
+          format: int64
+          description: Personal or business profile ID.
+          example: 101
+        rateType:
+          type: string
+          description: Whether the rate is fixed or floating.
+          enum:
+          - FIXED
+          - FLOATING
+          example: FIXED
+        rateExpirationTime:
+          type: string
+          format: date-time
+          description: Time the locked rate will expire.
+          example: '2019-04-08T13:18:57Z'
+        guaranteedTargetAmountAllowed:
+          type: boolean
+          description: Whether guaranteed target amount is allowed.
+          example: true
+        targetAmountAllowed:
+          type: boolean
+          description: Whether target amount is allowed.
+          example: true
+        guaranteedTargetAmount:
+          type: boolean
+          description: Whether the target amount is guaranteed.
+          example: false
+        providedAmountType:
+          type: string
+          description: Whether the quote was created as source or target.
+          enum:
+          - SOURCE
+          - TARGET
+          example: SOURCE
+        pricingConfiguration:
+          type: object
+          description: Allows for pricing configurations to be overridden by partners on a transfer level.
+          properties:
+            fee:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Identifies the type of fee that will be configured. Options include only `OVERRIDE`.
+                  example: OVERRIDE
+                variable:
+                  type: number
+                  description: The selected variable percentage (in decimal format) that should be used in the pricingConfiguration.
+                  example: 0.011
+                fixed:
+                  type: number
+                  description: The selected fixed fee (in source currency) that should be used in the pricingConfiguration.
+                  example: 15.42
+        paymentOptions:
+          type: array
+          description: List of the methods a user can pay for the transfer.
+          items:
+            type: object
+            properties:
+              disabled:
+                type: boolean
+                description: Whether this option is enabled or not for this quote.
+                example: false
+              estimatedDelivery:
+                type: string
+                format: date-time
+                description: The estimated delivery time for this combination of payIn and payOut methods, assuming payIn is performed now.
+                example: '2019-04-08T12:30:00Z'
+              formattedEstimatedDelivery:
+                type: string
+                description: A string to display to users for the estimated delivery date.
+                example: by Apr 8
+              estimatedDeliveryDelays:
+                type: array
+                description: Array of objects for delivery delays to display to users.
+                items:
+                  type: object
+                  properties:
+                    reason:
+                      type: string
+                      description: Reason of the delivery delay.
+                      example: sample reason
+              fee:
+                type: object
+                description: Object containing fee information.
+                properties:
+                  transferwise:
+                    type: number
+                    description: The fee to be paid by the sender based on the current state of the quote.
+                    example: 3.04
+                  payIn:
+                    type: number
+                    description: The fee for this payment option, based on the product type of the payment option.
+                    example: 0
+                  discount:
+                    type: number
+                    description: Any discounts that have been applied to this quote for the user.
+                    example: 2.27
+                  partner:
+                    type: number
+                    description: If you have agreed a custom price, it will be displayed here.
+                    example: 0
+                  total:
+                    type: number
+                    description: The total fees to be paid - use this figure when displaying fees on your app.
+                    example: 0.77
+              price:
+                type: object
+                description: Object containing the price information.
+                properties:
+                  priceSetId:
+                    type: integer
+                    format: int64
+                    description: ID of the price structure.
+                    example: 238
+                  total:
+                    type: object
+                    description: The total fees to be paid - use this figure when displaying fees on your app.
+                    properties:
+                      type:
+                        type: string
+                        description: Type of the pricing element.
+                        example: TOTAL
+                      label:
+                        type: string
+                        description: Short text describing the price structure.
+                        example: Total fees
+                      value:
+                        type: object
+                        description: Object containing value elements.
+                        properties:
+                          amount:
+                            type: number
+                            description: Amount to be paid.
+                            example: 0.77
+                          currency:
+                            type: string
+                            description: Currency of the amount to be paid.
+                            example: GBP
+                          label:
+                            type: string
+                            description: Text version of the price.
+                            example: 0.77 GBP
+                      explanation:
+                        type: object
+                        description: Object element giving more details about the price.
+                  items:
+                    type: array
+                    description: Object containing the details of the different elements of the total price.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: ID of this item.
+                        type:
+                          type: string
+                          description: Type of the pricing item. It could be `DISCOUNT` for example.
+                          example: FEE
+                        label:
+                          type: string
+                          description: Short text describing the pricing element.
+                          example: fee
+                        value:
+                          type: object
+                          description: Object containing value elements.
+                          properties:
+                            amount:
+                              type: number
+                              description: Amount associated to this pricing element. Can be negative for discounts.
+                              example: 0
+                            currency:
+                              type: string
+                              description: Currency of the pricing element.
+                              example: GBP
+                            label:
+                              type: string
+                              description: Text field containing the price and its currency.
+                              example: 0 GBP
+                        explanation:
+                          type: object
+                          description: Additional information on a price breakdown item.
+                          properties:
+                            plainText:
+                              type: string
+                              description: Text element giving more details about the item.
+                            markdown:
+                              type: string
+                              description: Formatted textual information.
+                  deferredFee:
+                    type: object
+                    description: Deferred fee information from a pricingConfiguration override.
+                    properties:
+                      amount:
+                        type: number
+                        description: The amount of fees that has been deferred by a pricingConfiguration override.
+                        example: 14.79
+                      currency:
+                        type: string
+                        description: The currency of the deferred fee amount.
+                        example: BRL
+                  calculatedOn:
+                    type: object
+                    properties:
+                      unroundedAmountToConvert:
+                        type: object
+                        description: The amount, unrounded, that fees were calculated on and built up from.
+                        properties:
+                          amount:
+                            type: number
+                            example: 179.97342
+                          currency:
+                            type: string
+                            example: BRL
+              sourceAmount:
+                type: number
+                description: sourceAmount when using this payment option.
+                example: 100
+              targetAmount:
+                type: number
+                description: targetAmount when using this payment option.
+                example: 129.24
+              sourceCurrency:
+                type: string
+                description: Source currency for this payment option.
+                example: GBP
+              targetCurrency:
+                type: string
+                description: Target currency for this payment option.
+                example: USD
+              payIn:
+                type: string
+                description: Type of pay in method for this payment option.
+                example: BANK_TRANSFER
+              payOut:
+                type: string
+                description: Type of pay out method for this payment option.
+                example: BANK_TRANSFER
+              allowedProfileTypes:
+                type: array
+                description: Array of the allowed types of profile to use this payment option.
+                items:
+                  type: string
+                  enum:
+                  - PERSONAL
+                  - BUSINESS
+                example:
+                - PERSONAL
+                - BUSINESS
+              payInProduct:
+                type: string
+                description: Pay-in product type.
+                example: CHEAP
+              feePercentage:
+                type: number
+                description: Fee percentage for this payment option.
+                example: 0.0092
+              disabledReason:
+                type: object
+                description: Object present if a payment option is disabled.
+                properties:
+                  code:
+                    type: string
+                    description: Code to denote the reason a payment method is unavailable.
+                  message:
+                    type: string
+                    description: User friendly message to display when a method is unavailable.
+        status:
+          type: string
+          description: Current status of this quote.
+          enum:
+          - PENDING
+          - ACCEPTED
+          - FUNDED
+          - EXPIRED
+          example: PENDING
+        expirationTime:
+          type: string
+          format: date-time
+          description: The time the quote expires.
+          example: '2019-04-05T13:48:58Z'
+        notices:
+          type: array
+          description: Array of messages to display to the user. May be empty (`[]`) if there are no messages.
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+                description: The message to display.
+                example: You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.
+              link:
+                type:
+                - string
+                - 'null'
+                description: URL that provides more information to the message. May be `null` if there's no URL.
+                example: null
+              type:
+                type: string
+                description: Type of message. If it is `BLOCKED`, don't allow the quote to be used to create the transfer.
+                enum:
+                - WARNING
+                - INFO
+                - BLOCKED
+                example: WARNING
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

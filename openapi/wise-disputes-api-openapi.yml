@@ -1,0 +1,1007 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds disputes API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: disputes
+  x-displayName: Disputes
+  description: "Raise and manage card transaction disputes, including submission via Dynamic Flow or direct API, file uploads, and dispute lifecycle tracking.\n\nFor implementation details, see:\n- [Disputes via Dynamic Flow](/guides/product/issue-cards/card-disputes-dynamic-flow) — build a dispute UI using the Dynamic Flow framework\n- [Disputes via API](/guides/product/issue-cards/card-disputes-api) — submit disputes directly, with per-reason request body details\n- [Dispute management](/guides/product/issue-cards/card-disputes-management) — track and withdraw disputes\n\nDispute sub-statuses {% #dispute-sub-status .title-3 .m-t-5 %}\n\nThe possible `subStatus` values are:\n- `SUBMITTED` — Initial status\n- `IN_REVIEW` — The dispute is under review or requires additional information\n- `REFUNDED` — The refund has been processed\n- `REJECTED` — The dispute is invalid\n- `WITHDRAWN` — The customer has withdrawn the dispute\n- `CONFIRMED` — The dispute has been reviewed but a refund is not applicable\n- `REFUND_IN_PROGRESS` — A refund is being processed\n- `ATTEMPTING_RECOVERY` — A chargeback request has been submitted\n- `RECOVERY_UNSUCCESSFUL` — The chargeback attempt was unsuccessful\n\n{% admonition type=\"warning\" %}\nThe status transition diagram may undergo modifications in the future and only covers regular pathways.\n{% /admonition %}\n\n{% img\n  src=\"/images/diagrams/dispute-status-flow.png\"\n  alt=\"Dispute statuses transition diagram\"\n/%}\n"
+paths:
+  /v3/spend/profiles/{profileId}/dispute-form/flows/step/{scheme}/{reason}:
+    post:
+      operationId: disputeDynamicFlowStep
+      summary: Dispute dynamic flow entry point
+      description: 'Retrieves the JSON for initiating the dispute flow. Use this endpoint with Wise''s
+
+        [Dynamic Flow framework](https://www.npmjs.com/package/@transferwise/dynamic-flows).
+
+
+        The JSON response must be passed into the Dynamic Flow framework, which handles the multi-step dispute submission including the generation of subsequent pages and the creation of the dispute.
+
+
+        **Setting up the API**
+
+
+        You will need to implement a GET API with the following format:
+
+        `GET https://{{yourApiUrl}}/v3/spend/profiles/{{profileId}}/dispute-form/flows/step/{{scheme}}/{{reason}}?transactionId={{transactionId}}`
+
+
+        This API should forward the call to:
+
+        `POST https://{{wiseUrl}}/v3/spend/profiles/{{profileId}}/dispute-form/flows/step/{{scheme}}/{{reason}}?transactionId={{transactionId}}`
+
+
+        This is required as the dynamic flow returned by Wise will automatically be configured to call your GET API. Use `baseUrl` or `fetcher` as part of the dynamic flow setup to redirect the Dynamic Flow JavaScript library to your domain.
+
+
+        For a full integration guide, including example backend implementation and styling, see [Disputes via Dynamic Flow](/guides/product/issue-cards/card-disputes-dynamic-flow).
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 14547572
+      - name: scheme
+        in: path
+        required: true
+        description: The network of the card that was used to make this transaction.
+        schema:
+          type: string
+          enum:
+          - MASTERCARD
+          - VISA
+        example: VISA
+      - name: reason
+        in: path
+        required: true
+        description: Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget).
+        schema:
+          type: string
+        example: TROUBLE_WITH_GOODS_SERVICES
+      - name: transactionId
+        in: query
+        required: true
+        description: The ID of the transaction being disputed. Can be a comma-separated list of IDs if the reason code has the `supportsMultipleTransactions` flag.
+        schema:
+          type: string
+        example: '6789'
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email used to receive communications regarding the dispute from Wise (e.g. your support team's email).
+                  example: support@partner.com
+            example:
+              email: support@partner.com
+      responses:
+        '200':
+          description: Returns information required to populate the form with the correct information. Note how the `action` field contains the URL and method to the next step.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Dynamic Flow JSON object. Pass this to the Dynamic Flow framework to render the dispute form.
+              example:
+                key: TROUBLE_WITH_GOODS_SERVICES
+                type: form
+                title: There's a problem with the goods or service I ordered
+                actions: []
+                schemas: []
+                layout:
+                - type: decision
+                  options:
+                  - title: I never got the goods or service I ordered
+                    action:
+                      url: /v3/spend/profiles/12345/dispute-form/flows/visa/no-goods-or-services?transactionId=6789
+                      method: GET
+                    disabled: false
+                    description: Choose this if the order was cancelled or never arrived
+                  - title: Something is wrong with the goods or service I ordered
+                    action:
+                      url: /v3/spend/profiles/12345/dispute-form/flows/visa/something-wrong-what-was-received?transactionId=6789
+                      method: GET
+                    disabled: false
+                  - title: I think there might be an issue with the merchant
+                    action:
+                      url: /v3/spend/profiles/12345/dispute-form/flows/visa/scam?transactionId=6789
+                      method: GET
+                    disabled: false
+                    description: Choose this if you haven't heard from the merchant, or have found scam reviews
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/dispute-form/reasons:
+    get:
+      operationId: disputeReasonsGet
+      summary: Retrieve dispute reasons
+      description: 'Retrieves the list of possible reasons for submitting a dispute.
+
+
+        If a reason code has `subOptions`, those should be used as the reason code when submitting disputes.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 14547572
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of dispute reasons.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DisputeReason'
+              example:
+              - code: ATM_DISPENSED_NO_FUNDS
+                description: I didn't receive the money from the ATM or cash machine
+                isFraud: false
+                supportsMultipleTransactions: false
+                tooltip: Choose this if the ATM did not dispense the money or gave you less than expected
+              - code: WRONG_AMOUNT
+                description: I was charged the wrong amount or currency
+                isFraud: false
+                supportsMultipleTransactions: false
+                tooltip: Choose this if you were overcharged or the payment was in a different currency than you were expecting
+              - code: TROUBLE_WITH_GOODS_SERVICES
+                description: There's a problem with the goods or service I ordered
+                isFraud: false
+                supportsMultipleTransactions: false
+                tooltip: Choose this if the goods or service never arrived, or if the product was defective or different from what you expected
+              - code: MERCHANT_CHARGED_AGAIN
+                description: I got an unexpected charge from a merchant
+                isFraud: false
+                supportsMultipleTransactions: false
+                tooltip: Choose this for subscription charges, when you've paid twice for one purchase, or when you know the merchant from a past transaction but aren't sure why they charged you
+              - code: NO_REFUND
+                description: I haven't received the refund
+                isFraud: false
+                supportsMultipleTransactions: false
+                tooltip: Choose this when you've been promised a refund and it hasn't arrived
+              - code: UNAUTHORIZED
+                description: I did not make, authorize, or participate in this transaction
+                tooltip: Choose this if you don't know the merchant or have never purchased anything from them
+                subOptions:
+                - code: UNEXPECTEDLY_CHARGED_AGAIN
+                  description: A past merchant unexpectedly charged me again
+                  isFraud: false
+                  supportsMultipleTransactions: false
+                - code: UNWANTED_SUBSCRIPTION
+                  description: I've been charged for a subscription without my permission
+                  isFraud: false
+                  supportsMultipleTransactions: false
+                - code: CARD_POSSESSION
+                  description: I don't recognise a transaction
+                  isFraud: true
+                  supportsMultipleTransactions: true
+                  tooltip: Choose this if you had your card at the time of the transactions, or if you think your card details have been compromised
+                - code: CARD_NO_POSSESSION
+                  description: My card was lost or stolen
+                  isFraud: true
+                  supportsMultipleTransactions: true
+                  tooltip: Choose this if you didn't have your card at the time of the transactions
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/dispute-form/flows/{scheme}/{reason}:
+    post:
+      operationId: disputeSubmit
+      summary: Submit dispute
+      description: 'Submit a dispute for a card transaction.
+
+
+        The request body structure varies per dispute reason code. All reasons share a common structure with `transaction`, `form`, `disclaimer`, and `files` objects, but the fields within `form` and `files` differ per reason.
+
+
+        For per-reason request body details, see the [disputes via API guide](/guides/product/issue-cards/card-disputes-api#reason-examples).
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 14547572
+      - name: scheme
+        in: path
+        required: true
+        description: The network of the card that was used to make this transaction.
+        schema:
+          type: string
+          enum:
+          - MASTERCARD
+          - VISA
+        example: VISA
+      - name: reason
+        in: path
+        required: true
+        description: Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget).
+        schema:
+          type: string
+        example: WRONG_AMOUNT
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction:
+                  type: object
+                  description: Transaction details for the dispute.
+                  properties:
+                    transactionId:
+                      type: string
+                      description: ID of the transaction.
+                      example: '12345'
+                    email:
+                      type: string
+                      description: Email of the support team that Wise should reach out to.
+                      example: support@partner.com
+                form:
+                  type: object
+                  description: 'Form fields required to submit this dispute. The specific fields vary per reason code.
+
+
+                    See the [disputes via API guide](/guides/product/issue-cards/card-disputes-api#reason-examples) for per-reason field details.
+
+                    '
+                  additionalProperties: true
+                disclaimer:
+                  type: object
+                  description: Acknowledgement fields.
+                  properties:
+                    allAnswered:
+                      type: boolean
+                      description: Acknowledgment that all questions have been answered. Must be `true` or the request will be rejected.
+                      example: true
+                    filesUploaded:
+                      type: boolean
+                      description: Acknowledgment that all relevant files have been attached. Must be `true` or the request will be rejected.
+                      example: true
+                files:
+                  type: object
+                  description: 'Key-value pairs mapping file field names to file IDs obtained from the [file upload endpoint](/api-reference/disputes/disputefileupload). Available file fields vary per reason code.
+
+                    '
+                  additionalProperties:
+                    type: string
+            example:
+              transaction:
+                transactionId: '12345'
+                email: support@partner.com
+              form:
+                charged:
+                  value: 50
+                  currency: EUR
+                expected:
+                  value: 5
+                  currency: EUR
+                agreedDetails:
+                  agreed: true
+                  agreedReason: some reason
+                goods: something
+                details: wrong amount dispute
+              disclaimer:
+                allAnswered: true
+                filesUploaded: true
+      responses:
+        '200':
+          description: 'Dynamic Flow JSON response. If using the Dynamic Flow framework, pass this to the framework. If using the API directly, the response can be ignored.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Dynamic Flow JSON object.
+              example:
+                key: final
+                type: form
+                title: Done!
+                actions:
+                - title: Continue
+                  exit: true
+                  $id: continue
+                schemas: []
+                layout:
+                - width: md
+                  components:
+                  - url: https://wise.com/web-art/assets/illustrations/email-success-large%402x.png
+                    type: image
+                  type: box
+                - margin: lg
+                  align: center
+                  type: info
+                  markdown: Thanks for reporting this transaction. It's pre-authorised right now, but as soon as it becomes "spent" we'll begin our investigation.
+                - type: button
+                  action:
+                    $ref: continue
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/spend/profiles/{profileId}/dispute-form/file:
+    post:
+      operationId: disputeFileUpload
+      summary: Upload dispute file
+      description: 'Upload a file for use in a dispute submission. Use the returned file ID in the `files` object when submitting a dispute.
+
+
+        A dispute referencing the returned file ID must be submitted no later than **two hours** after the file upload, otherwise the file will expire and must be re-uploaded.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 14547572
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                receipt:
+                  type: string
+                  format: binary
+                  description: The file to upload.
+      responses:
+        '200':
+          description: A key-value pair mapping the file name to the assigned file ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Object with the file field name as key and the assigned file ID as value.
+              example:
+                receipt: ab4f5d2
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/disputes:
+    get:
+      operationId: disputeList
+      summary: List disputes
+      description: 'List disputes for a profile with optional filters.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 16605997
+      - name: status
+        in: query
+        required: false
+        description: Filter by dispute status.
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - CLOSED
+        example: ACTIVE
+      - name: transactionId
+        in: query
+        required: false
+        description: Filter by card transaction ID.
+        schema:
+          type: integer
+          format: int64
+        example: 2040
+      - name: pageSize
+        in: query
+        required: false
+        description: The maximum number of disputes to return per page. Between 10 and 100, defaults to 10.
+        schema:
+          type: integer
+          format: int32
+          minimum: 10
+          maximum: 100
+          default: 10
+        example: 10
+      - name: pageNumber
+        in: query
+        required: false
+        description: The page number to retrieve. Must be at least 1, defaults to 1.
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          default: 1
+        example: 1
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Paginated list of disputes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: Total number of disputes matching the filters.
+                    example: 2
+                  disputes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dispute'
+              example:
+                totalCount: 2
+                disputes:
+                - id: 51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb
+                  transactionId: 2040
+                  profileId: 16605997
+                  reason: NEVER_ARRIVED
+                  status: ACTIVE
+                  subStatus: SUBMITTED
+                  statusMessage: Submitted
+                  createdAt: '2024-03-08T08:30:14.989Z'
+                  createdBy: '6097861'
+                  lastUpdatedAt: '2024-03-08T08:30:14.989Z'
+                  canWithdraw: true
+                - id: 9c5ca0cb-00d6-41f7-8214-8cfdb11388a7
+                  transactionId: 3405
+                  profileId: 16605997
+                  reason: CANCELLED_ORDER
+                  status: ACTIVE
+                  subStatus: SUBMITTED
+                  statusMessage: Submitted
+                  createdAt: '2024-03-27T02:24:16.878Z'
+                  createdBy: '6097861'
+                  lastUpdatedAt: '2024-03-27T02:24:16.878Z'
+                  canWithdraw: true
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/disputes/{disputeId}:
+    get:
+      operationId: disputeGet
+      summary: Get dispute
+      description: 'Retrieve a dispute by its ID.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 16605997
+      - name: disputeId
+        in: path
+        required: true
+        description: The dispute ID.
+        schema:
+          type: string
+        example: 51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: The dispute.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/disputes/{disputeId}/status:
+    put:
+      operationId: disputeWithdraw
+      summary: Withdraw dispute
+      description: 'Withdraw a dispute by setting its status to `CLOSED`.
+
+
+        You can only withdraw a dispute if `canWithdraw` is `true` on the dispute resource.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 16605997
+      - name: disputeId
+        in: path
+        required: true
+        description: The dispute ID.
+        schema:
+          type: string
+        example: 51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  description: Must be set to `CLOSED`.
+                  enum:
+                  - CLOSED
+                  example: CLOSED
+            example:
+              status: CLOSED
+      responses:
+        '200':
+          description: The updated dispute.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+              example:
+                id: 51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb
+                transactionId: 2040
+                profileId: 16605997
+                reason: NEVER_ARRIVED
+                status: CLOSED
+                subStatus: WITHDRAWN
+                statusMessage: Withdrawn
+                createdAt: '2024-03-08T08:30:14.989Z'
+                createdBy: '6097861'
+                lastUpdatedAt: '2024-03-27T13:12:28.390Z'
+                canWithdraw: false
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/dispute-form/file:
+    post:
+      operationId: disputeFileUploadV3
+      summary: Upload dispute file (v3)
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use the [v4 upload dispute file endpoint](/api-reference/disputes/disputefileupload) instead.
+
+        {% /admonition %}
+
+
+        Submit a file for disputes.
+
+
+        This API is not available for sandbox testing.
+
+
+        Use the `fileId` in the response for the dispute submission.
+
+
+        **NB:** A dispute referencing the returned `fileId` must be submitted no later than **two hours** after the file submission, otherwise the file will expire and must be re-submitted.
+
+        '
+      tags:
+      - disputes
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 14547572
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                receipt:
+                  type: string
+                  format: binary
+                  description: The file to upload.
+      responses:
+        '200':
+          description: A key-value pair mapping the file name to the assigned file ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Object with the file field name as key and the assigned file ID as value.
+              example:
+                receipt: ab4f5d2
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  schemas:
+    DisputeReason:
+      title: DisputeReason
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
+
+
+            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
+
+            '
+          example: UNAUTHORIZED
+        description:
+          type: string
+          description: The description of the dispute reason.
+          example: I did not make, authorize, or participate in this transaction
+        isFraud:
+          type: boolean
+          description: Flag indicating that the dispute reason is fraud-related.
+          example: false
+        tooltip:
+          type: string
+          description: Text to display when showing the dispute form to your users.
+          example: Choose this if you don't know the merchant or have never purchased anything from them
+        supportsMultipleTransactions:
+          type: boolean
+          description: Whether the dispute supports multiple transactions.
+          example: false
+        subOptions:
+          type: array
+          description: Optional list of sub-reasons that should be used as the dispute reason.
+          items:
+            $ref: '#/components/schemas/DisputeReason'
+    Dispute:
+      title: Dispute
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the dispute.
+          example: b4eae16c-b3a9-4327-b0bd-6a2ad430d803
+        transactionId:
+          type: integer
+          format: int64
+          description: Card transaction ID.
+          example: 476873
+        profileId:
+          type: integer
+          format: int64
+          description: Profile ID.
+          example: 14547572
+        reason:
+          type: string
+          description: Dispute reason code.
+          example: WRONG_AMOUNT
+        status:
+          type: string
+          description: Dispute overall status.
+          enum:
+          - ACTIVE
+          - CLOSED
+          example: CLOSED
+        subStatus:
+          type: string
+          description: Dispute detailed status.
+          enum:
+          - SUBMITTED
+          - IN_REVIEW
+          - REFUNDED
+          - REJECTED
+          - WITHDRAWN
+          - CONFIRMED
+          - REFUND_IN_PROGRESS
+          - ATTEMPTING_RECOVERY
+          - RECOVERY_UNSUCCESSFUL
+          example: WITHDRAWN
+        statusMessage:
+          type: string
+          description: Explanation for `subStatus`.
+          example: Withdrawn
+        createdAt:
+          type: string
+          format: date-time
+          description: Time when the dispute was created.
+          example: '2024-03-18T03:47:52.493Z'
+        createdBy:
+          type: string
+          description: Creator of the dispute. Currently set to the user ID.
+          example: '9867661'
+        lastUpdatedAt:
+          type: string
+          format: date-time
+          description: Time when the dispute was last updated.
+          example: '2024-03-27T02:30:27.374Z'
+        canWithdraw:
+          type: boolean
+          description: Whether the dispute can be withdrawn.
+          example: false
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

@@ -1,0 +1,815 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds digital-wallet API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: digital-wallet
+  x-displayName: Digital Wallet
+  description: 'These APIs provide encrypted cardholder information needed to implement push provisioning (Apple Pay, Google Pay) in your own mobile app.
+
+    '
+paths:
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens:
+    post:
+      operationId: pushProvisioningPaymentTokensList
+      summary: List payment tokens for a card
+      description: 'You have the option to obtain the payment tokens associated with a card, which can assist in determining if it''s already linked to a specific wallet.
+
+        Note that the payment token status associated with the card may not be accurate (for example, after a phone factory reset).
+
+        Therefore, it''s advisable to consistently check the wallet instance for the most up-to-date token status.
+
+        '
+      tags:
+      - digital-wallet
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 12345
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+        example: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                walletNames:
+                  type: array
+                  description: List of supported wallet types.
+                  items:
+                    type: string
+                    enum:
+                    - APPLE_PAY
+                    - GOOGLE_PAY
+                  example:
+                  - APPLE_PAY
+                  - GOOGLE_PAY
+      responses:
+        '200':
+          description: Returns all the payment tokens except deactivated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentTokens:
+                    type: array
+                    items:
+                      type: object
+                      title: Payment Token
+                      properties:
+                        cardToken:
+                          type: string
+                          description: Card token.
+                          example: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+                        walletName:
+                          type: string
+                          description: Wallet name.
+                          enum:
+                          - GOOGLE_PAY
+                          - APPLE_PAY
+                          example: GOOGLE_PAY
+                        paymentTokenUniqueReference:
+                          type: string
+                          description: Unique reference of the payment token.
+                          example: DSHRMC0000255389d1106783179b420aa5b5ca09ba2f12b8
+                        panUniqueReference:
+                          type: string
+                          description: Unique reference of the PAN.
+                          example: FSHRMC000025538959679bc73c9d4fdc8031b20fa91d0e3b
+                        provisioningStatus:
+                          type: string
+                          description: 'Payment token status.
+
+
+                            - `ACTIVE` — The token is active and available for payments
+
+                            - `SUSPENDED` — The token has been temporarily suspended
+
+                            - `INACTIVE` — The token is in the active wallet, but requires additional user authentication for use
+
+                            - `DEACTIVATED` — The status will not be visible, you can safely ignore it
+
+                            '
+                          enum:
+                          - ACTIVE
+                          - SUSPENDED
+                          - INACTIVE
+                          - DEACTIVATED
+                          example: ACTIVE
+                        creationTime:
+                          type: string
+                          format: date-time
+                          description: Time when the payment token was created.
+                          example: '2025-10-02T21:26:00.377756354Z'
+                        modificationTime:
+                          type: string
+                          format: date-time
+                          description: Time when the payment token was last modified.
+                          example: '2025-10-02T21:26:00.378182498Z'
+              example:
+                paymentTokens:
+                - cardToken: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+                  walletName: GOOGLE_PAY
+                  paymentTokenUniqueReference: DSHRMC0000255389d1106783179b420aa5b5ca09ba2f12b8
+                  panUniqueReference: FSHRMC000025538959679bc73c9d4fdc8031b20fa91d0e3b
+                  provisioningStatus: ACTIVE
+                  creationTime: '2025-02-06T15:34:23.877041000Z'
+                  modificationTime: '2025-02-06T15:34:23.877343000Z'
+                - cardToken: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+                  walletName: GOOGLE_PAY
+                  paymentTokenUniqueReference: DSHRMC0000255389e2f7133754ab4e2f87fc323730fdfd8e
+                  panUniqueReference: ''
+                  provisioningStatus: INACTIVE
+                  creationTime: '2025-06-25T22:05:47.116016000Z'
+                  modificationTime: '2025-06-25T22:05:47.116077000Z'
+                - cardToken: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+                  walletName: APPLE_PAY
+                  paymentTokenUniqueReference: DAPLMC000025538967ea1d7972414a93a6544a07dae27a8c
+                  panUniqueReference: FAPLMC0000255389d7df244df7244803aa2c4ce2a29c242a
+                  provisioningStatus: ACTIVE
+                  creationTime: '2025-08-19T21:28:28.434472000Z'
+                  modificationTime: '2025-08-19T21:28:28.434738000Z'
+                - cardToken: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+                  walletName: APPLE_PAY
+                  paymentTokenUniqueReference: DAPLMC0000255389c25cd65bf8084c168dbc4aa59708841a
+                  panUniqueReference: FAPLMC0000255389d7df244df7244803aa2c4ce2a29c242a
+                  provisioningStatus: SUSPENDED
+                  creationTime: '2025-08-04T01:37:30.658315000Z'
+                  modificationTime: '2025-08-04T01:37:30.658552000Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens/{paymentTokenUniqueReference}/activation:
+    post:
+      operationId: digitalWalletActivatePaymentToken
+      summary: Manual provisioning payment token activation
+      description: 'This endpoint activates the payment token for a card that has been manually added to a wallet provider. Please read this [guide](/guides/product/issue-cards/card-digital-wallet.md) before implementing this API.
+
+        {% admonition type="warning" %}
+
+        This API is not available for sandbox testing.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - digital-wallet
+      security:
+      - UserToken: []
+      - ClientCredentialsToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID
+        schema:
+          type: integer
+          format: int64
+        example: 12345
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token
+        schema:
+          type: string
+          format: uuid
+        example: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+      - name: paymentTokenUniqueReference
+        in: path
+        required: true
+        description: The payment token unique reference issued by the scheme token service
+        schema:
+          type: string
+        example: DNITHE382607223583426199
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - activation
+              properties:
+                activation:
+                  type: string
+                  description: Approve or decline a payment token activation
+                  enum:
+                  - APPROVE
+                  - DECLINE
+                  example: APPROVE
+            example:
+              activation: APPROVE
+      responses:
+        '204':
+          description: No Content - Payment token have been successfully activated or declined
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Validation type error
+                    examples:
+                    - /errors/types/validation
+                  title:
+                    type: string
+                    description: A validation type exception
+                    examples:
+                    - Validation Error
+                  status:
+                    type: string
+                    description: The HTTP status error code
+                    examples:
+                    - 400
+                  instance:
+                    type: string
+                    description: The uri the triggered a validation error
+                    examples:
+                    - /public/v3/spend/profiles/2/cards/f47da127-7b8c-4312-8f10-dd2d70e6912b/payment-tokens/DNI234089950342/activation
+                  errors:
+                    type: array
+                    description: A list of specific validation failures.
+                    items:
+                      type: object
+                      properties:
+                        detail:
+                          type: string
+                          description: A detailed description of the validation failure.
+                          examples:
+                          - activation value must be APPROVE or DECLINE
+                        code:
+                          type: string
+                          description: A specific code for the validation failure type.
+                          examples:
+                          - invalid_value
+                        ref:
+                          type: string
+                          description: A reference to the field that failed validation.
+                          examples:
+                          - activation
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Forbidden request
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An access type exception
+                    examples:
+                    - /errors/types/access
+                  title:
+                    type: string
+                    description: The title of the exception
+                    examples:
+                    - Forbidden
+                  status:
+                    type: string
+                    description: The HTTP status error code
+                    examples:
+                    - 403
+                  detail:
+                    type: string
+                    description: A detailed description of the validation failure
+                    examples:
+                    - Operation is unauthorized
+                  instance:
+                    type: string
+                    description: The uri the triggered a validation error
+                    examples:
+                    - /public/v3/spend/profiles/2/cards/f47da127-7b8c-4312-8f10-dd2d70e6912b/payment-tokens/DNI234089950342/activation
+                  code:
+                    type: string
+                    description: A specific application-level code
+                    examples:
+                    - unauthorized
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An domain type exception
+                    examples:
+                    - /errors/types/domain
+                  title:
+                    type: string
+                    description: The title of the exception
+                    examples:
+                    - Not found
+                  status:
+                    type: string
+                    description: The HTTP status error code
+                    examples:
+                    - 404
+                  detail:
+                    type: string
+                    description: A detailed description of the validation failure
+                    examples:
+                    - Payment Token Unique Reference does not exist
+                  instance:
+                    type: string
+                    description: The uri the triggered a validation error
+                    examples:
+                    - /public/v3/spend/profiles/2/cards/f47da127-7b8c-4312-8f10-dd2d70e6912b/payment-tokens/DNI234089950342/activation
+                  code:
+                    type: string
+                    description: A specific application-level code
+                    examples:
+                    - resource_not_found
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          description: Server side error
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An server type exception
+                    examples:
+                    - /errors/types/server
+                  title:
+                    type: string
+                    description: The title of the exception
+                    examples:
+                    - Internal Server Error
+                  status:
+                    type: string
+                    description: The HTTP status error code
+                    examples:
+                    - 500
+                  detail:
+                    type: string
+                    description: A detailed description of the validation failure
+                    examples:
+                    - An unexpected error occurred during card tokenisation
+                  instance:
+                    type: string
+                    description: The uri the triggered a validation error
+                    examples:
+                    - /public/v3/spend/profiles/2/cards/f47da127-7b8c-4312-8f10-dd2d70e6912b/payment-tokens/DNI234089950342/activation
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+  /twcard-data/v1/push-provisioning/encrypted-payload/google-pay:
+    post:
+      operationId: pushProvisioningGooglePayGet
+      summary: Push provisioning for Google Pay
+      description: 'Returns encrypted cardholder information and other metadata needed for Google Pay push provisioning.
+
+
+        {% admonition type="warning" %}
+
+        This API is not available for sandbox testing.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - digital-wallet
+      servers:
+      - url: https://twcard.wise.com
+        description: Production Environment
+      - url: https://twcard.wise-sandbox.com
+        description: Sandbox Environment
+      security:
+      - UserToken: []
+      parameters:
+      - name: x-tw-twcard-card-token
+        in: header
+        required: true
+        description: The card token identifying which card to retrieve push provisioning data for.
+        schema:
+          type: string
+          format: uuid
+        example: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - clientDeviceId
+              - clientWalletAccountId
+              properties:
+                clientDeviceId:
+                  type: string
+                  description: Stable device identification set by Wallet Provider. Could be computer identifier or ID tied to hardware such as TEE_ID or SE_ID. This field must match the `clientDeviceId` wallet provider will send in token provision request.
+                  example: ed6abb56323ba656521ac476
+                clientWalletAccountId:
+                  type: string
+                  description: Client-provided consumer ID that identifies the Wallet Account Holder entity.
+                  example: walletid
+      responses:
+        '200':
+          description: Encrypted cardholder information for Google Pay.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  opaquePaymentCard:
+                    type: string
+                    description: Encrypted authentication and activation data following card scheme and wallet provider specifications. The response is encoded in Base64.
+                    example: eyJraWQiOiIwQk...
+                  cardNetwork:
+                    type: string
+                    description: Card network.
+                    enum:
+                    - CARD_NETWORK_VISA
+                    - CARD_NETWORK_MASTERCARD
+                    example: CARD_NETWORK_VISA
+                  tokenServiceProvider:
+                    type: string
+                    description: Token service provider.
+                    enum:
+                    - TOKEN_PROVIDER_VISA
+                    - TOKEN_PROVIDER_MASTERCARD
+                    example: TOKEN_PROVIDER_VISA
+                  cardDisplayName:
+                    type: string
+                    description: Default card name that will be displayed in wallet.
+                    example: Wise Card
+                  cardLastDigits:
+                    type: string
+                    description: Last 4 digits of the card PAN.
+                    example: '1234'
+                  userAddress:
+                    type: object
+                    description: Entire address and phone number associated with the card.
+                    properties:
+                      addressLine1:
+                        type: string
+                        description: First line of the address.
+                        example: 56 Shoreditch High St
+                      addressLine2:
+                        type: string
+                        description: Second line of the address.
+                        example: The Tea Bldg
+                      countryCode:
+                        type: string
+                        description: Country code.
+                        example: GB
+                      locality:
+                        type: string
+                        description: City or locality.
+                        example: London
+                      administrativeArea:
+                        type: string
+                        description: State or administrative area.
+                        example: ''
+                      name:
+                        type: string
+                        description: Cardholder name.
+                        example: John Smith
+                      phoneNumber:
+                        type: string
+                        description: Phone number associated with the card.
+                        example: '+441234567890'
+                      postalCode:
+                        type: string
+                        description: Postal code.
+                        example: E1 6JJ
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /twcard-data/v1/push-provisioning/encrypted-payload/apple-pay:
+    post:
+      operationId: pushProvisioningApplePayGet
+      summary: Push Provisioning for Apple Pay
+      description: 'Returns encrypted cardholder information and other metadata needed for Apple Pay push provisioning.
+
+
+        {% admonition type="warning" %}
+
+        This API is not available for sandbox testing.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - digital-wallet
+      servers:
+      - url: https://twcard.wise.com
+        description: Production Environment
+      - url: https://twcard.wise-sandbox.com
+        description: Sandbox Environment
+      security:
+      - UserToken: []
+      parameters:
+      - name: x-tw-twcard-card-token
+        in: header
+        required: true
+        description: The card token identifying which card to retrieve push provisioning data for.
+        schema:
+          type: string
+          format: uuid
+        example: a3f90c98-1cd1-4488-9050-2e32c696f8fa
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - certificates
+              - nonce
+              - nonceSignature
+              properties:
+                certificates:
+                  type: array
+                  description: DER encoded X.509 ECC leaf and sub CA certificates, each encoded in Base64.
+                  items:
+                    type: string
+                  example:
+                  - MIICpTCCAkqgAwIBAgIIB...
+                  - MIICpTCCAYmgAwIBAgIIX...
+                nonce:
+                  type: string
+                  description: One time use nonce generated by Apple Servers and HEX encoded on iOS app.
+                  example: a1b2c3d4e5f6
+                nonceSignature:
+                  type: string
+                  description: The device and account specific signature of the nonce generated by Apple and HEX encoded on iOS app.
+                  example: f6e5d4c3b2a1
+      responses:
+        '200':
+          description: Encrypted cardholder information for Apple Pay.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  encryptedPassData:
+                    type: string
+                    description: Encrypted authentication data following card scheme and wallet provider specifications. The response is encoded in Base64.
+                    example: 443232323637393045DDE321469537FE461E824AA55BA67BF645454330A32433610DE1D1461475BEB6D815F31764DDC20298BD779FBE37EE5AB3CBDA9F9825E1
+                  activationData:
+                    type: string
+                    description: Encrypted activation data following card scheme and wallet provider specifications. The response is encoded in Base64.
+                    example: KDlTthhZTGufMY…….xPSUrfmqCHXaI9wOGY=
+                  ephemeralKey:
+                    type: string
+                    description: Ephemeral key used to encrypt authentication data. The response is encoded in Base64.
+                    example: A1B2C3D4E5F6112233445566
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

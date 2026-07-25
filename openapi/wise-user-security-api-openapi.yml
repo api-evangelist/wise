@@ -1,0 +1,860 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds user-security API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: user-security
+  x-displayName: User Security
+  description: '{% admonition type="warning" %}
+
+    These endpoints are deprecated. Please refer to [PIN](/api-reference/sca-pin), [Facemaps](/api-reference/sca-facemaps), and [Device Fingerprints](/api-reference/sca-device-fingerprints) to integrate with SCA.
+
+    {% /admonition %}
+
+
+    User security allows users to set up security-related protections over the API.
+
+    '
+paths:
+  /v1/application/users/{userId}/phone-numbers:
+    get:
+      deprecated: true
+      operationId: userSecurityPhoneNumberList
+      summary: List Phone Numbers
+      description: 'List verified phone numbers for a user.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/phone-number'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/application/users/{userId}/phone-numbers/{phoneNumberId}:
+    put:
+      deprecated: true
+      operationId: userSecurityPhoneNumberUpdate
+      summary: Update Phone Number
+      description: 'Update a verified phone number for a user.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - name: phoneNumberId
+        in: path
+        required: true
+        description: ID of a phone number.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phoneNumber:
+                  type: string
+                  description: A valid phone number in string.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/phone-number'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '422':
+          description: The phone number is already associated with another account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        message:
+                          type: string
+              example:
+                errors:
+                - code: phone.number.repeated
+                  message: It's linked to an account with the email ****@wise.com
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/user/pin:
+    post:
+      deprecated: true
+      operationId: userSecurityPinCreate
+      summary: Create PIN
+      description: 'Create PIN for a user as a form of authentication.
+
+
+        Can be used to [verify pin](/api-reference/sca-pin/ottpinverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).
+
+
+        The request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/auth-and-security/jose-jwe) to understand how encryption and decryption work.
+
+        '
+      tags:
+      - user-security
+      security:
+      - UserToken: []
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          default: application/jose+json
+      - name: Accept-Encoding
+        in: header
+        required: true
+        schema:
+          type: string
+          default: identity
+      - name: Content-Encoding
+        in: header
+        required: true
+        schema:
+          type: string
+          default: identity
+      - name: X-tw-jose-method
+        in: header
+        required: true
+        schema:
+          type: string
+          default: jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \\\n  'https://api.wise-sandbox.com/v1/user/pin' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Accept-Encoding: identity' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'Content-Encoding: identity' \\\n  -H 'X-TW-JOSE-Method: jwe' \\\n  -d 'eyJlbmMiOiJBMjU2R0NNIiwi...'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'A JWE encrypted string. The decrypted payload contains:
+
+                - `pin` — A four-digit string.
+
+
+                Payload before encryption:
+
+                ```json
+
+                {"pin": "1234"}
+
+                ```
+
+                '
+            example: <JWE encrypted string>
+      responses:
+        '204':
+          description: PIN is created successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: PIN has already been created.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/users/{userId}/pin:
+    delete:
+      deprecated: true
+      operationId: userSecurityPinDelete
+      summary: Delete PIN
+      description: 'Remove the PIN from the user''s account.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: PIN is deleted successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: PIN is not setup for this user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        message:
+                          type: string
+              example:
+                errors:
+                - code: pin.not.setup
+                  message: PIN has not been setup.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/user/facemap/enrol:
+    post:
+      deprecated: true
+      operationId: userSecurityFacemapEnrol
+      summary: Enrol FaceMap
+      description: 'Facial biometric enrolment for Strong Customer Authentication (SCA).
+
+
+        Can be used to [verify facemap](/api-reference/sca-facemaps/ottfacemapverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).
+
+        '
+      tags:
+      - user-security
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                faceMap:
+                  type: string
+                  description: 'Base64-encoded binary data as a string.
+
+
+                    For more details how to get this binary, please read FaceTec''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap).
+
+
+                    To retrieve Wise''s FaceTec public key, please refer to our FaceTec''s [Get Public Key API](/api-reference/facetec/facetecpublickeyget).
+
+                    '
+      responses:
+        '204':
+          description: Enrollment is successful.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: FaceMap has already been enrolled.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v1/users/{userId}/facemap/enrol:
+    delete:
+      deprecated: true
+      operationId: userSecurityFacemapDelete
+      summary: Delete FaceMap
+      description: 'Remove the FaceMap from the user''s account.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: FaceMap is deleted successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: FaceMap is not setup for this user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        message:
+                          type: string
+              example:
+                errors:
+                - code: facemap.not.setup
+                  message: FaceMap has not been setup.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/user/partner-device-fingerprints:
+    post:
+      deprecated: true
+      operationId: userSecurityDeviceFingerprintCreate
+      summary: Create Device Fingerprint
+      description: 'A device fingerprint represents a string that identifies a unique device.
+
+
+        This endpoint is used to register the fingerprint of the device as one of the allowed devices used during an One Time Token (OTT) challenge.
+
+
+        This can be used to [verify device fingerprint](/api-reference/sca-device-fingerprints/ottdevicefingerprintverify) when clearing a [OTT](/api-reference/sca-ott).
+
+
+        The request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/auth-and-security/jose-jwe) to understand how encryption and decryption work.
+
+        '
+      tags:
+      - user-security
+      security:
+      - UserToken: []
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          default: application/jose+json
+      - name: Accept-Encoding
+        in: header
+        required: true
+        schema:
+          type: string
+          default: identity
+      - name: Content-Encoding
+        in: header
+        required: true
+        schema:
+          type: string
+          default: identity
+      - name: X-tw-jose-method
+        in: header
+        required: true
+        schema:
+          type: string
+          default: jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \\\n  'https://api.wise-sandbox.com/v1/user/partner-device-fingerprints' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Accept-Encoding: identity' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'Content-Encoding: identity' \\\n  -H 'X-TW-JOSE-Method: jwe' \\\n  -d 'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W0fuxaZOoyaBcx...'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'A JWE encrypted string. The decrypted payload contains:
+
+                - `deviceFingerprint` — A string value used as a device fingerprint.
+
+
+                Payload before encryption:
+
+                ```json
+
+                {"deviceFingerprint": "3207da22-a0d3-4b6b-a591-6297e646fe32"}
+
+                ```
+
+                '
+            example: <JWE encrypted string>
+      responses:
+        '200':
+          description: The device fingerprint has been successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceFingerprintId:
+                    type: string
+                    format: uuid
+                    description: Identifier of the device fingerprint.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp on when the device fingerprint was created.
+              example:
+                deviceFingerprintId: 636a5514-aa86-4719-8700-e9a9a0ae7ea7
+                createdAt: '2024-05-24T07:27:58.273205554Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Maximum number of device fingerprints reached (defaulted to 3).
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '409':
+          description: The device fingerprint has already been created.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/users/{userId}/partner-device-fingerprints:
+    get:
+      deprecated: true
+      operationId: userSecurityDeviceFingerprintList
+      summary: List Device Fingerprints
+      description: 'Returns a list of device fingerprints created for this user.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    deviceFingerprintId:
+                      type: string
+                      format: uuid
+                      description: Identifier of the device fingerprint.
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Timestamp on when the device fingerprint was created.
+              example:
+              - deviceFingerprintId: 636a5514-aa86-4719-8700-e9a9a0ae7ea7
+                createdAt: '2024-05-24T07:27:58.273205554Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: The user is not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/users/{userId}/partner-device-fingerprints/{deviceFingerprintId}:
+    delete:
+      deprecated: true
+      operationId: userSecurityDeviceFingerprintDelete
+      summary: Delete Device Fingerprint
+      description: 'Remove a specific device fingerprint from the allowed devices of a user.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - user-security
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID.
+        schema:
+          type: integer
+          format: int64
+      - name: deviceFingerprintId
+        in: path
+        required: true
+        description: Device fingerprint ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: Device fingerprint has been successfully removed.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: User or deviceFingerprintId is not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    phone-number:
+      title: Phone Number
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the phone number.
+          example: 1230944
+        phoneNumber:
+          type: string
+          description: A text representation of phone number.
+          example: '+6588888888'
+        type:
+          type: string
+          description: 'Type of phone number when used in authentication.
+
+
+            Only **PRIMARY** is supported at the moment.
+
+            '
+          example: PRIMARY
+        verified:
+          type: boolean
+          description: Indicator if phone number is verified.
+          example: true
+        clientId:
+          type: string
+          description: Client ID of which this phone number belongs to.
+          example: clientId
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

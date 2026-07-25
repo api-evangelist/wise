@@ -1,0 +1,477 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds activity API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: activity
+  x-displayName: Activity
+  description: 'Activity represents a snapshot of a performed action for a profile.
+
+    '
+paths:
+  /v1/profiles/{profileId}/activities:
+    get:
+      tags:
+      - activity
+      summary: List Activities for a Profile
+      operationId: activityList
+      description: 'List of activities belonging to user profile.
+
+
+        Activities represent snapshots of performed actions and can be filtered by various parameters to narrow down the results.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The unique identifier of the profile.
+      - name: monetaryResourceType
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/ActivityResourceType'
+        description: Filter activity by resource type.
+      - name: status
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/ActivityStatus'
+        description: Filter by activity status.
+      - name: since
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: '2025-03-10T11:56:30.376Z'
+        description: Filter activity list after a certain timestamp. Use ISO 8601 format.
+      - name: until
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: '2025-03-30T23:59:59.999Z'
+        description: Filter activity list until a certain timestamp. Use ISO 8601 format.
+      - name: nextCursor
+        in: query
+        required: false
+        schema:
+          type: string
+          example: ''
+        description: 'Pagination cursor returned from a previous response. Use the `cursor` value from the response to fetch the next page of activities.
+
+          '
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        description: Desired size of query. Min 1, max 100, and default value is 10 if not specified.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved activities.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response containing a list of activities for a profile.
+                properties:
+                  cursor:
+                    type:
+                    - string
+                    - 'null'
+                    description: Pagination cursor. Pass this value as the `nextCursor` query parameter to fetch the next page of results. Returns `null` when there are no more pages.
+                  activities:
+                    type: array
+                    description: Array of activity objects.
+                    items:
+                      $ref: '#/components/schemas/Activity'
+              example:
+                cursor: WyJQUklPUklUWSIsMTAwMDAxNjY5NzA4MjI0MDAwMDE2MDk5OV0=
+                activities:
+                - id: TU9ORVRBUllfQUNUSVZJVFk6OjE0NTU4OTk4OjpDQVJEX1RSQU5TQUNUSU9OOjozNDMwNDk=
+                  type: CARD_PAYMENT
+                  resource:
+                    type: CARD_TRANSACTION
+                    id: '343049'
+                  title: <strong>Test Payment</strong>
+                  description: ''
+                  primaryAmount: 150 JPY
+                  secondaryAmount: 1.50 SGD
+                  status: COMPLETED
+                  createdOn: '2023-01-01T00:00:00.000Z'
+                  updatedOn: '2023-01-01T00:00:00.000Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  schemas:
+    ActivityResourceType:
+      type: string
+      description: Type of Activity Monetary Resource.
+      example: TRANSFER
+      enum:
+      - ACCRUAL_CHARGE
+      - ACQUIRING_PAYMENT
+      - ASSETS_WITHDRAWAL
+      - BALANCE_CASHBACK
+      - BALANCE_INTEREST
+      - BALANCE_TRANSACTION
+      - BANK_DETAILS_ORDER
+      - BATCH_TRANSFER
+      - CARD_CASHBACK
+      - CARD_ORDER
+      - CARD_TRANSACTION
+      - DIRECT_DEBIT_INSTRUCTION
+      - DIRECT_DEBIT_TRANSACTION
+      - FEE_REFUND
+      - INCIDENT_REFUND
+      - INCORPORATION_ORDER
+      - OPERATIONAL_TRANSACTION
+      - PAYMENT_REQUEST
+      - REWARD
+      - REWARDS_REDEMPTION
+      - SEND_ORDER
+      - SEND_ORDER_EXECUTION
+      - TRANSFER
+    Activity:
+      type: object
+      description: Activity represents a snapshot of a performed action for a profile.
+      properties:
+        id:
+          type: string
+          description: Activity id.
+          example: TU9ORVRBUllfQUNUSVZJVFk6OjE0NTU4OTk4OjpDQVJEX1RSQU5TQUNUSU9OOjozNDMwNDk=
+        type:
+          $ref: '#/components/schemas/ActivityType'
+        resource:
+          type: object
+          description: The resource associated with the activity.
+          properties:
+            type:
+              $ref: '#/components/schemas/ActivityResourceType'
+            id:
+              type: string
+              description: The unique identifier of the resource.
+              example: '343049'
+        title:
+          type: string
+          description: 'Title of the Activity.
+
+
+            Value can be formatted with custom tags to put emphasis on important wordings.
+
+
+            Supported custom tags:
+
+            - `<strong>`: Indicates strong emphasis on words that the end user should pay attention to.
+
+            - `<positive>`: Indicates a positive transaction (e.g., top up to balance is successful).
+
+            - `<negative>`: Indicates a negative transaction (e.g., amount is deducted from a balance).
+
+            - `<strikethrough>`: (Coming soon) Indicates the negation of an activity (e.g., transfer is cancelled).
+
+            '
+          example: <strong>Test Payment</strong>
+        description:
+          type: string
+          description: A short description that briefly summarizes the activity.
+        primaryAmount:
+          type: string
+          description: 'A currency formatted text that describe the primary amount of transaction.
+
+
+            Value of this field is intended to have units in it and should not be treated as a numeric value.
+
+
+            One example of primaryAmount would be: "Topping up 100 USD balance with 80 GBP". In this case `100 USD` would be the primaryAmount of the activity.
+
+            '
+          example: 150 JPY
+        secondaryAmount:
+          type: string
+          description: 'A currency formatted text that describe the secondary amount of transaction.
+
+
+            Value of this field is intended to have units in it and should not be treated as a numeric value.
+
+            Value can be empty if there is no good candidate as secondary amount.
+
+
+            One example of secondaryAmount would be: "Topping up 100 USD balance with 80 GBP". In this case `80 GBP` would be the secondaryAmount of the activity.
+
+            '
+          example: 1.50 SGD
+        status:
+          $ref: '#/components/schemas/ActivityStatus'
+        createdOn:
+          type: string
+          format: date-time
+          description: Timestamp when the activity was created.
+          example: '2023-01-01T00:00:00.000Z'
+        updatedOn:
+          type: string
+          format: date-time
+          description: Timestamp when the activity was last modified.
+          example: '2023-01-01T00:00:00.000Z'
+    ActivityStatus:
+      type: string
+      description: 'Status of the Activity.
+
+        - `REQUIRES_ATTENTION` - Requires an end user attention.
+
+        - `IN_PROGRESS` - Indicates that this activity has yet to be completed. (Example: In progress Top Up)
+
+        - `UPCOMING` - Indicates that this activity is scheduled to happen in the future. By default these activities will only be shown 2 days before the date. (Example: A scheduled transfer)
+
+        - `COMPLETED` - Indicates that this activity is at its end state. (Example: A completed Top Up)
+
+        - `CANCELLED` - Indicates that this activity is cancelled. (Example: A Top Up is cancelled)
+
+        '
+      example: IN_PROGRESS
+      enum:
+      - REQUIRES_ATTENTION
+      - IN_PROGRESS
+      - UPCOMING
+      - COMPLETED
+      - CANCELLED
+    ActivityType:
+      type: string
+      description: Type of Activity.
+      example: CARD_PAYMENT
+      enum:
+      - ACQUIRING_PAYMENT
+      - AUTO_CONVERSION
+      - BALANCE_ADJUSTMENT
+      - BALANCE_ASSET_FEE
+      - BALANCE_CASHBACK
+      - BALANCE_DEPOSIT
+      - BALANCE_HOLD_FEE
+      - BALANCE_INTEREST
+      - BANK_DETAILS_ORDER
+      - BATCH_TRANSFER
+      - CARD_CASHBACK
+      - CARD_CHECK
+      - CARD_ORDER
+      - CARD_PAYMENT
+      - CASH_WITHDRAWAL
+      - CLAIMABLE_SEND_ORDER
+      - DIRECT_DEBIT_TRANSACTION
+      - EXCESS_REFUND
+      - FEE_REFUND
+      - INCORPORATION_ORDER
+      - INTERBALANCE
+      - PAYMENT_REQUEST
+      - PREFUNDING_TRANSFER
+      - REWARD
+      - SCHEDULED_SEND_ORDER
+      - TRANSFER
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

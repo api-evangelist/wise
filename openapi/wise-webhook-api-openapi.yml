@@ -1,0 +1,710 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds webhook API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: webhook
+  x-displayName: Subscriptions
+  description: 'Manage webhook subscriptions at both the application and profile level. Create, list, retrieve, and delete subscriptions, as well as test your webhook endpoints.
+
+
+    For more information on creating and managing webhooks, and specific event types, see [Webhooks & Notifications](/guides/developer/webhooks).
+
+    '
+paths:
+  /v3/applications/{clientKey}/subscriptions:
+    post:
+      operationId: webhookApplicationSubscriptionCreate
+      summary: Create Application Webhook Subscription
+      description: 'Create a webhook subscription at the application level.
+
+
+        `clientKey` can be received upon obtaining client credentials from our tech support.
+
+        '
+      tags:
+      - webhook
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        description: Your application's client key.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/subscription-request'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subscription'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: webhookApplicationSubscriptionList
+      summary: List Application Webhook Subscriptions
+      description: List all webhook subscriptions for your application.
+      tags:
+      - webhook
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        description: Your application's client key.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/subscription'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/applications/{clientKey}/subscriptions/{subscriptionId}:
+    get:
+      operationId: webhookApplicationSubscriptionGet
+      summary: Get Application Webhook Subscription
+      description: Retrieve an application webhook subscription by its identifier.
+      tags:
+      - webhook
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        description: Your application's client key.
+        schema:
+          type: string
+      - name: subscriptionId
+        in: path
+        required: true
+        description: UUID of the subscription.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subscription'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    delete:
+      operationId: webhookApplicationSubscriptionDelete
+      summary: Delete Application Webhook Subscription
+      description: Delete an application webhook subscription by its identifier.
+      tags:
+      - webhook
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        description: Your application's client key.
+        schema:
+          type: string
+      - name: subscriptionId
+        in: path
+        required: true
+        description: UUID of the subscription.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: No Content.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/applications/{clientKey}/subscriptions/{subscriptionId}/test-notifications:
+    post:
+      operationId: webhookApplicationSubscriptionTest
+      summary: Test Application Webhook Subscription
+      description: 'Generate test notifications for an existing application subscription.
+
+
+        Test notifications will have the correct structure for their source subscription''s event type and version, and will contain "dummy" data. These data include random UUIDs, entity IDs of zero, current dates and times, and hard-coded status codes.
+
+
+        Test notifications are delivered with the usual notification HTTP request headers, including a unique delivery ID for the notification, and a "test notification" flag set to true. You can check for the presence of this test flag to determine that an incoming notification is a test notification which should not be processed as real data. See the section [Event HTTP requests](/guides/developer/webhooks/event-handling#requests) for more information on request headers.
+
+
+        When test notifications are created with the API, they are queued for sending in the same way as non-test notifications. This means that there may be some delay in notification delivery, and delivery failures will result in attempts to redeliver the notification later. The API returns the delivery IDs of the notifications that have been successfully queued for sending, which can be correlated with the delivery ID header values for notifications you later receive.
+
+
+        {% admonition type="info" %}
+
+        This test notification API is only available for application-based subscriptions. Profile-based subscriptions do not currently support this testing feature.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - webhook
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: clientKey
+        in: path
+        required: true
+        description: Your application's client key.
+        schema:
+          type: string
+      - name: subscriptionId
+        in: path
+        required: true
+        description: UUID of the subscription.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/test-notification'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/subscriptions:
+    post:
+      operationId: webhookProfileSubscriptionCreate
+      summary: Create Profile Webhook Subscription
+      description: Create a webhook subscription at the profile level.
+      tags:
+      - webhook
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: ID of the profile you are subscribing to.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/subscription-request'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subscription'
+              example:
+                id: 72195556-e5cb-495e-a010-b37a4f2a3043
+                name: 'Webhook Subscription #1'
+                delivery:
+                  version: 4.0.0
+                  url: https://your.webhook.url/12345
+                trigger_on: transfers#state-change
+                scope:
+                  domain: profile
+                  id: <your profile ID>
+                created_by:
+                  type: user
+                  id: <your user ID>
+                created_at: '2019-10-10T13:55:57Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: webhookProfileSubscriptionList
+      summary: List Profile Webhook Subscriptions
+      description: List all webhook subscriptions for a profile.
+      tags:
+      - webhook
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: ID of the profile.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/subscription'
+              example:
+              - id: e889e085-3677-4110-be26-3e9160ac9f25
+                name: '#1 subscription'
+                delivery:
+                  version: 2.0.0
+                  url: https://your.webhook.url/12345
+                trigger_on: transfers#state-change
+                scope:
+                  domain: profile
+                  id: <your profile ID>
+                created_by:
+                  type: user
+                  id: <your user ID>
+              - id: eabeb3f5-c134-4a1c-99e2-86a1163daf1b
+                name: '#2 subscription'
+                delivery:
+                  version: 2.0.0
+                  url: https://your.webhook.url/12345
+                trigger_on: transfers#state-change
+                scope:
+                  domain: profile
+                  id: <your profile ID>
+                created_by:
+                  type: user
+                  id: <your user ID>
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/subscriptions/{subscriptionId}:
+    get:
+      operationId: webhookProfileSubscriptionGet
+      summary: Get Profile Webhook Subscription
+      description: Retrieve a profile webhook subscription by its identifier.
+      tags:
+      - webhook
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: ID of the profile.
+        schema:
+          type: integer
+          format: int64
+      - name: subscriptionId
+        in: path
+        required: true
+        description: UUID of the subscription.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subscription'
+              example:
+                id: f215f353-35fd-405b-b27f-4fd603c905ed
+                name: 'Webhook Subscription #1'
+                delivery:
+                  version: 2.0.0
+                  url: https://your.webhook.url/12345
+                trigger_on: balances#credit
+                scope:
+                  domain: profile
+                  id: <your profile ID>
+                created_by:
+                  type: user
+                  id: <your user ID>
+                created_at: '2008-09-15T15:53:00Z'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    delete:
+      operationId: webhookProfileSubscriptionDelete
+      summary: Delete Profile Webhook Subscription
+      description: Delete a profile webhook subscription by its identifier.
+      tags:
+      - webhook
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: ID of the profile.
+        schema:
+          type: integer
+          format: int64
+      - name: subscriptionId
+        in: path
+        required: true
+        description: UUID of the subscription.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: No Content.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    subscription:
+      title: Subscription
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID that uniquely identifies the subscription.
+          example: 72195556-e5cb-495e-a010-b37a4f2a3043
+        name:
+          type: string
+          description: A custom name for your webhook to ease with identification.
+          example: 'Webhook Subscription #1'
+        trigger_on:
+          type: string
+          description: 'The event type this subscription is listening for. [List of available events](/guides/developer/webhooks/event-types).
+
+            '
+          example: transfers#state-change
+        delivery:
+          type: object
+          properties:
+            version:
+              type: string
+              description: The event representation semantic version.
+              example: 4.0.0
+            url:
+              type: string
+              description: The URL where your server will be listening for events.
+              example: https://your.webhook.url/12345
+        scope:
+          type: object
+          properties:
+            domain:
+              type: string
+              description: Scope of this subscription (e.g. "application" or "profile").
+              example: application
+            id:
+              type: string
+              description: ID associated with the scope (client key or profile ID).
+              example: <your client key>
+        created_by:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Creator type (e.g. "application" or "user").
+              example: application
+            id:
+              type: string
+              description: ID of the creator.
+              example: <your client ID>
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the subscription was created.
+          example: '2019-10-10T13:55:57Z'
+    subscription-request:
+      title: Subscription Request
+      type: object
+      required:
+      - name
+      - trigger_on
+      - delivery
+      properties:
+        name:
+          type: string
+          description: A custom name for your webhook to ease with identification.
+          example: 'Webhook Subscription #1'
+        trigger_on:
+          type: string
+          description: '[Choose from a list of available events](/guides/developer/webhooks/event-types).
+
+            '
+          example: transfers#state-change
+        delivery:
+          type: object
+          required:
+          - version
+          - url
+          properties:
+            version:
+              type: string
+              description: The event representation semantic version.
+              example: 4.0.0
+            url:
+              type: string
+              description: The URL where your server will be listening for events.
+              example: https://your.webhook.url/12345
+    test-notification:
+      title: Test Notification
+      type: object
+      properties:
+        delivery_id:
+          type: string
+          format: uuid
+          description: ID of the delivery that was queued for sending.
+          example: 4a6b9810-4279-4de5-8d8d-1a6cf3b92a75
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the test notification was created.
+          example: '2019-03-28T11:22:33Z'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

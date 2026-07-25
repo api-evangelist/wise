@@ -1,0 +1,837 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds jose API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: jose
+  x-displayName: JOSE
+  description: 'Wise uses the [JOSE framework](https://jose.readthedocs.io/en/latest/) to accept and respond with signed and encrypted payloads. These endpoints allow you to manage keys and test your signing and encryption implementation.
+
+
+    For more information, please speak with your Implementation team.
+
+    '
+paths:
+  /v1/auth/jose/response/public-keys:
+    get:
+      operationId: joseResponsePublicKeysGet
+      summary: Get Wise JOSE public key
+      description: "Returns a public key issued by Wise.\n\nDepending on the scope requested, the key will be used for verifying HTTP responses signed by Wise or for for encrypting the payload prior to sending it to Wise.\n\nFor both signature verification and payload encryption, the process involves storing this public key after retrieval. In both cases, the stored public key should be used without calling this endpoint.\n\nIf verification of the signed request fails or Wise is unable to decrypt your request payload, call this API to issue a fresh key from Wise and reattempt the operation again.\n\n{% admonition type=\"warning\" %}\n  This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid [client credentials token](/api-reference/oauth-token/oauthtokencreate) before performing this call.\n{% /admonition %}\n"
+      tags:
+      - jose
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: version
+        in: query
+        required: false
+        description: Fetch a specific public key version. If omitted the most recent public key is provided.
+        schema:
+          type: integer
+          format: int32
+      - name: algorithm
+        in: query
+        required: true
+        description: 'Algorithm to be used for signature verification or payload encryption. This must match the algorithm used during request.
+
+
+          - Signature verification (Scope: `PAYLOAD_SIGNING`): `ES256`, `ES384`, `ES512`, `PS256`, `PS384`, `PS512`
+
+          - Payload encryption (Scope: `PAYLOAD_ENCRYPTION`): `RSA_OAEP_256`
+
+          '
+        schema:
+          type: string
+          enum:
+          - ES256
+          - ES384
+          - ES512
+          - PS256
+          - PS384
+          - PS512
+          - RSA_OAEP_256
+        example: ES512
+      - name: scope
+        in: query
+        required: true
+        description: Scope of the key. Must be `PAYLOAD_SIGNING` or `PAYLOAD_ENCRYPTION`.
+        schema:
+          type: string
+          enum:
+          - PAYLOAD_SIGNING
+          - PAYLOAD_ENCRYPTION
+        example: PAYLOAD_SIGNING
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Public key object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keyId:
+                    type: string
+                    format: UUID
+                    description: ID of the key in UUID format.
+                  version:
+                    type: integer
+                    format: int32
+                    description: Version of the public key issued.
+                  keyMaterial:
+                    type: object
+                    properties:
+                      algorithm:
+                        type: string
+                        description: Algorithm to be used with the key.
+                        enum:
+                        - ES256
+                        - ES384
+                        - ES512
+                        - PS256
+                        - PS384
+                        - PS512
+                        - RSA_OAEP_256
+                      keyMaterial:
+                        type: string
+                        description: Public key material.
+                  scope:
+                    type: string
+                    description: Scope of the key.
+                    enum:
+                    - PAYLOAD_SIGNING
+                    - PAYLOAD_ENCRYPTION
+              example:
+                version: 1
+                keyMaterial:
+                  algorithm: ES512
+                  keyMaterial: MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBYAwVICxD0Paq7MOuO34omujHxSrQXZtiTQ/VMteqAeUfM4wE+vTSpbYCqb1pNhhcQpF+FJd2H8jB1H1zil7qLLcBw+yl4PrnLza1pmNLr+kqQVoVXVyVx/xxMK2WObLn8tHxXtW4k+bm1/ySF+0RQ265IZcw2i8YYX2FY59JkwE2Fac=
+                scope: PAYLOAD_SIGNING
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/auth/jose/request/public-keys:
+    post:
+      operationId: joseRequestPublicKeysCreate
+      summary: Add a new client public key
+      description: "Upload a client public key for request payload signing or response payload encryption.\n\n{% admonition type=\"warning\" %}\n  This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid [client credentials token](/api-reference/oauth-token/oauthtokencreate) before performing this call.\n{% /admonition %}\n"
+      tags:
+      - jose
+      security:
+      - ClientCredentialsToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyId:
+                  type: string
+                  format: uuid
+                  description: Unique public key identifier in UUID format.
+                validFrom:
+                  type: string
+                  description: 'The key is valid from this date. Format: `yyyy-MM-dd HH:mm:ss` (UTC).'
+                validTill:
+                  type: string
+                  description: 'The key is valid until this date. Format: `yyyy-MM-dd HH:mm:ss` (UTC).'
+                scope:
+                  type: string
+                  description: Scope of the payload operation.
+                  enum:
+                  - PAYLOAD_SIGNING
+                  - PAYLOAD_ENCRYPTION
+                publicKeyMaterial:
+                  type: object
+                  properties:
+                    algorithm:
+                      type: string
+                      description: 'Algorithm to be used for:
+
+                        - Signature verification (Scope: `PAYLOAD_SIGNING`): `ES256`, `ES384`, `ES512`, `PS256`, `PS384`, `PS512`
+
+                        - Payload encryption (Scope: `PAYLOAD_ENCRYPTION`): `RSA_OAEP_256`
+
+                        '
+                      enum:
+                      - ES256
+                      - ES384
+                      - ES512
+                      - PS256
+                      - PS384
+                      - PS512
+                      - RSA_OAEP_256
+                    keyMaterial:
+                      type: string
+                      description: Public key material in DER (Distinguished Encoding Rules) format and base64 encoded.
+            example:
+              keyId: e87da464-8e5e-4380-8f2d-4e4e04052672
+              scope: PAYLOAD_SIGNING
+              validFrom: '2023-04-27 00:00:00'
+              validTill: '2024-04-01 00:00:00'
+              publicKeyMaterial:
+                algorithm: ES512
+                keyMaterial: MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBYAwVICxD0Paq7MOuO34omujHxSrQXZtiTQ/VMteqAeUfM4wE+vTSpbYCqb1pNhhcQpF+FJd2H8jB1H1zil7qLLcBw+yl4PrnLza1pmNLr+kqQVoVXVyVx/xxMK2WObLn8tHxXtW4k+bm1/ySF+0RQ265IZcw2i8YYX2FY59JkwE2Fac=
+      responses:
+        '201':
+          description: Public key created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientId:
+                    type:
+                    - string
+                    - 'null'
+                    description: This field is currently not in use and will always return `null`.
+                  keyId:
+                    type: string
+                    format: uuid
+                    description: Unique public key identifier in UUID format.
+                  scope:
+                    type: string
+                    description: Scope of the payload operation.
+                    enum:
+                    - PAYLOAD_SIGNING
+                    - PAYLOAD_ENCRYPTION
+                  validFrom:
+                    type: string
+                    description: 'The key is valid from this date. Format: `yyyy-MM-dd HH:mm:ss` (UTC).'
+                  validTill:
+                    type: string
+                    description: 'The key is valid until this date. Format: `yyyy-MM-dd HH:mm:ss` (UTC).'
+                  publicKeyMaterial:
+                    type: object
+                    properties:
+                      algorithm:
+                        type: string
+                        description: Algorithm to be used for request signature verification or for response payload encryption.
+                      keyMaterial:
+                        type: string
+                        description: Public key material in DER (Distinguished Encoding Rules) format and base64 encoded.
+                  deactivationTimestamp:
+                    type:
+                    - string
+                    - 'null'
+                    description: This field is currently not in use and will always return `null`.
+              example:
+                clientId: null
+                keyId: e87da464-8e5e-4380-8f2d-4e4e04052672
+                scope: PAYLOAD_SIGNING
+                validFrom: '2023-04-27 00:00:00'
+                validTill: '2024-04-01 00:00:00'
+                publicKeyMaterial:
+                  algorithm: ES512
+                  keyMaterial: MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBYAwVICxD0Paq7MOuO34omujHxSrQXZtiTQ/VMteqAeUfM4wE+vTSpbYCqb1pNhhcQpF+FJd2H8jB1H1zil7qLLcBw+yl4PrnLza1pmNLr+kqQVoVXVyVx/xxMK2WObLn8tHxXtW4k+bm1/ySF+0RQ265IZcw2i8YYX2FY59JkwE2Fac=
+                deactivationTimestamp: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v1/auth/jose/playground/jws:
+    post:
+      operationId: josePlaygroundJws
+      summary: Playground JWS
+      description: 'Send test signed HTTP requests and receive signed responses. Signing is mandatory for this endpoint — any message that is not a JSON Web Signature (JWS) will be rejected.
+
+        '
+      tags:
+      - jose
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/jose+json
+        example: application/jose+json
+      - name: x-tw-jose-method
+        in: header
+        required: true
+        description: JOSE method identifier.
+        schema:
+          type: string
+          enum:
+          - jws
+        example: jws
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - ClientCredentialsToken: []
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -i -X POST \\\n  https://api.wise-sandbox.com/v1/auth/jose/playground/jws \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'x-tw-jose-method: jws' \\\n  -d 'eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCIsInVybCI6Ii92MS9hdXRoL2pvc2UvcGxheWdyb3VuZC9qd3MifQ.eyJtZXNzYWdlIjoiVGhpcyBpcyBhbiBleGFtcGxlIGZyb20gZG9jcy53aXNlLmNvbSJ9.AS9QHdkWvUEn0LxQEMPRBzlceN78J-Le-Qm1XIkkSBpsGdc0WM0MZTIGFEAJEcWeUR2M-abtd5DRdar4hLzs9apPAQ-GT70SIDV6pX9-4UKfIfzJ4g305zCoHflTfn-ijvI7XrVR_yr7xO9GJo86bfBqAX_m5uuxyU7Jy9gM1epd8HcC'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'JWS-encoded string. The payload before signing should contain a `message` field with any text.
+
+
+                Original payload:
+
+                ```json
+
+                {"message": "This is an example from docs.wise.com"}
+
+                ```
+
+
+                Encoded (JWS):
+
+                ```
+
+                eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCIsInVybCI6Ii92MS9hdXRoL2pvc2UvcGxheWdyb3VuZC9qd3MifQ.eyJtZXNzYWdlIjoiVGhpcyBpcyBhbiBleGFtcGxlIGZyb20gZG9jcy53aXNlLmNvbSJ9.AS9QHdkWvUEn0LxQEMPRBzlceN78J-Le-Qm1XIkkSBpsGdc0WM0MZTIGFEAJEcWeUR2M-abtd5DRdar4hLzs9apPAQ-GT70SIDV6pX9-4UKfIfzJ4g305zCoHflTfn-ijvI7XrVR_yr7xO9GJo86bfBqAX_m5uuxyU7Jy9gM1epd8HcC
+
+                ```
+
+                '
+            example: eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCIsInVybCI6Ii92MS9hdXRoL2pvc2UvcGxheWdyb3VuZC9qd3MifQ.eyJtZXNzYWdlIjoiVGhpcyBpcyBhbiBleGFtcGxlIGZyb20gZG9jcy53aXNlLmNvbSJ9.AS9QHdkWvUEn0LxQEMPRBzlceN78J-Le-Qm1XIkkSBpsGdc0WM0MZTIGFEAJEcWeUR2M-abtd5DRdar4hLzs9apPAQ-GT70SIDV6pX9-4UKfIfzJ4g305zCoHflTfn-ijvI7XrVR_yr7xO9GJo86bfBqAX_m5uuxyU7Jy9gM1epd8HcC
+      responses:
+        '200':
+          description: Signed response.
+          content:
+            application/jose+json:
+              schema:
+                type: string
+                description: "JWS-encoded string. When decoded, the response contains:\n\n- `message` — The original message prefixed with `jose-playground-response-`. Message length is limited to 100 characters.\n- `method` — Original HTTP request method name: `POST`.\n\nExample of decoded response:\n```json\n{\n  \"message\": \"jose-playground-response-This is an example from docs.wise.com\",\n  \"method\": \"POST\"\n}\n```\n"
+              example: eyJ2ZXJzaW9uIjoxLCJhbGciOiJFUzUxMiJ9.eyJtZXNzYWdlIjoiam9zZS1wbGF5Z3JvdW5kLXJlc3BvbnNlLVRoaXMgaXMgYW4gZXhhbXBsZSBmcm9tIGRvY3Mud2lzZS5jb20iLCJtZXRob2QiOiJQT1NUIn0.APYfoUySW_dPdBBVST3tJdaCBCMQZm0UR6g0vBqxjjX4WWkOdt6h045EXZKMT1m0JEMI5b7KpN14Mib9BxS7VWpLAPwYhTU5pJcQrtiK4fwaBMTT_DwipZk6ASXVevrMK_Tn9YSSkKDsv6X9qyBsnIXKy304Ex5QIHKmSGQT6wNSJ7Ye02
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/auth/jose/playground/jwe:
+    get:
+      operationId: josePlaygroundJweGet
+      summary: Playground JWE for GET requests
+      description: 'Send test HTTP GET requests and receive encrypted responses.
+
+        '
+      tags:
+      - jose
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/jose+json
+        example: application/jose+json
+      - name: x-tw-jose-method
+        in: header
+        required: true
+        description: JOSE method identifier.
+        schema:
+          type: string
+          enum:
+          - jwe
+        example: jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - ClientCredentialsToken: []
+      responses:
+        '200':
+          description: Encrypted response.
+          content:
+            application/jose+json:
+              schema:
+                type: string
+                description: "JWE-encoded string. When decrypted, the response contains:\n\n- `message` — The response message is always `jose-playground-response-`.\n- `method` — Original HTTP request method name: `GET`.\n\nExample of decrypted response:\n```json\n{\n  \"message\": \"jose-playground-response-\",\n  \"method\": \"GET\"\n}\n```\n"
+              example: eyJraWQiOiI2ZGE0OTQ5NS0xNjMyLTQzY2QtOWEwMy1kZDMyNDYwM2VjZDciLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.UC5mC6XSGZZuQzUALpM2QfDWyi-lcl4Wv3v8-9L04BFmqYTyiQMO-YMxiwzOdVbF-L01CaFcr_iuoM36fKp01onJAtsrvuGcnrHeh23kMwZ5k29ycGTckE0YYLe-WV9WtXguudfFC3Hri9v4FTPEE1_BbkrHACVufuhw_xWUWgYAekfm7dnmTI_3SmtExWZ_P-Xn6rkGXhsJ0Kq9LB-F3mnuvz_iglvZsW76RdLV_I4es-TfTnQgVOGO-N38SSS4wCF1qw2TWOkpNAe9kyAg6a8tWw8ZkpOxJlmGdp4jLuG_GDWlmtDrv9ntgeCLDRiTp4SLYL2MGYdmNXigZI5xrg.P_h3CuIiKxEzndER.Zf0wahZEHQSMcb4olkeT1NNzh3Alj34XbXVdREiqQH9CKDa-GnKvh1lXXYuvTO99vtBmNRM.iTzGQ3FNRIybDT_lJcnaeQ03
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    post:
+      operationId: josePlaygroundJwePost
+      summary: Playground JWE for POST requests
+      description: 'Send test encrypted HTTP requests and receive encrypted responses. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
+
+        '
+      tags:
+      - jose
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/jose+json
+        example: application/jose+json
+      - name: x-tw-jose-method
+        in: header
+        required: true
+        description: JOSE method identifier.
+        schema:
+          type: string
+          enum:
+          - jwe
+        example: jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - ClientCredentialsToken: []
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -i -X POST \\\n  https://api.wise-sandbox.com/v1/auth/jose/playground/jwe \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'x-tw-jose-method: jwe' \\\n  -d 'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W_WPBDXclMryaywqAB-_yC1hUYukKmZxByhE9d1G8hClc2HpewkryILGJW4uVTUeRdo1oVWd68TPIqi7bqMGUsrT-3MI4ggVSjC1rf8Lf1xTZ8-GHjSPso8tFBXnydOKzggi6fnfk98BIW76Rnxkn6sW79LH5NgN1spTOoh8-tI3i_wbHdqJOxTReaUNMYZobm7wxedZcRxhsaSrVqx2qdELeqkfwgvB1DRbHTF_PTe4W0ibMbcJivHjiDf6oAV9vXgVhYb66rhB43pgdFDv4nY1mkQC45R5T6CBdzv80EdAVOj1G4bktHyJWaJzHVsGozpxsNj3bt1AopyvDO8tsw.WLOO5WH4ZpBPi-8B.0g3eUpQPvRIaTbgUi6sH0WejsJ1nLWDGnDKTktZrkquLQlCMmIguj0I5UCyqXEo.URtTniRvfGxrKRLK63trug'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'JWE-encoded string. The payload before encryption should contain a `message` field with any text.
+
+
+                Original payload:
+
+                ```json
+
+                {"message": "This is an example from docs.wise.com"}
+
+                ```
+
+
+                Encoded (JWE):
+
+                ```
+
+                eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W_WPBDXclMryaywqAB-_yC1hUYukKmZxByhE9d1G8hClc2HpewkryILGJW4uVTUeRdo1oVWd68TPIqi7bqMGUsrT-3MI4ggVSjC1rf8Lf1xTZ8-GHjSPso8tFBXnydOKzggi6fnfk98BIW76Rnxkn6sW79LH5NgN1spTOoh8-tI3i_wbHdqJOxTReaUNMYZobm7wxedZcRxhsaSrVqx2qdELeqkfwgvB1DRbHTF_PTe4W0ibMbcJivHjiDf6oAV9vXgVhYb66rhB43pgdFDv4nY1mkQC45R5T6CBdzv80EdAVOj1G4bktHyJWaJzHVsGozpxsNj3bt1AopyvDO8tsw.WLOO5WH4ZpBPi-8B.0g3eUpQPvRIaTbgUi6sH0WejsJ1nLWDGnDKTktZrkquLQlCMmIguj0I5UCyqXEo.URtTniRvfGxrKRLK63trug
+
+                ```
+
+                '
+            example: eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W_WPBDXclMryaywqAB-_yC1hUYukKmZxByhE9d1G8hClc2HpewkryILGJW4uVTUeRdo1oVWd68TPIqi7bqMGUsrT-3MI4ggVSjC1rf8Lf1xTZ8-GHjSPso8tFBXnydOKzggi6fnfk98BIW76Rnxkn6sW79LH5NgN1spTOoh8-tI3i_wbHdqJOxTReaUNMYZobm7wxedZcRxhsaSrVqx2qdELeqkfwgvB1DRbHTF_PTe4W0ibMbcJivHjiDf6oAV9vXgVhYb66rhB43pgdFDv4nY1mkQC45R5T6CBdzv80EdAVOj1G4bktHyJWaJzHVsGozpxsNj3bt1AopyvDO8tsw.WLOO5WH4ZpBPi-8B.0g3eUpQPvRIaTbgUi6sH0WejsJ1nLWDGnDKTktZrkquLQlCMmIguj0I5UCyqXEo.URtTniRvfGxrKRLK63trug
+      responses:
+        '200':
+          description: Encrypted response.
+          content:
+            application/jose+json:
+              schema:
+                type: string
+                description: "JWE-encoded string. When decrypted, the response contains:\n\n- `message` — The original message prefixed with `jose-playground-response-`. Message length is limited to 100 characters.\n- `method` — Original HTTP request method name: `POST`.\n\nExample of decrypted response:\n```json\n{\n  \"message\": \"jose-playground-response-This is an example from docs.wise.com\",\n  \"method\": \"POST\"\n}\n```\n"
+              example: eyJraWQiOiI2ZGE0OTQ5NS0xNjMyLTQzY2QtOWEwMy1kZDMyNDYwM2VjZDciLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.qwMqgFXRI84THQdCHhxNe5yvKOuKp2rAMH62xQ1OioPatnLfxqPHJUX0as13B3g3JKaqGgF0qMi7r3QbJ_cXNFBIg1yenCwWv4192J73-kEkCSyS-FflDCNfih1z1mm95ftAE7FhHJVG5tcSm_B0-bPU3SbjB3SDhR3QlLX5o_sQmYkQay8PKSssyBS5tCjuKdz-9QNvZtNADPujKrJGe5hE5r7ShcNwVUS2vpMXANiQTzZnQ2L3j_m07Rru-PgMxHTD2uR621B87YfTHonWDJe4XogA_pMWD_hzHVQKT7Il--2YOtv8PTnLge-uVvRTgqUiYUdvq85nPyDKsOQMnQ.zprknKK9W4iAX7YA.LJWA6oRcYj0LruM3GLPtZ0CtVNpI0Zs9WFrARDd464kKxSlu15LBiFFCFwOHbeKoRudfp8Br7MfRIlaTLHxPEE1xoBB8jZN8fakAcApU.OlMATtfF9XMtYJtTsGuBGQ02
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/auth/jose/playground/jwe-direct-encryption:
+    post:
+      operationId: josePlaygroundJweDirectEncryption
+      summary: Playground JWE for direct encryption
+      description: 'Send encrypted HTTP requests for testing purposes and receive responses encrypted with the original content encryption key. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
+
+        '
+      tags:
+      - jose
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/jose+json
+        example: application/jose+json
+      - name: x-tw-jose-method
+        in: header
+        required: true
+        description: JOSE method identifier.
+        schema:
+          type: string
+          enum:
+          - jwe
+        example: jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - ClientCredentialsToken: []
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -i -X POST \\\n  https://api.wise-sandbox.com/v1/auth/jose/playground/jwe-direct-encryption \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'x-tw-jose-method: jwe' \\\n  -d 'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.rVqOhX92u637hqwrw96rqA48e7NhMZVeWvUZwA4OAwOa_sBVcpXecd6qivPfZ-CuhRaD4gNKUlUJnTedBwOh5hcDZELRWThtwNiTZKaDS_ZNDjJf1r0VQPj65nT2ikfPAP-S6cYCy6JbWXivf7Jwq6lus-QydmxoLlVRvAuROFe-HzlH0-JhlwOdhPwbwl1AGx64qEir7oOn5VezJvpx3sscipm3w30mfoFc7pLlscMijMNFUwngXCLmgpno1rC_ZDzRcEycVbwvgKW75jO25UyEJif25MdE0UJUx4IT6MDviHqtBXO4OQpwhd_W6jVk-PlZ1WkZyOZqpi8HLKGo8Q.eFHqPV-mcBC82Ga2.W9o2BT7Q-vEUA2u3n4gaSdfQY_4svVj0-jwjcXmlBraZEKmtTW_A1ygvr8b9iHfS9fkxL8H_6S_oEcqzFqTKmNTzwe2V0cRY-kvzsKI.lO2gETmo2WocPZoTpU-pkQ'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'JWE-encoded string. The payload before encryption should contain a `message` field with any text.
+
+
+                Original payload:
+
+                ```json
+
+                {"message": "This is an example from docs.wise.com"}
+
+                ```
+
+
+                Encoded (JWE):
+
+                ```
+
+                eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.rVqOhX92u637hqwrw96rqA48e7NhMZVeWvUZwA4OAwOa_sBVcpXecd6qivPfZ-CuhRaD4gNKUlUJnTedBwOh5hcDZELRWThtwNiTZKaDS_ZNDjJf1r0VQPj65nT2ikfPAP-S6cYCy6JbWXivf7Jwq6lus-QydmxoLlVRvAuROFe-HzlH0-JhlwOdhPwbwl1AGx64qEir7oOn5VezJvpx3sscipm3w30mfoFc7pLlscMijMNFUwngXCLmgpno1rC_ZDzRcEycVbwvgKW75jO25UyEJif25MdE0UJUx4IT6MDviHqtBXO4OQpwhd_W6jVk-PlZ1WkZyOZqpi8HLKGo8Q.eFHqPV-mcBC82Ga2.W9o2BT7Q-vEUA2u3n4gaSdfQY_4svVj0-jwjcXmlBraZEKmtTW_A1ygvr8b9iHfS9fkxL8H_6S_oEcqzFqTKmNTzwe2V0cRY-kvzsKI.lO2gETmo2WocPZoTpU-pkQ
+
+                ```
+
+                '
+            example: eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.rVqOhX92u637hqwrw96rqA48e7NhMZVeWvUZwA4OAwOa_sBVcpXecd6qivPfZ-CuhRaD4gNKUlUJnTedBwOh5hcDZELRWThtwNiTZKaDS_ZNDjJf1r0VQPj65nT2ikfPAP-S6cYCy6JbWXivf7Jwq6lus-QydmxoLlVRvAuROFe-HzlH0-JhlwOdhPwbwl1AGx64qEir7oOn5VezJvpx3sscipm3w30mfoFc7pLlscMijMNFUwngXCLmgpno1rC_ZDzRcEycVbwvgKW75jO25UyEJif25MdE0UJUx4IT6MDviHqtBXO4OQpwhd_W6jVk-PlZ1WkZyOZqpi8HLKGo8Q.eFHqPV-mcBC82Ga2.W9o2BT7Q-vEUA2u3n4gaSdfQY_4svVj0-jwjcXmlBraZEKmtTW_A1ygvr8b9iHfS9fkxL8H_6S_oEcqzFqTKmNTzwe2V0cRY-kvzsKI.lO2gETmo2WocPZoTpU-pkQ
+      responses:
+        '200':
+          description: Encrypted response using direct encryption.
+          content:
+            application/jose+json:
+              schema:
+                type: string
+                description: "JWE-encoded string using direct encryption. The response is encrypted with the original content encryption key from the request.\n\nResponse JOSE headers:\n```json\n{\"enc\": \"A256GCM\", \"alg\": \"dir\"}\n```\n\nWhen decrypted, the response contains:\n\n- `message` — The original message prefixed with `jose-playground-response-`. Message length is limited to 100 characters.\n- `method` — Original HTTP request method name: `POST`.\n\nExample of decrypted response:\n```json\n{\n  \"message\": \"jose-playground-response-This is an example from docs.wise.com\",\n  \"method\": \"POST\"\n}\n```\n"
+              example: eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..gTnxA4uYrCTWVNp1.jQ3dDidM2Z8RuYkgQt1ydJ6xYy5uG3CH72-pioHlZPqucxPWeN1pWwmceQKgpGulJmw3nYLRNkgCa9yQHMofpFIlV5HQJS6mQDxZP4G2kj3bFKvByckRYQQ3v3W7TkjfVL4NAVlrDqxx3G29-qblRwbyneMP.mVY_uctEfEAleVVbHjcqdA04
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/auth/jose/playground/jwsjwe:
+    post:
+      operationId: josePlaygroundJwsJwe
+      summary: Playground JWS+JWE
+      description: 'Send test signed and encrypted HTTP requests and receive signed and encrypted responses. Both signing and encryption are mandatory for this endpoint. The request must be a JSON Web Signature (JWS) wrapped in JSON Web Encryption (JWE) — any message that does not follow this format will be rejected.
+
+
+        The flow combines both JWS and JWE:
+
+        1. **Request**: Sign payload (JWS) → Encrypt signed JWT (JWE) → Send to Wise
+
+        2. **Response**: Receive encrypted response → Decrypt (JWE) → Verify signature (JWS)
+
+
+        {% admonition type="warning" name="" %}
+
+        Currently, the Wise API returns a generic 500 Internal Server Error for decryption failures across endpoints using JWE and JWS+JWE. For example, an invalid key can cause a decryption failure.
+
+
+        Our team is currently planning improvements for these types of error messages to make them more specific and clear. Thank you for your patience.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - jose
+      parameters:
+      - name: Accept
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/jose+json
+        example: application/jose+json
+      - name: x-tw-jose-method
+        in: header
+        required: true
+        description: JOSE method identifier.
+        schema:
+          type: string
+          enum:
+          - jws+jwe
+        example: jws+jwe
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - ClientCredentialsToken: []
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -i -X POST \\\n  https://api.wise-sandbox.com/v1/auth/jose/playground/jwsjwe \\\n  -H 'Accept: application/jose+json' \\\n  -H 'Authorization: Bearer <YOUR_JWT_HERE>' \\\n  -H 'Content-Type: application/jose+json' \\\n  -H 'x-tw-jose-method: jws+jwe' \\\n  -d 'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W0fuxaZOoyaBcxWwgtjEPkOnLdVNyH9ncZi5Y9xQbjD4sYJn8vEQmxKHDw5s14sWhdexSNAPTVMSyzwJaA-LRL0tZTEuQ.ohD4LLjImiKOV4Tu.Rgp9mc2JD6m9Zm5htSqrejwWYy0_hIylYdLD39ZCR-VnQ2VX-Tot8kKGeNncnv7hJ_ApANWiJpKJbiM.5hNt-uaxuOkOraGGZSmsig'\n"
+      requestBody:
+        required: true
+        content:
+          application/jose+json:
+            schema:
+              type: string
+              description: 'JWE-encoded string containing a signed JWS. The payload before signing and encryption should contain a `message` field with any text.
+
+
+                Original payload:
+
+                ```json
+
+                {"message": "This is an example from docs.wise.com"}
+
+                ```
+
+
+                Encoded (JWS+JWE):
+
+                ```
+
+                eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W0fuxaZOoyaBcxWwgtjEPkOnLdVNyH9ncZi5Y9xQbjD4sYJn8vEQmxKHDw5s14sWhdexSNAPTVMSyzwJaA-LRL0tZTEuQ.ohD4LLjImiKOV4Tu.Rgp9mc2JD6m9Zm5htSqrejwWYy0_hIylYdLD39ZCR-VnQ2VX-Tot8kKGeNncnv7hJ_ApANWiJpKJbiM.5hNt-uaxuOkOraGGZSmsig
+
+                ```
+
+                '
+            example: eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.W0fuxaZOoyaBcxWwgtjEPkOnLdVNyH9ncZi5Y9xQbjD4sYJn8vEQmxKHDw5s14sWhdexSNAPTVMSyzwJaA-LRL0tZTEuQ.ohD4LLjImiKOV4Tu.Rgp9mc2JD6m9Zm5htSqrejwWYy0_hIylYdLD39ZCR-VnQ2VX-Tot8kKGeNncnv7hJ_ApANWiJpKJbiM.5hNt-uaxuOkOraGGZSmsig
+      responses:
+        '200':
+          description: Signed and encrypted response.
+          content:
+            application/jose+json:
+              schema:
+                type: string
+                description: "JWE-encoded string containing a signed JWS. After decryption (JWE) and signature verification (JWS), the response contains:\n\n- `message` — The original message prefixed with `jose-playground-response-`. Message length is limited to 100 characters.\n- `method` — Original HTTP request method name: `POST`.\n\nExample of decrypted and decoded response:\n```json\n{\n  \"message\": \"jose-playground-response-This is an example from docs.wise.com\",\n  \"method\": \"POST\"\n}\n```\n"
+              example: eyJraWQiOiJiMzc0ODE1MC0xNGQ0LTRlMDAtYjM5NC03YWUwYzkzYmUyNDUiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.VGhpcyBpcyB0aGUgZW5jcnlwdGVkIENFSw.aXZfdmFsdWU.ZW5jcnlwdGVkX3BheWxvYWQ.YXV0aF90YWc
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              examples:
+                jwsError:
+                  summary: Unable to verify request signature
+                  value:
+                    error: jws_error
+                    error_description: Unable to verify the request signature
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              examples:
+                unexpectedError:
+                  summary: Unexpected server error
+                  value:
+                    message: An unexpected error occurred
+                    request_id: c29beb2374156c390c06fb583e99c999
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

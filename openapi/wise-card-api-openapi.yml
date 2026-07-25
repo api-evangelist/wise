@@ -1,0 +1,907 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds card API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: card
+  x-displayName: Cards
+  description: 'Manage your customers'' cards programmatically. These APIs allow you to list cards, retrieve card details, control card status, and manage spending permissions.
+
+
+    **Key capabilities:**
+
+    - List and retrieve card details for a profile
+
+    - Update card status (active, frozen, blocked)
+
+    - Control spending permissions (e-commerce, ATM, contactless, magnetic stripe, etc.)
+
+    - Reset PIN attempt counter after incorrect PIN entries
+
+    - Update card phone number for verification purposes
+
+
+    {% admonition type="info" %}
+
+    For accessing sensitive card data (PAN, CVV, PIN), see the [Sensitive Card Details API](/api-reference/card-sensitive-details). For ordering new cards, see the [Card Orders API](/api-reference/card-order). For transaction history, see the [Card Transactions API](/api-reference/card-transaction).
+
+    {% /admonition %}'
+paths:
+  /v3/spend/profiles/{profileId}/cards:
+    get:
+      operationId: cardList
+      summary: List cards for a profile
+      description: 'Returns a paginated list of cards that belong to a specific profile.
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile to retrieve cards for.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: pageSize
+        in: query
+        required: false
+        description: The maximum number of cards to return per page. Must be between 10 and 100.
+        schema:
+          type: integer
+          format: int64
+          minimum: 10
+          maximum: 100
+          default: 10
+        example: 10
+      - name: pageNumber
+        in: query
+        required: false
+        description: The page number to retrieve. Must be greater than or equal to 1.
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+          default: 1
+        example: 1
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      responses:
+        '200':
+          description: List of cards retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cards:
+                    type: array
+                    description: Collection of cards for this profile.
+                    items:
+                      $ref: '#/components/schemas/Card'
+                  totalCount:
+                    type: integer
+                    format: int64
+                    description: The total number of cards for this profile.
+                    example: 1
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}:
+    get:
+      operationId: cardGet
+      summary: Get card details
+      description: 'Retrieves details for a specific card by its token.
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      responses:
+        '200':
+          description: Card details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/status:
+    put:
+      operationId: cardStatusUpdate
+      summary: Update card status
+      description: 'Update the status of a card. For cards issued with an `INACTIVE` status, updating to `ACTIVE` will activate the card and move the card order status to `COMPLETED`.
+
+
+        **Available status transitions:**
+
+        - `ACTIVE` - The card is active and usable
+
+        - `FROZEN` - The card is temporarily frozen; all authorization requests will be declined
+
+        - `BLOCKED` - The card is **irreversibly** blocked and is no longer usable
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  description: The status to update the card to.
+                  enum:
+                  - ACTIVE
+                  - FROZEN
+                  - BLOCKED
+                  example: ACTIVE
+            example:
+              status: ACTIVE
+      responses:
+        '200':
+          description: Card status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/reset-pin-count:
+    post:
+      operationId: cardPinCountReset
+      summary: Reset PIN count
+      description: 'If the wrong PIN has been entered more than 3 times, future transactions on the card will be blocked with a `PIN_ENTRY_TRIES_EXCEEDED` error message.
+
+
+        Use this endpoint to reset the PIN count to 0 and unblock transactions.
+
+
+        {% admonition type="info" %}
+
+        In some cases, you may also need to reset the PIN count directly at the ATM.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      responses:
+        '200':
+          description: PIN count reset successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/spending-permissions:
+    get:
+      operationId: cardPermissionsGet
+      summary: Get card spending permissions
+      description: 'Retrieves the current spending permissions configured for a card.
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      responses:
+        '200':
+          description: Card permissions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permissions:
+                    type: array
+                    description: List of spending permissions for this card.
+                    items:
+                      $ref: '#/components/schemas/Permission'
+              example:
+                permissions:
+                - type: ECOM
+                  isEnabled: false
+                  isLocked: false
+                - type: POS_CHIP
+                  isEnabled: true
+                  isLocked: false
+                - type: ATM_WITHDRAWAL
+                  isEnabled: false
+                  isLocked: false
+                - type: MOBILE_WALLETS
+                  isEnabled: true
+                  isLocked: false
+                - type: POS_CONTACTLESS
+                  isEnabled: false
+                  isLocked: true
+                - type: POS_MAGSTRIPE
+                  isEnabled: false
+                  isLocked: true
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    patch:
+      operationId: cardPermissionsUpdate
+      summary: Update a single card permission
+      deprecated: true
+      description: 'Enable or disable a single spending permission on a card.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is deprecated. Please use the [v4 endpoint](/api-reference/card/cardpermissionsbulkupdate) instead.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - isEnabled
+              properties:
+                type:
+                  type: string
+                  description: The permission type to update.
+                  enum:
+                  - ECOM
+                  - POS_CHIP
+                  - POS_MAGSTRIPE
+                  - POS_CONTACTLESS
+                  - ATM_WITHDRAWAL
+                  - MOBILE_WALLETS
+                  example: ECOM
+                isEnabled:
+                  type: boolean
+                  description: Whether to enable or disable this permission.
+                  example: true
+      responses:
+        '200':
+          description: Permission updated successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/spend/profiles/{profileId}/cards/{cardToken}/spending-permissions:
+    patch:
+      operationId: cardPermissionsBulkUpdate
+      summary: Bulk update card permissions
+      description: 'Enable or disable multiple spending permissions on a card in a single request.
+
+
+        This is the recommended endpoint for updating card permissions as it allows updating multiple permissions atomically.
+
+        '
+      tags:
+      - card
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - permissions
+              properties:
+                permissions:
+                  type: array
+                  description: List of permissions to update.
+                  items:
+                    type: object
+                    required:
+                    - type
+                    - isEnabled
+                    properties:
+                      type:
+                        type: string
+                        description: The permission type to update.
+                        enum:
+                        - ECOM
+                        - POS_CHIP
+                        - POS_MAGSTRIPE
+                        - POS_CONTACTLESS
+                        - ATM_WITHDRAWAL
+                        - MOBILE_WALLETS
+                      isEnabled:
+                        type: boolean
+                        description: Whether to enable or disable this permission.
+            example:
+              permissions:
+              - type: ECOM
+                isEnabled: true
+              - type: POS_CHIP
+                isEnabled: true
+      responses:
+        '200':
+          description: Permissions updated successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/cards/{cardToken}/phone-number:
+    put:
+      operationId: cardPhoneNumberUpdate
+      summary: Update phone number
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated for partners onboarded after 1/3/2025. For new and existing partners, your clientId will need to be approved by our support team to make the `phoneNumber` optional in the [create card order endpoint](/api-reference/card-order/cardordercreate). See [3DS for more information](/guides/product/issue-cards/3ds).
+
+        {% /admonition %}
+
+
+        Updates the phone number of a card. The new phone number must be a valid phone number.
+
+        '
+      tags:
+      - card
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 30000000
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+        example: 12345-12345-12345-12345
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phoneNumber
+              properties:
+                phoneNumber:
+                  type: string
+                  description: Must be a valid phone number prefixed with + and country code.
+                  example: '+6588888888'
+      responses:
+        '200':
+          description: Updated card phone number details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The card token that you are modifying.
+                    example: 12345-12345-12345-12345
+                  profileId:
+                    type: integer
+                    description: The profile ID that the card is linked to.
+                    example: 30000000
+                  phoneNumber:
+                    type: string
+                    description: The new phone number associated with the card.
+                    example: '+6588888888'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  schemas:
+    Card:
+      type: object
+      description: The Card resource represents a Wise card linked to a profile.
+      x-tags:
+      - card
+      properties:
+        token:
+          type: string
+          description: Unique identifier for the card.
+          example: ca0c8154-1e14-4464-a1ce-dcea7dc3de52
+        profileId:
+          type: integer
+          format: int64
+          description: Profile ID that owns this card.
+          example: 123456
+        clientId:
+          type: string
+          description: Client ID of the partner that issued the card.
+          example: wise_api_docs
+        status:
+          type: object
+          description: Current status of the card.
+          properties:
+            value:
+              type: string
+              description: 'Status value. One of:
+
+                - `ACTIVE` - Card is active and can be used
+
+                - `INACTIVE` - Card is inactive and all transactions will be declined
+
+                - `BLOCKED` - Card is blocked and cannot be reversed back to any state
+
+                - `FROZEN` - Card is temporarily blocked
+
+                - `PARTNER_SUSPENDED` - Card is suspended by Wise temporarily (do not display to end customers)
+
+                - `EXPIRED` - Card is expired
+
+                - `PURGED` - Cardholder data (e.g. PAN, PIN) has been purged after the retention period (555 days after the card''s expiry date)
+
+                '
+              enum:
+              - ACTIVE
+              - INACTIVE
+              - BLOCKED
+              - FROZEN
+              - PARTNER_SUSPENDED
+              - EXPIRED
+              - PURGED
+              example: ACTIVE
+        cardHolderName:
+          type: string
+          description: Name of the card holder.
+          example: John Smith
+        expiryDate:
+          type: string
+          format: date-time
+          description: Date when the card will expire.
+          example: '2028-05-31T00:00:00Z'
+        lastFourDigits:
+          type: string
+          description: Last 4 digits of the card number.
+          example: '6320'
+        bankIdentificationNumber:
+          type: string
+          description: Bank identification number (BIN) of the card.
+          example: '459661'
+        phoneNumber:
+          type: string
+          description: Phone number associated with the card.
+          example: '+441234567890'
+        cardProgram:
+          type: object
+          description: Card program details.
+          properties:
+            name:
+              type: string
+              description: Name of the card program.
+              example: VISA_DEBIT_BUSINESS_UK_1
+            scheme:
+              type: string
+              description: Card network scheme.
+              enum:
+              - VISA
+              - MASTERCARD
+              example: VISA
+            defaultCurrency:
+              type: string
+              description: Default currency of the card.
+              example: GBP
+            cardType:
+              type: string
+              description: Type of the card. E.g. `PHYSICAL` or `VIRTUAL`.
+              example: VIRTUAL
+        unlockSpendingPermissions:
+          type: string
+          description: 'Method with which physical card spending permissions can be unlocked. One of:
+
+            - `WITH_PARTNER_API` - Unlock via Partner API
+
+            - `WITH_FIRST_CHIP_AND_PIN_TRANSACTION` - Unlock with first chip and PIN transaction
+
+            - `NONE` - Not applicable (for virtual cards)
+
+            '
+          enum:
+          - WITH_PARTNER_API
+          - WITH_FIRST_CHIP_AND_PIN_TRANSACTION
+          - NONE
+          example: WITH_PARTNER_API
+        creationTime:
+          type: string
+          format: date-time
+          description: Time when the card was created.
+          example: '2022-05-31T01:43:24.596321434Z'
+        modificationTime:
+          type: string
+          format: date-time
+          description: Time when the card was last modified.
+          example: '2022-05-31T01:43:24.596321825Z'
+    Permission:
+      type: object
+      description: Spending permission configuration for a card.
+      x-tags:
+      - card
+      properties:
+        type:
+          type: string
+          description: 'The type of transaction this permission controls:
+
+            - `ECOM` - Online transactions
+
+            - `POS_CHIP` - Physical point-of-sale transactions with chip
+
+            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
+
+            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
+
+            - `ATM_WITHDRAWAL` - ATM withdrawals
+
+            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
+
+            '
+          enum:
+          - ECOM
+          - POS_CHIP
+          - POS_MAGSTRIPE
+          - POS_CONTACTLESS
+          - ATM_WITHDRAWAL
+          - MOBILE_WALLETS
+          example: ECOM
+        isEnabled:
+          type: boolean
+          description: Indicates if this permission type is enabled.
+          example: false
+        isLocked:
+          type: boolean
+          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
+          example: false
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

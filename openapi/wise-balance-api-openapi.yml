@@ -1,0 +1,1763 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds balance API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: balance
+  x-displayName: Balances
+  description: 'Create and manage balance accounts within a multi-currency account.
+
+
+    Each profile can hold multiple balance accounts in different currencies. A `STANDARD` balance is limited to one per currency, while `SAVINGS` balances (Jars) allow multiple in the same currency. Creating the first balance for a profile automatically creates the multi-currency account.
+
+
+    Balances include an `investmentState` field. Only balances with `NOT_INVESTED` can be operated on via the API. Invested balances should be shown but not actionable.
+
+
+    For a complete guide on multi-currency accounts, see [Multi-Currency Accounts](/guides/product/accounts).
+
+    '
+paths:
+  /v4/profiles/{profileId}/balances:
+    post:
+      tags:
+      - balance
+      summary: Create a Balance Account
+      operationId: balanceCreate
+      description: 'Opens a balance within the specified profile, in the currency and type specified in the request.
+
+
+        For `STANDARD` balances, only one can be created per currency. For `SAVINGS` balances, multiple in the same currency can be opened.
+
+
+        When creating a `SAVINGS` type balance, a `name` is required.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: X-idempotence-uuid
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical reasons then you can use the same value again for making a retry call.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for creating a balance account.
+              required:
+              - currency
+              - type
+              properties:
+                currency:
+                  type: string
+                  description: Currency code (ISO 4217 Alphabetic Code).
+                  example: EUR
+                type:
+                  $ref: '#/components/schemas/BalanceType'
+                name:
+                  type: string
+                  description: Name of the balance. Required for SAVINGS type balances.
+            example:
+              currency: EUR
+              type: STANDARD
+      responses:
+        '201':
+          description: Created - Balance successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      tags:
+      - balance
+      summary: List Balances for a Profile
+      operationId: balanceList
+      description: 'Retrieves the user''s multi-currency account balance accounts. Returns all balance accounts the profile has in the types specified.
+
+
+        The `types` parameter must include at least one type. To return more than one type, comma-separate the values.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: types
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Comma-separated list of balance types to return. Acceptable values are `STANDARD` and `SAVINGS`.
+        example: STANDARD
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved balances.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Balance'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/profiles/{profileId}/balances/{balanceId}:
+    get:
+      tags:
+      - balance
+      summary: Retrieve a Balance by ID
+      operationId: balanceGet
+      description: Returns a balance based on the specified balance ID.
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: balanceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The balance ID.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved the balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    delete:
+      tags:
+      - balance
+      summary: Remove a Balance Account
+      operationId: balanceDelete
+      description: 'Closes a balance account for the user''s profile.
+
+
+        Balance accounts must have a zero balance to be closed. Bank account details for the balance will also be deactivated and may not be restored.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: balanceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The balance ID.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '204':
+          description: No Content - Balance successfully removed.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/balance-movements:
+    post:
+      tags:
+      - balance
+      summary: Convert or Move Money Between Balances
+      operationId: balanceMovement
+      description: 'This endpoint allows conversion and movement of funds between balance accounts.
+
+
+        **Convert across balance accounts:**
+
+        Convert funds between two `STANDARD` balance accounts in different currencies. Requires a quote created with `"payOut": "BALANCE"`.
+
+
+        **Move money between balances:**
+
+        - Add money to a same-currency jar (move from `STANDARD` to `SAVINGS` without conversion)
+
+        - Add money to another-currency jar (convert money using a quote)
+
+        - Withdraw money from a jar (move from `SAVINGS` to `STANDARD` without conversion)
+
+
+        Either `amount` or `quoteId` is required. Use `quoteId` for cross-currency movements.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: X-idempotence-uuid
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical reasons then you can use the same value again for making a retry call.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for balance movements (conversion or transfer).
+              properties:
+                quoteId:
+                  type: string
+                  format: uuid
+                  description: 'Quote ID. Required for cross-currency movements. Quote must be created with `payOut: BALANCE`.'
+                sourceBalanceId:
+                  type: integer
+                  format: int64
+                  description: Source balance ID. Required when moving between balances (with targetBalanceId).
+                targetBalanceId:
+                  type: integer
+                  format: int64
+                  description: Target balance ID. Required when moving between balances (with sourceBalanceId).
+                amount:
+                  type: object
+                  description: Amount to move. Required for same-currency movements. Either `amount` or `quoteId` must be provided.
+                  properties:
+                    value:
+                      type: number
+                      description: Amount value.
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217 Alphabetic Code).
+            examples:
+              conversion:
+                summary: Convert between currencies
+                value:
+                  quoteId: 00000000-0000-0000-0000-000000000000
+              move:
+                summary: Move within same currency
+                value:
+                  sourceBalanceId: 1
+                  targetBalanceId: 2
+                  amount:
+                    value: 100
+                    currency: EUR
+      responses:
+        '201':
+          description: Created - Movement completed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response from a balance movement operation.
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Movement transaction ID.
+                    example: 30000001
+                  type:
+                    type: string
+                    description: Type of movement.
+                    enum:
+                    - DEPOSIT
+                    - WITHDRAWAL
+                    - CONVERSION
+                    example: CONVERSION
+                  state:
+                    type: string
+                    description: State of the movement.
+                    enum:
+                    - PENDING
+                    - COMPLETED
+                    - CANCELLED
+                    - REVERSED
+                    example: COMPLETED
+                  balancesAfter:
+                    type: array
+                    description: Balance states after the movement.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int64
+                          description: Balance ID.
+                          example: 1
+                        value:
+                          type: number
+                          description: Balance value after movement.
+                          example: 10000594.71
+                        currency:
+                          type: string
+                          description: Currency code.
+                          example: GBP
+                  creationTime:
+                    type: string
+                    format: date-time
+                    description: When the movement was created.
+                    example: '2017-11-21T09:55:49.275Z'
+                  sourceAmount:
+                    type: object
+                    description: Source amount of the movement.
+                    properties:
+                      value:
+                        type: number
+                        example: 113.48
+                      currency:
+                        type: string
+                        example: EUR
+                  targetAmount:
+                    type: object
+                    description: Target amount of the movement.
+                    properties:
+                      value:
+                        type: number
+                        example: 100
+                      currency:
+                        type: string
+                        example: GBP
+                  rate:
+                    type: number
+                    description: Exchange rate applied to the conversion.
+                    example: 0.88558
+                  feeAmounts:
+                    type: array
+                    description: Fee amounts charged for the movement.
+                    items:
+                      type: object
+                      properties:
+                        value:
+                          type: number
+                          example: 0.56
+                        currency:
+                          type: string
+                          example: EUR
+                  steps:
+                    type: array
+                    description: Steps involved in the movement.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int64
+                          description: Step ID.
+                          example: 369588
+                        type:
+                          type: string
+                          description: Step type.
+                          example: CONVERSION
+                        creationTime:
+                          type: string
+                          format: date-time
+                          description: When the step was created.
+                          example: '2017-11-21T09:55:49.276Z'
+                        balancesAfter:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              value:
+                                type: number
+                                example: 9998887.01
+                              currency:
+                                type: string
+                                example: EUR
+                        sourceAmount:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              example: 113.48
+                            currency:
+                              type: string
+                              example: EUR
+                        targetAmount:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              example: 100
+                            currency:
+                              type: string
+                              example: GBP
+                        fee:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              example: 0.56
+                            currency:
+                              type: string
+                              example: EUR
+                        rate:
+                          type: number
+                          description: Exchange rate applied.
+                          example: 0.88558
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/balance-capacity:
+    get:
+      tags:
+      - balance
+      summary: Retrieve Deposit Limits
+      operationId: balanceCapacity
+      description: 'Returns the deposit limit for a profile based on regulatory requirements.
+
+
+        Useful for personal profiles located in countries that have hold limits. We advise calling this API before depositing money into an account if the profile is located in Singapore or Malaysia.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: currency
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Currency code (ISO 4217 Alphabetic Code). The deposit limit will be returned in this currency.
+        example: SGD
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved deposit limits.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Deposit limit information for a profile.
+                properties:
+                  hasLimit:
+                    type: boolean
+                    description: True if there is a regulatory hold limit for the profile's country.
+                    example: true
+                  depositLimit:
+                    type: object
+                    description: Amount of money that can be added to the account.
+                    properties:
+                      amount:
+                        type: number
+                        description: Deposit limit amount.
+                        example: 2000
+                      currency:
+                        type: string
+                        description: Currency code (ISO 4217 Alphabetic Code).
+                        example: SGD
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/excess-money-account:
+    post:
+      tags:
+      - balance
+      summary: Add an Excess Money Account
+      operationId: excessMoneyAccount
+      description: 'If a balance goes over the regulatory hold limit, excess funds are automatically moved to another account at the end of the day.
+
+
+        Use this endpoint to specify a recipient where excess money will be transferred.
+
+
+        Primarily used for Singapore and Malaysia customers.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for configuring an excess money account.
+              required:
+              - recipientId
+              properties:
+                recipientId:
+                  type: integer
+                  format: int64
+                  description: ID of the recipient for excess money transfers.
+                  example: 148393305
+      responses:
+        '200':
+          description: OK - Excess money account configured successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response from configuring an excess money account.
+                properties:
+                  userProfileId:
+                    type: integer
+                    format: int64
+                    description: ID of the profile.
+                    example: 12321323
+                  recipientId:
+                    type: integer
+                    format: int64
+                    description: ID of the recipient for excess money transfers.
+                    example: 148393305
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/total-funds/{currency}:
+    get:
+      tags:
+      - balance
+      summary: Get Total Funds
+      operationId: totalFunds
+      description: 'Provides an overview of your account''s total valuation and available liquidity across all balances.
+
+
+        Returns total worth, total available (including overdraft), total cash, and overdraft details.
+
+
+        #### Example (Assuming GBP and USD has 1:1 exchange rate)
+
+
+        | Scenario                                 | GBP balance | USD balance | Total Worth | Total Available | Overdraft Usage | Overdraft Limit |
+
+        | ---------------------------------------- | ----------- | ----------- | ----------- | --------------- | --------------- | --------------- |
+
+        | Positive account value with no overdraft | 2000        | 0           | 2000        | 2000            | 0               | 0               |
+
+        | Positive account value with overdraft    | 2000        | -100        | 1900        | 2400            | 100             | 500             |
+
+        | Negative account value with overdraft    | 0           | -100        | -100        | 400             | 100             | 500             |
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: currency
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Currency code (ISO 4217 Alphabetic Code). All values will be converted to this currency.
+        example: EUR
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved total funds.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Total funds overview for a profile.
+                properties:
+                  totalWorth:
+                    type: object
+                    description: Total worth of the account, including cash ledger balance and valuation of any asset portfolio if invested.
+                    properties:
+                      value:
+                        type: number
+                        description: Amount value.
+                        example: 2000
+                      currency:
+                        type: string
+                        description: Currency code (ISO 4217 Alphabetic Code).
+                        example: EUR
+                  totalAvailable:
+                    type: object
+                    description: Total available balance, which is the sum of cash ledger balance and any approved overdraft limit.
+                    properties:
+                      value:
+                        type: number
+                        description: Amount value.
+                        example: 2500
+                      currency:
+                        type: string
+                        description: Currency code (ISO 4217 Alphabetic Code).
+                        example: EUR
+                  totalCash:
+                    type: object
+                    description: Total cash balance across all balances, including group balances but excluding asset portfolios.
+                    properties:
+                      value:
+                        type: number
+                        description: Amount value.
+                        example: 2000
+                      currency:
+                        type: string
+                        description: Currency code (ISO 4217 Alphabetic Code).
+                        example: EUR
+                  overdraft:
+                    type: object
+                    description: Overdraft details for the account.
+                    properties:
+                      limit:
+                        type: object
+                        description: Maximum overdraft available through an overdraft program. Zero if no approved overdraft.
+                        properties:
+                          value:
+                            type: number
+                            description: Amount value.
+                            example: 500
+                          currency:
+                            type: string
+                            description: Currency code (ISO 4217 Alphabetic Code).
+                            example: EUR
+                      used:
+                        type: object
+                        description: Portion of the approved overdraft limit currently being utilized.
+                        properties:
+                          value:
+                            type: number
+                            description: Amount value.
+                            example: 0
+                          currency:
+                            type: string
+                            description: Currency code (ISO 4217 Alphabetic Code).
+                            example: EUR
+                      available:
+                        type: object
+                        description: Amount of overdraft currently available (limit minus used).
+                        properties:
+                          value:
+                            type: number
+                            description: Amount value.
+                            example: 500
+                          currency:
+                            type: string
+                            description: Currency code (ISO 4217 Alphabetic Code).
+                            example: EUR
+                      availableByCurrency:
+                        type: array
+                        description: Available overdraft amounts converted to each currency the customer has a balance in.
+                        items:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              description: Amount value.
+                              example: 500
+                            currency:
+                              type: string
+                              description: Currency code (ISO 4217 Alphabetic Code).
+                              example: EUR
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/borderless-accounts:
+    get:
+      operationId: balanceGetV1
+      summary: Get account balance (v1)
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use the [v4 Balances endpoint](/api-reference/balance/balanceget) instead.
+
+        {% /admonition %}
+
+
+        Get available balances for all activated currencies in your multi-currency account.
+
+        '
+      tags:
+      - balance
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: query
+        required: true
+        description: Your profile ID.
+        schema:
+          type: integer
+          format: int64
+        example: 33333333
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Array of borderless account objects with balances.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Multi-currency account ID.
+                      example: 64
+                    profileId:
+                      type: integer
+                      description: Personal or business profile ID.
+                      example: 33333333
+                    recipientId:
+                      type: integer
+                      description: Recipient ID you can use for a multi-currency account deposit.
+                      example: 13828530
+                    creationTime:
+                      type: string
+                      format: date-time
+                      description: Date when multi-currency account was opened.
+                      example: '2018-03-14T12:31:15.678Z'
+                    modificationTime:
+                      type: string
+                      format: date-time
+                      description: Date when multi-currency account setup was modified.
+                      example: '2018-03-19T15:19:42.111Z'
+                    active:
+                      type: boolean
+                      description: Is multi-currency account active or inactive.
+                      example: true
+                    eligible:
+                      type: boolean
+                      description: Ignore.
+                      example: true
+                    balances:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          balanceType:
+                            type: string
+                            description: Balance type.
+                            example: AVAILABLE
+                          currency:
+                            type: string
+                            description: Currency code.
+                            example: GBP
+                          amount:
+                            type: object
+                            properties:
+                              value:
+                                type: number
+                                description: Available balance in specified currency.
+                                example: 10999859
+                              currency:
+                                type: string
+                                description: Currency code.
+                                example: GBP
+                          reservedAmount:
+                            type: object
+                            properties:
+                              value:
+                                type: number
+                                description: Reserved amount from your balance.
+                                example: 0
+                              currency:
+                                type: string
+                                description: Reserved amount currency code.
+                                example: GBP
+                          bankDetails:
+                            type:
+                            - object
+                            - 'null'
+                            description: Bank account details assigned to your multi-currency account. Available for EUR, GBP, USD, AUD, NZD.
+                            properties:
+                              id:
+                                type: integer
+                                format: int64
+                                description: Bank account details ID.
+                                example: 90
+                              currency:
+                                type: string
+                                description: Bank account currency.
+                                example: EUR
+                              bankCode:
+                                type: string
+                                description: Bank account code.
+                                example: DEKTDE7GXXX
+                              accountNumber:
+                                type: string
+                                description: Bank account number.
+                                example: DE51 7001 1110 6050 1008 91
+                              swift:
+                                type: string
+                                description: Bank account swift code.
+                                example: DEKTDE7GXXX
+                              iban:
+                                type: string
+                                description: Bank account IBAN.
+                                example: DE51 7001 1110 6050 0008 91
+                              bankName:
+                                type: string
+                                description: Bank name.
+                                example: Handelsbank
+                              accountHolderName:
+                                type: string
+                                description: Bank account holder name.
+                                example: Oliver Wilson
+                              bankAddress:
+                                type: object
+                                properties:
+                                  addressFirstLine:
+                                    type: string
+                                    description: Bank address street and house.
+                                    example: Elsenheimer Str. 41
+                                  postCode:
+                                    type: string
+                                    description: Bank address zip code.
+                                    example: '80687'
+                                  city:
+                                    type: string
+                                    description: Bank address city.
+                                    example: München
+                                  country:
+                                    type: string
+                                    description: Bank address country.
+                                    example: Germany
+                                  stateCode:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: Bank address state code.
+                                    example: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/borderless-accounts/{borderlessAccountId}/conversions:
+    post:
+      operationId: balanceConvertV1
+      summary: Convert currencies between balances (v1)
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use the [balance movements endpoint](/api-reference/balance/balancemovement) to move and convert between balances instead.
+
+        {% /admonition %}
+
+
+        Convert funds between your multi-currency account currencies.
+
+        Quote which is used in this call must be created with `"payOut": "BALANCE"`.
+
+
+        Note that this call needs an extra field in header called `X-idempotence-uuid`.
+
+        '
+      tags:
+      - balance
+      security:
+      - UserToken: []
+      parameters:
+      - name: borderlessAccountId
+        in: path
+        required: true
+        description: Your borderless account ID.
+        schema:
+          type: integer
+          format: int64
+        example: 64
+      - name: X-idempotence-uuid
+        in: header
+        required: true
+        description: Unique identifier assigned by you. Used for idempotency check purposes. Should your call fail for technical reasons then you can use the same value again for making retry call.
+        schema:
+          type: string
+          format: uuid
+        example: a1b2c3d4-e5f6-7890-abcd-ef0123456789
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quoteId
+              properties:
+                quoteId:
+                  type: integer
+                  description: Conversion quote ID.
+                  example: 1234
+      responses:
+        '200':
+          description: Conversion result.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Conversion result containing source and target amounts, exchange rate, fees, and balance state after conversion.
+              example:
+                id: 1
+                type: CONVERSION
+                state: COMPLETED
+                balancesAfter:
+                - value: 10000594.71
+                  currency: GBP
+                - value: 9998887.01
+                  currency: EUR
+                creationTime: '2017-11-21T09:55:49.275Z'
+                steps:
+                - id: 369588
+                  type: CONVERSION
+                  creationTime: '2017-11-21T09:55:49.276Z'
+                  balancesAfter:
+                  - value: 9998887.01
+                    currency: EUR
+                  - value: 10000594.71
+                    currency: GBP
+                  channelName: null
+                  channelReferenceId: null
+                  tracingReferenceCode: null
+                  sourceAmount:
+                    value: 113.48
+                    currency: EUR
+                  targetAmount:
+                    value: 100
+                    currency: GBP
+                  fee:
+                    value: 0.56
+                    currency: EUR
+                  rate: 0.88558
+                sourceAmount:
+                  value: 113.48
+                  currency: EUR
+                targetAmount:
+                  value: 100
+                  currency: GBP
+                rate: 0.88558
+                feeAmounts:
+                - value: 0.56
+                  currency: EUR
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/balances/hold-limit-breach:
+    post:
+      tags:
+      - balance
+      summary: List hold limit breaches
+      operationId: holdLimitBreachList
+      description: 'Returns a list of hold limit breaches for a profile. A hold limit breach occurs when a balance exceeds the regulatory hold limit for that profile''s country (e.g. Singapore, Malaysia).
+
+
+        You can optionally filter by `state` and `closing_reason`.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: state
+        in: query
+        required: false
+        description: Filter by breach state. One of `OPEN`, `CLOSED`
+        schema:
+          type: string
+          format: string
+        example: OPEN
+      - name: closingReason
+        in: query
+        required: false
+        description: Filter by closing reason. One of `AUTOMATICALLY_RESOLVED`, `MANUALLY_RESOLVED`
+        schema:
+          type: string
+          format: string
+        example: AUTOMATICALLY_RESOLVED
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Successfully returned list of hold limit breaches.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldLimitBreach'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid closing reason or state used.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Must be /errors/types/validation for this error type
+                    examples:
+                    - /errors/types/validation
+                  title:
+                    type: string
+                    description: Request parameter type mismatch
+                    examples:
+                    - Request parameter type mismatch
+                  status:
+                    type: string
+                    description: Bad request error
+                    examples:
+                    - 400
+                  instance:
+                    type: string
+                    description: The uri that triggered the error
+                    examples:
+                    - /v1/profiles/{profileId}/balances/hold-limit-breach?state=INVALID_STATE
+                  errors:
+                    type: array
+                    description: A list of specific validation failures.
+                    items:
+                      type: object
+                      properties:
+                        detail:
+                          type: string
+                          description: A detailed description of the validation failure.
+                          examples:
+                          - The parameter value is not of the expected type.
+                        code:
+                          type: string
+                          description: A specific code for the validation failure type.
+                          examples:
+                          - parameter_invalid_type_mismatch
+                        ref:
+                          type: string
+                          description: A reference to the field that failed validation.
+                          examples:
+                          - state
+                          - closing_reason
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Caller does not have access to the profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Must be /errors/types/access for this error type
+                    examples:
+                    - /errors/types/access
+                  title:
+                    type: string
+                    description: Forbidden
+                    examples:
+                    - Forbidden
+                  status:
+                    type: string
+                    description: Forbidden error
+                    examples:
+                    - 403
+                  instance:
+                    type: string
+                    description: The uri that triggered the error
+                    examples:
+                    - /v1/profiles/{profileId}/balances/hold-limit-breach
+                  detail:
+                    type: string
+                    description: Detail of the error
+                    example: Unauthorized
+                  code:
+                    type: string
+                    description: Error code of the request
+                    example: forbidden
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}:
+    post:
+      tags:
+      - balance
+      summary: Close a hold limit breach
+      operationId: holdLimitBreachClose
+      description: 'Closes an open hold limit breach by performing a one-time refund to a specified recipient. The recipient will receive the excess amount that caused the breach.
+
+
+        Only breaches with `state: OPEN` can be closed via this endpoint.
+
+        '
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The profile ID.
+      - name: holdLimitBreachId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The hold limit breach ID.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetRecipientId
+              - state
+              properties:
+                targetRecipientId:
+                  type: integer
+                  description: ID of the recipient to receive the refund of the excess funds.
+                  example: 148393305
+                state:
+                  type: string
+                  description: Must be `CLOSED`. This is the only supported value.
+                  example: CLOSED
+      responses:
+        '204':
+          description: Returns 204 No Content on success.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid state used.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Must be /errors/types/validation for this error type
+                    examples:
+                    - /errors/types/validation
+                  title:
+                    type: string
+                    description: Validation Error
+                    examples:
+                    - Validation Error
+                  status:
+                    type: string
+                    description: Bad request error
+                    examples:
+                    - 400
+                  instance:
+                    type: string
+                    description: The uri that triggered the error
+                    examples:
+                    - /v1/profiles/{profileId}/balances/hold-limit-breach?state=INVALID_STATE
+                  errors:
+                    type: array
+                    description: A list of specific validation failures.
+                    items:
+                      type: object
+                      properties:
+                        detail:
+                          type: string
+                          description: A detailed description of the validation failure.
+                          examples:
+                          - Only state CLOSED is supported
+                        code:
+                          type: string
+                          description: A specific code for the validation failure type.
+                          examples:
+                          - invalid_value
+                        ref:
+                          type: string
+                          description: A reference to the field that failed validation.
+                          examples:
+                          - state
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '403':
+          description: Caller attempts to close a holdLimitBreach that does not belong to them.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Must be /errors/types/access for this error type
+                    examples:
+                    - /errors/types/access
+                  title:
+                    type: string
+                    description: Forbidden
+                    examples:
+                    - Forbidden
+                  status:
+                    type: string
+                    description: Forbidden error
+                    examples:
+                    - 403
+                  instance:
+                    type: string
+                    description: The uri that triggered the error
+                    examples:
+                    - /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}
+                  detail:
+                    type: string
+                    description: Detail of the error
+                    example: Hold limit breach {holdLimitBreachId} does not belong to profile {profileId}
+                  code:
+                    type: string
+                    description: Error code of the request
+                    example: forbidden
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Caller attempts to close a holdLimitBreach that does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri-reference
+                    description: Must be /errors/types/validation for this error type
+                    examples:
+                    - /errors/types/validation
+                  title:
+                    type: string
+                    description: Validation Error
+                    examples:
+                    - Validation Error
+                  status:
+                    type: string
+                    description: Validation error
+                    examples:
+                    - 404
+                  instance:
+                    type: string
+                    description: The uri that triggered the error
+                    examples:
+                    - /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}
+                  detail:
+                    type: string
+                    description: Detail of the error
+                    example: 'Hold limit breach not found: 123'
+                  code:
+                    type: string
+                    description: Error code of the request
+                    example: not_found
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    Balance:
+      type: object
+      x-tags:
+      - balance
+      description: Represents a balance account within a profile.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Balance ID.
+          example: 200001
+        currency:
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code).
+          example: EUR
+        type:
+          $ref: '#/components/schemas/BalanceType'
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name of the balance. Required for SAVINGS balances.
+          example: null
+        icon:
+          type:
+          - object
+          - 'null'
+          description: Icon for the balance.
+          properties:
+            type:
+              type: string
+              enum:
+              - EMOJI
+              description: Icon type.
+            value:
+              type: string
+              description: Icon value (e.g., emoji character).
+          example: null
+        investmentState:
+          type: string
+          description: 'Investment state of the balance.
+
+            - `NOT_INVESTED` - Balance is not invested.
+
+            - `INVESTED` - Balance is invested in assets.
+
+            - `INVESTING` - Balance is being invested into assets.
+
+            - `DIVESTING` - Balance is being divested from assets.
+
+            - `UNKNOWN` - Investment state is unknown.
+
+            '
+          enum:
+          - NOT_INVESTED
+          - INVESTED
+          - INVESTING
+          - DIVESTING
+          - UNKNOWN
+          example: NOT_INVESTED
+        amount:
+          type: object
+          description: Available balance that can be used to fund transfers.
+          properties:
+            value:
+              type: number
+              description: Amount value.
+              example: 310.86
+            currency:
+              type: string
+              description: Currency code (ISO 4217 Alphabetic Code).
+              example: EUR
+        reservedAmount:
+          type: object
+          description: Amount reserved for transactions.
+          properties:
+            value:
+              type: number
+              description: Amount value.
+              example: 0
+            currency:
+              type: string
+              description: Currency code (ISO 4217 Alphabetic Code).
+              example: EUR
+        cashAmount:
+          type: object
+          description: Cash amount in the account.
+          properties:
+            value:
+              type: number
+              description: Amount value.
+              example: 310.86
+            currency:
+              type: string
+              description: Currency code (ISO 4217 Alphabetic Code).
+              example: EUR
+        totalWorth:
+          type: object
+          description: Current total worth.
+          properties:
+            value:
+              type: number
+              description: Amount value.
+              example: 310.86
+            currency:
+              type: string
+              description: Currency code (ISO 4217 Alphabetic Code).
+              example: EUR
+        creationTime:
+          type: string
+          format: date-time
+          description: Date when the balance was created.
+          example: '2020-05-20T14:43:16.658Z'
+        modificationTime:
+          type: string
+          format: date-time
+          description: Date when the balance was last modified.
+          example: '2020-05-20T14:43:16.658Z'
+        visible:
+          type: boolean
+          description: Whether the balance is visible to the user.
+          example: true
+    BalanceType:
+      type: string
+      description: 'Type of balance account.
+
+        - `STANDARD` - Standard balance account. Only one per currency per profile.
+
+        - `SAVINGS` - Savings balance (Jar). Multiple allowed per currency.
+
+        '
+      enum:
+      - STANDARD
+      - SAVINGS
+      example: STANDARD
+    HoldLimitBreach:
+      type: object
+      x-tags:
+      - balance
+      description: Represents a hold limit breach.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Hold limit breach ID.
+          example: 200001
+        profileId:
+          type: integer
+          format: int64
+          description: ID of the profile that owns the hold limit breach
+          example: 123456
+        amount:
+          type: number
+          description: Amount value.
+          example: 310.86
+        currency:
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code).
+          example: EUR
+        state:
+          type: string
+          description: Current state of the hold limit breach.
+          enum:
+          - OPEN
+          - CLOSED
+          x-enumDescriptions:
+            OPEN: Hold limit breach is open and needs to be resolved.
+            CLOSED: Hold limit breach is closed and resolved.
+          example: OPEN
+        closingReason:
+          type: string
+          description: Reason the breach was closed, null if state is `OPEN`.
+          enum:
+          - AUTOMATICALLY_RESOLVED
+          - MANUALLY_RESOLVED
+          x-enumDescriptions:
+            AUTOMATICALLY_RESOLVED: The breach was resolved automatically after the customer withdrew funds and the balance dropped below the hold limit.
+            MANUALLY_RESOLVED: The breach was closed by calling the [Close Hold Limit Breach](/api-reference/balance/holdlimitbreachclose) endpoint with a specified recipient.
+          example: AUTOMATICALLY_RESOLVED
+        createdAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was created.
+          example: '2020-05-20T14:43:16.658Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was last modified.
+          example: '2020-05-20T14:43:16.658Z'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

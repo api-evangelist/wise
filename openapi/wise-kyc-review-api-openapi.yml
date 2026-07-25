@@ -1,0 +1,1508 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds kyc-review API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: kyc-review
+  x-displayName: KYC Review
+  description: 'KYC Review API provides endpoints to view, update and submit information related to the KYC flow.
+
+
+    There are two ways to collect KYC requirements from your customers:
+
+    - **Hosted KYC** — redirect your customer to a Wise-hosted UI that guides them through the process.
+
+    - **API submission** — use the [KYC Requirement Submit](/api-reference/kyc-review/kycreviewrequirementsubmit) endpoint to submit requirements directly. This is only available for requirement types where `apiCollectionSupported` is `true`.
+
+
+    Please refer to our [Hosted KYC guide](/guides/product/kyc/wise-kyc/hosted-kyc) for more information on the general use of the endpoints included below.
+
+    '
+paths:
+  /v1/profiles/{profileId}/kyc-reviews:
+    post:
+      operationId: kycReviewCreate
+      summary: Create a KYC Review
+      description: 'Creates a KYC Review for a specific customer action.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  description: 'Type of the underlying action or process this KYC Review is for. Usually a reference to which product this KYC Review is for (like `QUOTE` or `TRANSFER`) or a reference to a KYC process on the profile that isn''t related to a specific product (like `REFRESH_CYCLE` or `REPAPERING`).
+
+
+                    Following types are available when creating a KYC Review using this endpoint:
+
+                    - `QUOTE`
+
+                    - `PROACTIVE_SEND_MONEY`
+
+                    - `CARD`
+
+                    '
+                  enum:
+                  - QUOTE
+                  - PROACTIVE_SEND_MONEY
+                  - CARD
+                  example: QUOTE
+                triggerData:
+                  type: object
+                  description: 'Object containing data of the underlying product object that triggered the KYC Review.
+
+                    '
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: ID of the underlying product object. For example, if type is `QUOTE` then this would be the quote ID. This ID might be null when referencing an ID isn't meaningful. As an example, there's only ever one active refresh cycle per profile so referencing by ID isn't useful.
+                      example: ba83a43a-f623-46f0-956d-196c13e2ab01
+      responses:
+        '202':
+          description: KYC Review successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kyc-review'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid request (e.g. unsupported `type`, null `type`).
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Underlying action with provided ID is not found (e.g. quote not found).
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: kycReviewList
+      summary: Get all KYC Reviews for a profile
+      description: 'Retrieves a list of all active KYC Reviews for a given profile.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        required: false
+        description: Page number. Default value is `1`.
+        schema:
+          type: integer
+          default: 1
+      - name: pageSize
+        in: query
+        required: false
+        description: Desired number of items per page. Max `100`, default `100`.
+        schema:
+          type: integer
+          default: 100
+          maximum: 100
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns a list of KYC Review objects for the profile. Returns an empty list if no KYC Review exists for the profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/kyc-review'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/kyc-reviews/{kycReviewId}:
+    get:
+      operationId: kycReviewGetV1
+      summary: Get KYC Review by ID (V1)
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use [Get KYC Review by ID](kycreviewget) (V2) instead.
+
+        {% /admonition %}
+
+
+        Retrieves a single KYC Review by ID for a profile.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The KYC Review ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the KYC Review object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kyc-review'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: KYC Review not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    patch:
+      operationId: kycReviewRedirectUrlUpdate
+      summary: Update KYC Review to get a Hosted KYC link
+      description: 'Updates the KYC Review with a redirect URL.
+
+
+        Returns the KYC Review object with a `link` field containing a URL where the end customer needs to be directed in order to complete the Hosted KYC flow.
+
+
+        Once the Hosted KYC flow is completed by the end customer, they will be redirected to the `redirectUrl` provided in this API call. During the redirection, the `redirectUrl` will be appended with query parameters: `status=success`, `status=failed`, or `status=closed`.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The KYC Review ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - redirectUrl
+              properties:
+                redirectUrl:
+                  type: string
+                  description: URL where the user will be redirected at the end of the flow. Can contain query params and path fragments. It has to be a valid URL as per [RFC 2396](https://www.ietf.org/rfc/rfc2396.txt).
+                  example: https://example.com
+      responses:
+        '200':
+          description: Returns the updated KYC Review object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kyc-review'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid request (e.g. not a valid URI).
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: KYC Review not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/kyc-reviews/{kycReviewId}:
+    get:
+      operationId: kycReviewGet
+      summary: Get KYC Review by ID
+      description: 'Retrieves a single KYC Review by ID for a profile.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The KYC Review ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Returns the KYC Review object including the `requirements` field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kyc-review'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: KYC Review not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/kyc-requirements/{requirementKey}:
+    post:
+      operationId: kycReviewRequirementSubmit
+      summary: Submit a KYC Requirement
+      description: 'Submit a KYC requirement for a KYC Review.
+
+
+        - A KYC requirement can only be submitted if the KYC Review status is `WAITING_CUSTOMER_INPUT` or `PASSED_WITH_REQUIREMENTS`.
+
+        - A KYC requirement should only be submitted if its `state` is `NOT_PROVIDED` and `apiCollectionSupported` is `true`.
+
+
+        See the [KYC requirement types](/guides/product/kyc/wise-kyc/kyc-requirement-types) guide for the full list of supported requirement types, submission data structures, and accepted values.
+
+        '
+      tags:
+      - kyc-review
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: requirementKey
+        in: path
+        required: true
+        description: 'The KYC requirement type to submit.
+
+
+          See the [KYC requirement types](/guides/product/kyc/wise-kyc/kyc-requirement-types) guide for details on each type.
+
+          '
+        schema:
+          type: string
+          enum:
+          - ACCOUNT_INTENT
+          - ACCOUNT_PURPOSE
+          - ANNUAL_VOLUME
+          - BUSINESS_ANNUAL_INCOME
+          - BUSINESS_AUTHORISATION_ID
+          - BUSINESS_AUTHORISATION_LETTER
+          - BUSINESS_DIRECTORS_CHECK
+          - BUSINESS_MONTHLY_VOLUME
+          - BUSINESS_REGISTRATION_DOCS
+          - BUSINESS_SHAREHOLDERS_CHECK
+          - BUSINESS_SOURCE_OF_WEALTH
+          - BUSINESS_SOURCE_OF_WEALTH_INFO
+          - BUSINESS_SOURCE_OF_WEALTH_PROOF
+          - BUSINESS_ULTIMATE_BENEFICIAL_OWNER_ID
+          - BUSINESS_USE_CASE
+          - ID_DOCUMENT
+          - INCOME
+          - INDIA_TRANSFER_PURPOSE
+          - PROOF_OF_TRADING_ADDRESS
+          - SOURCE_OF_FUNDS
+          - SOURCE_OF_WEALTH
+          - SOURCE_OF_WEALTH_INFO
+          - SOURCE_OF_WEALTH_PROOF
+          - TAX_RESIDENCY
+          - USE_CASE_COUNTRIES
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - submissionData
+              properties:
+                submissionData:
+                  type: string
+                  format: application/json
+                  description: "A JSON string containing the following fields:\n\n- `data` — an object whose fields vary by requirement type. Some requirement types do not require a `data` field.\n- `version` — the submission version, currently `\"V1\"`.\n- `kycReviewId` — the ID of the KYC Review this submission belongs to.\n\nFor example, the JSON payload would look like below, but it should be included as a string value in the multipart form field:\n\n```json\n{\n  \"data\": {\n    \"accountPurpose\": \"SENDING_MONEY_TO_FRIENDS_OR_FAMILY\"\n  },\n  \"version\": \"V1\",\n  \"kycReviewId\": \"93a903ea-636c-4c86-a25c-cf6d2bd00e81\"\n}\n```\n\nSee the [KYC requirement types](/guides/product/kyc/wise-kyc/kyc-requirement-types) guide for the `data` structure and accepted values for each requirement type.\n"
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: "One or more files to upload. Required for certain requirement types.\n\nThere are 3 accepted types for documents, they must be provided with the below content-type/Mime-type and have a matching file extension.\n\nContentType/MimeType & file extension:\n  - `image/png` & `.png`\n  - `image/jpeg` & (`.jpg` or `jpeg`)\n  - `application/pdf` & `.pdf`\n\n\nSee the [KYC requirement types](/guides/product/kyc/wise-kyc/kyc-requirement-types) guide for which types require files.\n"
+            example:
+              submissionData: '{"data":{"accountPurpose":"SENDING_MONEY_TO_FRIENDS_OR_FAMILY"},"version":"V1","kycReviewId":"93a903ea-636c-4c86-a25c-cf6d2bd00e81"}'
+      x-codeSamples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \\\n  'https://api.wise-sandbox.com/v2/profiles/{profileId}/kyc-requirements/{requirementKey}' \\\n  -H 'Authorization: Bearer <token>' \\\n  -F 'submissionData={\"data\":{\"accountPurpose\":\"SENDING_MONEY_TO_FRIENDS_OR_FAMILY\"},\"version\":\"V1\",\"kycReviewId\":\"93a903ea-636c-4c86-a25c-cf6d2bd00e81\"};type=application/json' \\\n  -F 'files=@\"<file>\"'\n"
+      responses:
+        '202':
+          description: KYC requirement successfully submitted.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: 'Invalid request. Common error scenarios:
+
+            - No `submissionData` provided
+
+            - No `kycReviewId` provided in submission data
+
+            - No `data` provided in submission data
+
+            - Invalid field values
+
+            - Missing required files
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: /errors/types/validation
+                  title:
+                    type: string
+                    example: Validation Error
+                  status:
+                    type: integer
+                    example: 400
+                  instance:
+                    type: string
+                  detail:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        ref:
+                          type: string
+                        detail:
+                          type: string
+                        attributes:
+                          type: object
+              examples:
+                no-submission-data:
+                  summary: No submissionData provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ACCOUNT_INTENT
+                    errors:
+                    - code: invalid_value
+                      ref: submissionData
+                      detail: submissionData must not be empty
+                no-kyc-review-id:
+                  summary: No kycReviewId provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ACCOUNT_INTENT
+                    errors:
+                    - code: invalid_value
+                      ref: submissionData.kycReviewId
+                      detail: kycReviewId must not be empty
+                no-data:
+                  summary: No data provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    detail: No files or submissionData is submitted
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ACCOUNT_INTENT
+                    errors: []
+                invalid-field-value:
+                  summary: Invalid field value
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ACCOUNT_INTENT
+                    errors:
+                    - code: invalid_value
+                      ref: accountPurpose
+                      detail: 'Invalid accountPurpose submitted: invalid'
+                      attributes:
+                        acceptedValues:
+                        - Consult API documentation
+                negative-amount:
+                  summary: Negative amount provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    detail: Amount must be greater than zero.
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_ANNUAL_INCOME
+                    errors: []
+                invalid-currency:
+                  summary: Invalid currency provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_ANNUAL_INCOME
+                    errors:
+                    - code: invalid_request
+                      ref: submissionData
+                      detail: submitted data is invalid
+                      attributes: null
+                no-files:
+                  summary: No files provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_AUTHORISATION_ID
+                    errors:
+                    - code: missing_value
+                      ref: files
+                      detail: No file has been provided
+                mismatching-filenames:
+                  summary: Mismatching fileNames provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_AUTHORISATION_ID
+                    errors:
+                    - code: invalid_value
+                      ref: files
+                      detail: File - filenames mismatch
+                      attributes:
+                        acceptedValues:
+                        - xx.png
+                missing-front-filename:
+                  summary: Multiple files provided without frontFileName field
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_AUTHORISATION_ID
+                    errors:
+                    - code: missing_value
+                      ref: frontSideFilename
+                      detail: No front side file name is provided
+                empty-source-of-wealth-list:
+                  summary: Empty sourceOfWealthList provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH
+                    errors:
+                    - code: invalid_value
+                      ref: sourceOfWealthList
+                      detail: No business source of wealth provided
+                      attributes:
+                        acceptedValues:
+                        - REVENUE
+                        - PERSONAL_FUNDING
+                        - BUSINESS_LOAN
+                        - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                        - INVESTMENT_INCOME
+                        - DONATIONS
+                        - GRANTS
+                        - OTHER
+                        - LEGAL
+                missing-wealth-description:
+                  summary: No description when sourceOfWealthList is OTHER
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH
+                    errors:
+                    - code: invalid_value
+                      ref: sourceOfWealthList
+                      detail: Missing business source of wealth description
+                      attributes:
+                        acceptedValues:
+                        - REVENUE
+                        - PERSONAL_FUNDING
+                        - BUSINESS_LOAN
+                        - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                        - INVESTMENT_INCOME
+                        - DONATIONS
+                        - GRANTS
+                        - OTHER
+                        - LEGAL
+                wealth-description-too-short:
+                  summary: Short description when sourceOfWealthList is OTHER
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH
+                    errors:
+                    - code: invalid_value
+                      ref: sourceOfWealthList
+                      detail: Source of wealth description too short
+                      attributes:
+                        acceptedValues:
+                        - REVENUE
+                        - PERSONAL_FUNDING
+                        - BUSINESS_LOAN
+                        - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                        - INVESTMENT_INCOME
+                        - DONATIONS
+                        - GRANTS
+                        - OTHER
+                        - LEGAL
+                india-transfer-purpose-non-inr-from-currency:
+                  summary: India transfer purpose submitted for non-INR currency
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: invalid_value
+                      ref: requirementKey
+                      detail: Transfer which triggered KycReview is not from INR currency so submission of this requirement is not permitted
+                india-transfer-purpose-not-accepted-to-currency:
+                  summary: India transfer purpose submitted to not accepted currency
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: invalid_value
+                      ref: requirementKey
+                      detail: Transfer which triggered KycReview does not have an accepted target currency so submission of this requirement is not permitted
+                india-transfer-purpose-invalid-code:
+                  summary: India transfer purpose invalid code
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: invalid_value
+                      ref: code
+                      detail: The code provided is not valid
+                india-transfer-purpose-not-required:
+                  summary: India transfer purpose not required
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: invalid_value
+                      ref: requirementKey
+                      detail: INDIA_TRANSFER_PURPOSE is not required for the KycReview
+                india-transfer-purpose-additionaldocumentfilename-not-supplied:
+                  summary: additionalDocumentFileName missing or empty
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: missing_value
+                      ref: additionalDocumentFileName
+                      detail: additionalDocumentFileName cannot be null or empty
+                india-transfer-purpose-educationpaidwithloan-not-supplied:
+                  summary: educationPaidWithLoan missing
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: missing_value
+                      ref: educationPaidWithLoan
+                      detail: educationPaidWithLoan cannot be null
+                india-transfer-purpose-educationpaidwithloan-not-required:
+                  summary: educationPaidWithLoan not required
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: invalid_value
+                      ref: educationPaidWithLoan
+                      detail: educationPaidWithLoan is only valid for OVERSEAS_EDUCATION & EDUCATION_EXPENSES
+                india-transfer-purpose-loandocumentfilename-not-supplied:
+                  summary: loanDocumentFileName missing
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: missing_value
+                      ref: loanDocumentFileName
+                      detail: loanDocumentFileName must be provided if the code is OVERSEAS_EDUCATION or EDUCATION_EXPENSES and educationPaidWithLoan is true
+                india-transfer-purpose-passportfilename-not-supplied:
+                  summary: passportFileName missing or empty
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: missing_value
+                      ref: passportFileName
+                      detail: passportFileName cannot be null or empty
+                india-transfer-purpose-tcstaxapplies-not-supplied:
+                  summary: tcsTaxApplies missing
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/INDIA_TRANSFER_PURPOSE
+                    errors:
+                    - code: missing_value
+                      ref: tcsTaxApplies
+                      detail: tcsTaxApplies cannot be null
+                invalid-wealth-info-data:
+                  summary: Invalid sourceOfWealthList submission data
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH_INFO
+                    errors:
+                    - code: invalid_value
+                      ref: sourceOfWealthList
+                      detail: Invalid submission data provided
+                      attributes:
+                        acceptedValues:
+                        - REVENUE
+                        - PERSONAL_FUNDING
+                        - BUSINESS_LOAN
+                        - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                        - INVESTMENT_INCOME
+                        - DONATIONS
+                        - GRANTS
+                        - OTHER
+                        - LEGAL
+                invalid-source-of-wealth-type:
+                  summary: Invalid sourceOfWealthType provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH_PROOF
+                    errors:
+                    - code: invalid_value
+                      ref: sourceOfWealthType
+                      detail: Invalid Source of Wealth type
+                      attributes:
+                        acceptedValues:
+                        - REVENUE
+                        - PERSONAL_FUNDING
+                        - BUSINESS_LOAN
+                        - FUNDING_AND_SHAREHOLDER_INVESTMENTS
+                        - INVESTMENT_INCOME
+                        - DONATIONS
+                        - GRANTS
+                        - OTHER
+                        - LEGAL
+                invalid-document-type:
+                  summary: Invalid documentType provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_SOURCE_OF_WEALTH_PROOF
+                    errors:
+                    - code: invalid_value
+                      ref: documentType
+                      detail: Invalid Document Type
+                      attributes:
+                        acceptedValues:
+                        - PAYSLIP
+                        - INVOICES
+                        - CONTRACTS
+                        - TAX_DOCUMENTS
+                        - AUDITED_FINANCIAL_STATEMENTS
+                        - E_COMMERCE_STATEMENTS
+                        - PERSONAL_INVESTMENT
+                        - PERSONAL_LOAN_AGREEMENT
+                        - PERSONAL_TAX_DECLARATION
+                        - LOAN_AGREEMENT
+                        - EQUITY_AGREEMENT
+                        - SUBSCRIPTION_AGREEMENT
+                        - SAVINGS_STATEMENT
+                        - ASSET_SALE_AGREEMENT
+                        - SHARE_SALE_CERTIFICATE
+                        - DONATION_RECEIPTS
+                        - GRANT_APPROVAL_LETTER
+                        - WRITTEN_CONFIRMATION
+                        - BANK_STATEMENT
+                shareholder-file-mismatch:
+                  summary: File not matching fileName for shareholder
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_ULTIMATE_BENEFICIAL_OWNER_ID
+                    errors:
+                    - code: invalid_value
+                      ref: file
+                      detail: 'No file was provided with a name that matches {fileName} for shareholderId: {shareHolderId}'
+                      attributes: null
+                shareholder-not-found:
+                  summary: Shareholder does not exist
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_ULTIMATE_BENEFICIAL_OWNER_ID
+                    errors:
+                    - code: invalid_value
+                      ref: shareholderId
+                      detail: Shareholder does not exist
+                      attributes: null
+                shareholder-document-type-mismatch:
+                  summary: DocumentType not valid for shareholder
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_ULTIMATE_BENEFICIAL_OWNER_ID
+                    errors:
+                    - code: invalid_value
+                      ref: documentType
+                      detail: 'DocumentType cannot be associated with shareholder: {shareHolderId}'
+                      attributes:
+                        acceptedValues:
+                        - NATIONAL_ID
+                        - DRIVING_LICENSE
+                        - PASSPORT
+                empty-required-array:
+                  summary: Required array field empty
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_USE_CASE
+                    errors:
+                    - code: parameter_missing
+                      ref: useCases
+                      detail: No value provided
+                      attributes: null
+                invalid-array-values:
+                  summary: Invalid values in array field
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/BUSINESS_USE_CASE
+                    errors:
+                    - code: invalid_value
+                      ref: useCases
+                      detail: 'Invalid useCases are submitted: [invalid]'
+                      attributes:
+                        acceptedValues:
+                        - Consult API documentation
+                file-name-not-found:
+                  summary: No file matching specified fileName
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ID_DOCUMENT
+                    errors:
+                    - code: invalid_request
+                      ref: files
+                      detail: 'No file was provided with the specified fileName: xxx.png'
+                      attributes: null
+                invalid-issuing-country:
+                  summary: Invalid issuingCountry provided
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/ID_DOCUMENT
+                    errors:
+                    - code: invalid_value
+                      ref: issuingCountry
+                      detail: Invalid issuingCountry provided
+                      attributes:
+                        acceptedValues:
+                        - Consult API documentation
+                golden-visa-declaration-required:
+                  summary: Golden visa declaration required
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/TAX_RESIDENCY
+                    errors:
+                    - code: invalid_request
+                      ref: goldenVisaDeclaration
+                      detail: Golden visa declaration is required when all declared countries are within golden visa jurisdictions.
+                golden-visa-values-not-true:
+                  summary: Golden visa declaration values must be true
+                  value:
+                    type: /errors/types/validation
+                    title: Validation Error
+                    status: 400
+                    instance: /v2/profiles/{profileId}/kyc-requirements/TAX_RESIDENCY
+                    errors:
+                    - code: invalid_request
+                      ref: goldenVisaDeclaration
+                      detail: All values in the golden visa declaration must be set to true.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: User is not authorised to access the resource.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: KYC Review or provided requirement key not found.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  schemas:
+    kyc-review:
+      title: KYC Review
+      description: The return object of most KYC Review endpoints, which includes information about the given KYC Review such as status, trigger references, and a list of [KYC Requirements](api-reference/kyc-review/kyc-requirement).
+      x-tags:
+      - kyc-review
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for a KYC Review resource, generated by Wise.
+          example: 46e1a5c4-4a9b-4563-39d3-18174d3ac0f8
+        status:
+          type: string
+          description: 'Aggregated state of the underlying requirement set. Any of the states below could move into any other state.
+
+            '
+          enum:
+          - NEW
+          - PASSED
+          - PASSED_WITH_REQUIREMENTS
+          - WAITING_CUSTOMER_INPUT
+          - PROCESSING
+          example: WAITING_CUSTOMER_INPUT
+        link:
+          type:
+          - object
+          - 'null'
+          description: 'Contains the URL and expiry of said URL the end customer needs to be directed to in order to go through Hosted KYC flow. `link` is returned only when `status` is `WAITING_CUSTOMER_INPUT` and [Update redirect URL](kycreviewredirecturlupdate) is called.
+
+            '
+          properties:
+            value:
+              type: string
+              description: The URL that the end customer needs to be directed to in order to go through the Hosted KYC flow.
+              example: https://wise-sandbox.com/embedded-flows/verification?token=d7332edb-25bf-41af-a4e9-09f5efe39ded&checkId=3120073
+            expiresAt:
+              type: string
+              format: date-time
+              description: Timestamp for when the one-time token in the link will expire, after which a new link needs to be generated.
+              example: '2024-09-03T16:29:41.203225146'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp marking the creation of the KYC Review.
+          example: '2024-09-03T16:22:02.257725'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp marking the last update of the KYC Review.
+          example: '2024-09-03T16:29:41.147522'
+        requiredBy:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp by which the underlying requirement set needs to be verified to not block the customer. Only relevant if the status is `PASSED_WITH_REQUIREMENTS`.
+          example: '2024-09-03T16:22:02.257725'
+        triggerReferences:
+          type: array
+          description: List of trigger reference objects.
+          items:
+            type: object
+            description: An object that refers to the action or process this KYC Review pertains to.
+            properties:
+              type:
+                type: string
+                description: 'Type of the underlying action or process this KYC Review is for. Usually a reference to which product this KYC Review pertains to (like `QUOTE` or `TRANSFER`) or a reference to a KYC process on the profile that isn''t related to a specific product (like `REFRESH_CYCLE` or `REPAPERING`).
+
+
+                  Currently supported types:
+
+                  - `QUOTE`
+
+                  - `TRANSFER`
+
+                  - `PROACTIVE_SEND_MONEY`
+
+                  - `ADD_MONEY`
+
+                  - `CARD`
+
+                  - `BANK_ACCOUNT_DETAILS`
+
+                  - `INFO_REQUEST`
+
+                  '
+                example: QUOTE
+              triggerData:
+                type: object
+                description: 'Key-value object containing metadata of the underlying product object that triggered the KYC Review.
+
+                  For `QUOTE`, `TRANSFER` and `ADD_MONEY` types, `triggerData` contains an `id` field that refers to their respective IDs.
+
+                  For `BANK_ACCOUNT_DETAILS`, `triggerData` has a field called `currencies` which contains a list of currencies (e.g. USD, SGD, EUR) that the bank details have been created for.
+
+
+                  Fields and their data types for each `triggerReference.type`:
+
+                  - `QUOTE` - `id` (uuid)
+
+                  - `TRANSFER` - `id` (long)
+
+                  - `ADD_MONEY` - `id` (long)
+
+                  - `BANK_ACCOUNT_DETAILS` - `currencies` (list of string)
+
+                  '
+                additionalProperties: true
+                example:
+                  id: ba83a43a-f623-46f0-956d-196c13e2ab01
+        redirectUrl:
+          type:
+          - string
+          - 'null'
+          description: 'URL where the user will be redirected at the end of the flow. Can contain query params and path fragments. It has to be a valid URL as per [RFC 2396](https://www.ietf.org/rfc/rfc2396.txt). Provided by the caller in the [Update redirect URL](kycreviewredirecturlupdate) call.
+
+            '
+          example: https://example.com
+        requirements:
+          type:
+          - array
+          - 'null'
+          description: 'Nested list of [KYC Requirement](api-reference/kyc-review/kyc-requirement) objects in `[[Requirement]]` format, where each inner list represents a combination of possible requirements to be provided. To fulfil the whole KYC Review, at least one item from each inner list should be provided.
+
+
+            For example, if the requirements are `[[a, b], [c, d]]` then it should be read as `(a or b) and (c or d)`.
+
+            '
+          items:
+            type: array
+            items:
+              type: object
+              $ref: '#/components/schemas/kyc-requirement'
+    kyc-requirement:
+      title: KYC Requirement
+      description: An object returned as part of the [KYC Review](api-reference/kyc-review/kyc-review) object, which includes information about a required evidence, its state, and any additional information that might be required.
+      x-tags:
+      - kyc-review
+      type: object
+      properties:
+        key:
+          type: string
+          description: The name of the KYC requirement. A single KYC Requirement should appear in the requirements list at most once.
+          example: ID_DOCUMENT
+        state:
+          type: string
+          description: 'The state of the KYC requirement.
+
+            - `NOT_PROVIDED` — the information is pending. Either the Hosted KYC flow or [KYC Requirement Submit](kycreviewrequirementsubmit) endpoint should be used to fulfil the requirement.
+
+            - `IN_REVIEW` — the required information has been retrieved and the KYC requirement is being reviewed. No action is needed.
+
+            '
+          enum:
+          - NOT_PROVIDED
+          - IN_REVIEW
+          example: NOT_PROVIDED
+        apiCollectionSupported:
+          type: boolean
+          description: 'Indicates if the requirement can be provided via the [KYC Requirement Submit](kycreviewrequirementsubmit) endpoint. If `false`, the requirement should be provided via the Hosted KYC flow.
+
+            '
+          example: true
+        additionalRequirements:
+          type:
+          - array
+          - 'null'
+          description: 'List of additional submissions that are needed to fulfill this requirement. These can appear when the originally submitted evidence is a wrong document, wrong format, incomplete or otherwise insufficient. Only provided if not empty.
+
+            '
+          items:
+            type: object
+            properties:
+              additionalRequirementId:
+                type: string
+                format: uuid
+                description: Unique identifier for an additional requirement, generated by Wise.
+                example: 8b789c45-60ae-475d-b667-c8714db9a6a4
+              key:
+                type: string
+                description: A key outlining what type of evidence is additionally required
+                enum:
+                - ACKNOWLEDGEMENT,
+                - DOCUMENT
+                - WRITTEN_ANSWER
+                - DOCUMENT_AND_WRITTEN_ANSWER
+                - DOCUMENT_OR_WRITTEN_ANSWER
+                - EMAIL
+                - CUSTOM_REQUEST
+                example: DOCUMENT_OR_WRITTEN_ANSWER
+              state:
+                type: string
+                description: 'The state of the additional requirement. This state should be treated as independent of the parent KYC Requirement''s state. They can, but don''t have to, change together.
+
+                  - `NOT_PROVIDED` — the information is pending. Either the Hosted KYC flow or [KYC Requirement Submit](kycreviewrequirementsubmit) endpoint should be used to fulfil the additional requirement.
+
+                  - `IN_REVIEW` — the required information has been retrieved and the additional requirement is being reviewed. No action is needed.
+
+                  '
+                enum:
+                - NOT_PROVIDED
+                - IN_REVIEW
+                example: NOT_PROVIDED
+              reasons:
+                type: object
+                description: Contains information about the reason this additional requirement has been requested.
+                properties:
+                  errorCode:
+                    type: string
+                    description: Code for the reason this additional requirement has been requested.
+                    enum:
+                    - NEEDED
+                    - WRONG_DOCUMENT
+                    - EXPIRED
+                    - INVALID_TRADING_ADDRESS
+                    - MISSING_ONE_SIDE
+                    - MISSING_COUNTRY_OF_RESIDENCE
+                    - MISSING_DIRECTORS
+                    - MISSING_UBOS
+                    - NO_UBO_DOC_REQUIRED
+                    - MISMATCH_NAME
+                    - MISMATCH_DATE_OF_BIRTH
+                    - AGENT_DETAILS_PROVIDED
+                    - DIRECTOR_IS_BUSINESS
+                    - UBO_IS_BUSINESS
+                    - UNCLEAR
+                    - WEBSITE_LINK_BROKEN
+                    - BUSINESS_NAME_NOT_ON_WEBSITE
+                    - DRIVING_LICENSE_NOT_ACCEPTED
+                    - BUSINESS_NOT_REGISTERED
+                    - OTHER
+                    example: EXPIRED
+                  description:
+                    type: string
+                    example: The provided document or information has expired. A valid document is required.
+                  dateTime:
+                    type: string
+                    format: date-time
+                    description: Timestamp marking when this additional requirement was requested.
+                    example: '2026-04-13T10:54:21.929314'
+              attributes:
+                type: object
+                description: Contains metadata information about the additional requirement. Not returned if empty.
+                properties:
+                  fields:
+                    type: object
+                    description: Not returned if empty
+                    properties:
+                      name:
+                        type: string
+                        description: The name of the affected person(s) or business
+                        examples:
+                        - John Smith
+                        - Hannah Myers and John Smith
+                        - My Business Inc.
+                      website:
+                        type: string
+                        description: The URL of the affected website
+                        examples:
+                        - https://example.com
+                      businessName:
+                        type: string
+                        description: The name of the affected business
+                        examples:
+                        - My Business Inc.
+                      owningBusinessName:
+                        type: string
+                        description: The name of the affected owning business
+                        examples:
+                        - Owning Business Inc.
+                      markdownText:
+                        type: string
+                        description: Free format text written by a Wise Agent in markdown format.
+                        example: 'Requirement details were unclear, *please* provide a clear scan where:
+
+
+                          *   All information is clearly readable
+
+                          *   The document is in colour'
+                  issues:
+                    type: array
+                    description: A list of issues with the previously uploaded document. Not returned if empty
+                    items:
+                      type: string
+                      enum:
+                      - CANNOT_BE_SCREENSHOT
+                      - INCORRECT_FILE_FORMAT
+                      - NEED_COLOUR_VERSION
+                      - POOR_QUALITY
+                    example:
+                    - CANNOT_BE_SCREENSHOT
+                    - NEED_COLOUR_VERSION
+        versions:
+          type: array
+          description: '**Conditional:** Only present when `apiCollectionSupported` is `true`. Lists the available versions and their validity.
+
+            '
+          items:
+            type: object
+            properties:
+              version:
+                type: string
+                description: The version identifier.
+                example: v1
+              validUntil:
+                type:
+                - string
+                - 'null'
+                format: date
+                description: If present, indicates the expiry date of this version (ISO 8601).
+                example: '2026-06-30'
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

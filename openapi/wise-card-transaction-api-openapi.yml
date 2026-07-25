@@ -1,0 +1,1150 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds card-transaction API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: card-transaction
+  x-displayName: Card Transactions
+  description: "Retrieve information on transactions made on your users' cards.\n\nTransaction types {% #card-transaction-type .title-3 .m-t-5 %}\n\nThe possible `type` values are:\n\n- `ACCOUNT_CREDIT` - Receiving money on the card, excluding Visa OCT or Mastercard MoneySend\n- `ACCOUNT_FUNDING` - Sending money to another card or e-wallet\n- `CASH_ADVANCE` - Cash disbursement\n- `CASH_WITHDRAWAL` - ATM withdrawal\n- `CHARGEBACK` - Currently unused. Reserved for future use\n- `CREDIT_TRANSACTION` - Visa OCT and Mastercard MoneySend\n- `ECOM_PURCHASE` - Online purchase\n- `POS_PURCHASE` - Purchase via a POS terminal\n- `REFUND` - Partial or full refund of an existing card transaction\n\nTransaction states {% #card-transaction-state .title-3 .m-t-5 %}\n\nThe possible `state` values are:\n\n- `IN_PROGRESS` - The transaction has been authorized but not captured\n- `COMPLETED` - The transaction has been captured and/or settled\n- `DECLINED` - The transaction has been declined\n- `CANCELLED` - The transaction has been cancelled\n- `UNKNOWN` - Default fallback status if the state cannot be confirmed\n\nThe transition from `CANCELLED` to `COMPLETED` is an edge case. Wise releases the customer funds after 7 days (30 days for pre-authorization) if the merchant has not captured the transaction, and the state becomes `CANCELLED`. However, the merchant can decide to capture the transaction at a later date, at which point the state will become `COMPLETED`.\n\n![Transaction state flow](/images/diagrams/transaction-state-flow.png)\n\nDecline reasons {% #card-transaction-decline-reasons .title-3 .m-t-5 %}\n\nThe decline reason field provides information about the specific issue that led to the transaction being declined, helping the merchant and the customer troubleshoot the problem.\n\nWhile the decline reason field provides valuable information, it may not cover all possible reasons for a decline, such as technical issues or unforeseen circumstances.\n\n{% admonition type=\"warning\" %}\nNew decline reasons may be added in the future, and not all decline reasons are currently documented. Review this documentation regularly to ensure accuracy.\n{% /admonition %}\n\n{% admonition type=\"warning\" %}\nExercise caution when communicating decline reasons to your customers, as some may not be relevant or may cause confusion.\n{% /admonition %}\n\n- `ACCOUNT_INACTIVE` - Balance related to the transaction is not active. Ensure that all outstanding actions have been completed before using the card, as this may help avoid potential issues or declines\n- `ACCOUNT_SUSPENDED` - The transaction has been declined pending further compliance checks. It may have been flagged for potential sanctions issues\n- `ATM_PIN_CHANGE_NOT_ALLOWED` - PIN change via ATM terminal is not allowed\n- `BLOCKED_COUNTRY` - Transactions were made in unsupported countries. Check this [link](https://wise.com/help/articles/2935771/where-can-i-use-my-wise-card) to see if the country is included in the list of supported nations. It is possible for a merchant to be based in a supported country and have an address registered in a blocked country, albeit infrequently\n- `BLOCKED_SUBSCRIPTION` - The system cannot facilitate this transaction as the customer has opted out of recurring payments with this merchant\n- `CARD_EXPIRED` - The card provided has reached its expiration date, making it invalid for this transaction\n- `CARD_FROZEN` - The customer or the customer service team has put this card on a temporary hold. If the card has not been frozen by the customer, it may be worth investigating further. To resume spending, advise the customer to unfreeze the card\n- `CARD_INACTIVE` - The card is either not active or has not been received by the customer, so the transaction cannot proceed\n- `CARD_BLOCKED` - The card has been blocked and cannot be used anymore\n- `CARD_PARTNER_SUSPENDED` - The internal team has deactivated the account for compliance reasons related to AML, fraud, or EDD. Contact the team if this is believed to be an error\n- `CHIP_PIN_ENTRY_TRIES_EXCEEDED` - The PIN is restricted on the chip of the card due to excessive incorrect entries. The blocked PIN can be unlocked at an ATM using specific steps that vary depending on the machine and country, such as PIN management or PIN operations followed by unblocking the PIN\n- `CONNECTION_ISSUE` - A connection problem occurred during the transaction\n- `CONTACTLESS_PIN_ENTRY_REQUIRED` - Contactless payment systems sometimes require a PIN for authentication purposes to protect users' accounts from potential fraud or tampering. In Europe, contactless payment transactions that follow one after the other require PIN verification as an additional security measure\n- `CREDIT_TRANSACTIONS_NOT_SUPPORTED` - Credit is not supported for this specific transaction. Review the [Acceptable Use Policy](https://wise.com/gb/legal/acceptable-use-policy-eea) for further information\n- `CUMULATIVE_LIMIT_EXCEEDED` - In certain jurisdictions, there are restrictions on the amount that can be spent. Refer to [spending limits](https://wise.com/help/articles/2899986/what-are-my-spending-limits) for further details\n- `DECLINED_ADVICE` - There is a problem with the message from the processor, so it might not be accepted because it could be incomplete or unsafe. This does not indicate a problem with the card. Advise the customer that there was a technical issue with the payment and to try again later\n- `INCORRECT_CVV` - The customer entered the wrong security code. Advise the customer to check their card details and try again. If the saved card details are correct, they should remove their card details from the merchant's website and add them back again\n- `INCORRECT_EXPIRY_DATE` - The customer entered the wrong expiration date for their card. If the saved card details are correct, they should remove their card details from the merchant's website and add them back again\n- `INCORRECT_PIN` - The customer entered their PIN incorrectly. Advise the customer to check their PIN and try again. If the PIN is correct and still fails, suggest resetting the PIN\n- `INSUFFICIENT_FUNDS` - The customer does not have enough money in their account to make the payment. Advise the customer to add money to their account and try again. In most cases, this will resolve the issue\n- `INVALID_3DS_UCAF` - The 3D Secure checks failed during the transaction. The customer should try again and request authentication\n- `INCORRECT_ARQC` - ARQC (Authorization Request Cryptogram) is a cryptogram generated by the card during a transaction, which is validated on the server side. If incorrect, it could indicate a faulty card, a fraudulent attack, or an issue with the POS terminal\n- `INCORRECT_ICVV` - ICVV (Integrated Circuit Card Verification Value) is a security feature used to validate the authenticity of a card during chip-based transactions. There were problems reading the chip on the card, which may indicate an issue with the card's chip, the terminal, or the transaction process. Wait and try again\n- `INVALID_MERCHANT` - Transaction from a specific merchant is declined by scheme. The merchant should clarify the exact cause with the scheme\n- `INVALID_TRANSACTION` - Certain types of transactions are not supported. The customer should ask the merchant to use a different payment method or try a different merchant\n- `MANDATE_DCC_NON_SUPPORTED_FOR_CARD_COUNTRY` - The transaction was declined because the system does not support conversions for Brazilian cards when BRL is involved. BRL will not be automatically exchanged to other currencies. If the customer wants to continue with the payment, they need to change the currency\n- `MANDATE_LOCAL_CASH_WITHDRAWAL_NOT_ALLOWED` - ATM withdrawal services are not provided in the country where the transaction is taking place\n- `NON_SUPPORTED_CURRENCY` - The currency in this transaction is not supported\n- `NON_SUPPORTED_MCC_FOR_COUNTRY` - Transactions in this category are not supported for customers in the country of purchase. Consider using an alternative payment method or changing merchant\n- `PAYMENT_METHOD_DAILY_LIMIT_EXCEEDED` - The customer has reached the daily spending limit for the card or their profile. Advise if they would like to update [card](/api-reference/spend-limits/spendlimitscardupdate) or [profile](/api-reference/spend-limits/spendlimitsprofileupdate) limit\n- `PAYMENT_METHOD_LIFETIME_LIMIT_EXCEEDED` - The customer has reached the lifetime spending limit. Advise if they would like to [increase](/api-reference/spend-limits/spendlimitscardupdate) their lifetime limit\n- `PAYMENT_METHOD_MONTHLY_LIMIT_EXCEEDED` - The customer has reached the monthly spending limit for the card or their profile. Advise if they would like to update [card](/api-reference/spend-limits/spendlimitscardupdate) or [profile](/api-reference/spend-limits/spendlimitsprofileupdate) limit\n- `PAYMENT_METHOD_NOT_ALLOWED` - This payment type has been disabled. Advise if they would like to [enable](/api-reference/card/cardpermissionsbulkupdate) the payment type\n- `PAYMENT_METHOD_TRANSACTION_LIMIT_EXCEEDED` - The customer has exceeded the transaction limit for the card. Advise if they would like to update their [card](/api-reference/spend-limits/spendlimitscardupdate) limit\n- `PIN_ENTRY_TRIES_EXCEEDED` - The customer has reached the maximum number of allowed online PIN entry attempts. Consider implementing a [reset PIN](/api-reference/card/cardpincountreset) feature within the app to help the customer regain access to their card\n- `PRE_ACTIVATED_CARD_PIN_ENTRY_REQUIRED` - The customer has attempted to make a contactless payment at a POS or ATM, but their card has not been activated for chip and PIN transactions. To modify the card activation strategy for all cards, contact the implementation manager\n- `PROCESSING_ERROR` - The system is currently experiencing technical difficulties. Advise the customer to try again after a brief period\n- `RESTRICTED_MODE` - Although rare, restricted mode can occur. Advise the customer to replace their card promptly as the system should have already informed them. In this mode, more secure payment methods like chip and PIN, contactless, mobile wallets, and online payments with 3DS are allowed, while less secure methods like magnetic stripe and online payments without 3DS are not permitted\n- `REVERSAL_NOT_MATCHING_AUTH_CURRENCY` - The merchant has issued a reversal instruction for a different currency than what was originally requested during the authorization process\n- `SCA_SOFT_DECLINE` - The transaction cannot proceed due to SCA regulations. Suggest the customer contact the merchant and use a more secure authentication method such as 3DS. For example, the customer can try chip and PIN, or a mobile wallet like Apple Pay or Google Pay\n- `SCHEME_BLOCKED_TRANSACTION` - This transaction has been flagged by the scheme and cannot be processed\n- `SECURITY_CVM_FAILURE` - The system has detected that the POS terminal was misconfigured and failed security checks. Suggest the customer use an alternative payment method like contactless or mobile wallets, or recommend asking the merchant to accept a signature instead\n- `SECURITY_MAGSTRIPE_SECURE_ELEMENTS_INCORRECT_OR_MISSING` - The merchant has entered the wrong type of purchase. Advise the customer to contact the merchant and ask them to correct this issue\n- `SECURITY_PIN_ENTRY_REQUIRED` - To proceed with this transaction, the customer is required to enter their PIN\n- `SUSPECTED_FRAUD` - This transaction has been labeled as high-risk by Wise\n- `SUSPECTED_FRAUD_AML` - This transaction has been flagged as high-risk based on AML compliance protocols. This reason cannot be disclosed to end customers\n- `SUSPECTED_FRAUD_COMPLIANCE` - The compliance system has flagged this transaction as high-risk. This reason cannot be disclosed to end customers\n- `SUSPECTED_FRAUD_CORE_FRAUD` - This transaction has been blocked based on fraud policies and procedures\n- `SUSPECTED_FRAUD_SANCTIONS` - This transaction has been flagged as high-risk based on sanctions list analysis. This reason cannot be disclosed to end customers. This classification is final and cannot be appealed\n- `SUSPECTED_FRAUD_SOFT_DECLINE` - This e-commerce transaction cannot be processed due to high risk factors. The merchant must complete 3DS before the transaction can be approved\n- `TRANSACTION_TYPE_NOT_SUPPORTED` - There are restrictions on this type of transaction, and sometimes the scheme will not allow it. Check if [spend control](/api-reference/spend-controls) is set up to block this transaction\n- `UNEXPECTED_ERROR` - There may have been a communication error between the merchant's system and the server, but the POS system may have already notified the user of this issue\n\nDetailed decline reasons {% #card-transaction-detailed-decline-reasons .title-3 .m-t-5 %}\n\nDetailed decline reasons provide secondary level information for certain decline reasons, adding more context to transaction failures.\n\nPlease be aware that new detailed decline reasons may be added in the future, and not all reasons are currently documented. Therefore, it is important to exercise caution and regularly review the documentation to ensure accuracy.\n\n{% admonition type=\"warning\" %}\nPlease exercise caution when communicating reasons to your customers, as some may not be relevant or may cause confusion. If you have any questions or concerns, we are here to assist you.\n{% /admonition %}\n\n- `INSUFFICIENT_FUNDS_FOR_BLOCKED_SMART_CONVERSION` - Transaction was declined due to insufficient balance in transaction currency when smart conversion feature is disabled (e.g. BRL cards). The customer needs to convert their funds to the transaction currency and try again.\n- `INSUFFICIENT_FUNDS_FOR_SPECIFIC_CURRENCY_RESERVATION` - The transaction will be declined with this reason if the customer's card is issued in a region subject to smart conversion limitations, and the transaction currency is the limited currency but the customer doesn't hold enough of that currency. Other currencies won't be automatically converted to the limited currency. The customer needs to convert their funds to the transaction currency before retrying the payment.\n- `SUSPECTED_FRAUD_NO_BALANCE` - The customer might be abusing merchants by saving a card without having any balance to cover upcoming charges from them. The customer will need to top up their account to cover any charges from the merchant at a later date before re-attempting the transaction.\n- `RESET_YOUR_PIN_AT_ATM` - There's a problem with how Chip was read and we had to decline the transaction. The customer will need to reset their PIN at an ATM.\n- `INCORRECT_CVV2` - Invalid CVV2 was provided. The customer needs to check their saved card details and if they're correct, they should remove and add their card details to the merchant's website again. If this doesn't help, they could try to use their card at another merchant's website. If the same issue happens, they'll need to order a new card.\n- `SCA_SOFT_DECLINE_CONTACTLESS` - Contactless transaction could not be approved due to SCA regulations. The customer should perform at least one PIN transaction or use an ATM to reset PIN.\n- `SUSPECTED_FRAUD_REVIEW_ACTIVITY` - We couldn't confirm all transactions in the customer's activity were done by them, so we froze their card. The customer should review recent transactions and unfreeze the card.\n- `INVALID_TRANSACTION_TYPE_FINAL` - This decline reason is used for unmapped processor or network error codes, indicating an external system issue or unclassified response. The decision authority on the transaction information identifies a SCHEME decline, which may relate to card usage in unsupported countries. The customer will need to use an alternative payment method to complete this transaction.\n- `INVALID_TRANSACTION_TYPE_CONTACTLESS_MAGSTRIPE` - The POS terminal used a deprecated and not secure way to transmit card data. The customer will need to use another POS machine or try another payment method (Chip and PIN or Mobile Wallet).\n- `INVALID_TRANSACTION_TYPE_FALLBACK` - The chip couldn't be read due to a technical issue which resulted in the transaction \"falling back\" to magnetic stripe. As damaging the chip (so it would fall back to stripe) is a common way of fraud, these types of transactions are often deemed risky and being blocked.\n    The customer will need to:\n    - Try again or try a different terminal / ATM if it still doesn't work\n    - Use another payment method, e.g. Contactless\n    - Use another card\n    - If the issue persists with multiple terminals, they'll need to replace their card as it may be damaged\n- `CONTACTLESS_DISABLED` - `POS_CONTACTLESS` permission (contactless payments) is disabled. The customer will need to enable the permission to allow contactless transactions.\n- `ECOM_DISABLED` - `ECOM` permission (online payments) is disabled. The customer will need to enable the permission to allow e-commerce transactions.\n- `CHIP_DISABLED` - `POS_CHIP` permission (Chip transactions) is disabled. The customer will need to enable the permission to allow Chip transactions.\n- `MAGSTRIPE_DISABLED` - `POS_MAGSTRIPE` permission (magnetic stripe transactions) is disabled. The customer will need to enable the permission to allow magnetic stripe transactions.\n- `WALLET_DISABLED` - `MOBILE_WALLETS` permission is disabled. The customer will need to enable the permission to allow mobile wallet transactions.\n- `PROFILE_GENERAL_DAILY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has reached their daily total account limit (profile-level). The customer will need to edit the limit.\n- `PROFILE_GENERAL_MONTHLY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has gone over their monthly total account limit (profile-level). The customer will need to edit the limit.\n- `CARD_GENERAL_DAILY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has reached their daily limit for this card (card-level). The customer will need to edit the limit.\n- `CARD_GENERAL_MONTHLY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has gone over the monthly limit for this card (card-level). The customer will need to edit the limit.\n- `PAYMENT_METHOD_MAX_MONTHLY_LIMIT_EXCEEDED` - The card's maximum non-changeable monthly spending limit has been reached. The customer will need to wait until the start of the next calendar month to perform transactions again.\n- `UNKNOWN` - This decline reason is used when the processor or network returns an error code that is not mapped to any of our specific detailed decline reasons. This can be caused by various external system issues or unclassified processor responses."
+paths:
+  /v3/spend/profiles/{profileId}/cards/transactions/{transactionId}:
+    get:
+      deprecated: true
+      operationId: cardTransactionGetV3
+      summary: Get card transaction (V3)
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Use the [V4 Get card transaction](/api-reference/card-transaction/cardtransactionget) endpoint instead.
+
+        {% /admonition %}
+
+
+        Retrieve a card transaction by its ID.
+
+
+        Use in conjunction with the [V2.0.0 card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change).
+
+
+        When a refund happens, a separate transaction will be added with a `REFUND` transaction type.
+
+        '
+      tags:
+      - card-transaction
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: transactionId
+        in: path
+        required: true
+        description: The ID of the transaction.
+        schema:
+          type: string
+        example: '342671'
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Card transaction retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransactionV3'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/spend/profiles/{profileId}/cards/transactions/{transactionId}:
+    get:
+      operationId: cardTransactionGet
+      summary: Get card transaction
+      description: 'Retrieve a card transaction by its ID.
+
+
+        Use in conjunction with the [card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change) for versions V2.1.0 and later.
+
+
+        {% admonition type="warning" %}
+
+        Only transactions created in the past 90 days can be accessed. A 422 error code will be returned otherwise.
+
+        {% /admonition %}
+
+
+        When a refund happens, a separate transaction will be added with a `REFUND` transaction type.
+
+        '
+      tags:
+      - card-transaction
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: transactionId
+        in: path
+        required: true
+        description: The ID of the transaction.
+        schema:
+          type: integer
+          format: int64
+        example: 342671
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Card transaction retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardTransaction'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/spend/profiles/{profileId}/cards/{cardToken}/transactions:
+    get:
+      operationId: cardTransactionList
+      summary: List card transactions
+      description: 'Retrieve a list of card transactions for a specific card. Transactions are ordered by transaction ID in descending order.
+
+
+        Use in conjunction with the [card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change) for versions V2.1.0 and later.
+
+
+        {% admonition type="warning" %}
+
+        Only transactions created in the past 90 days can be accessed. A 422 error code will be returned otherwise.
+
+        {% /admonition %}
+
+
+        The `debits` and `credits` fields are not included in list responses. Use the [Get card transaction](/api-reference/card-transaction/cardtransactionget) endpoint to retrieve these fields.
+
+        '
+      tags:
+      - card-transaction
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile that owns the card.
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardToken
+        in: path
+        required: true
+        description: The unique token identifying the card.
+        schema:
+          type: string
+          format: uuid
+        example: 59123122-223d-45f9-b840-0ad4a4f80937
+      - name: fromCreationTime
+        in: query
+        required: true
+        description: Start of range for transaction creation time in UTC, in ISO-8601 format.
+        schema:
+          type: string
+          format: date-time
+        example: '2025-12-15T00:00:00Z'
+      - name: toCreationTime
+        in: query
+        required: true
+        description: End of range for transaction creation time in UTC, in ISO-8601 format.
+        schema:
+          type: string
+          format: date-time
+        example: '2026-01-15T00:00:10Z'
+      - name: pageSize
+        in: query
+        required: false
+        description: Page size of query between 10 and 100 inclusive, defaults to 20.
+        schema:
+          type: integer
+          format: int32
+          minimum: 10
+          maximum: 100
+          default: 20
+        example: 10
+      - name: lastId
+        in: query
+        required: false
+        description: A pagination cursor that marks your position in the list. Include the ID of the last transaction from the previous page to retrieve the next page (transactions with IDs less than the provided value).
+        schema:
+          type: integer
+          format: int64
+        example: 342672
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Card transactions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CardTransaction'
+              example:
+                transactions:
+                - id: 342671
+                  cardToken: 59123122-223d-45f9-b840-0ad4a4f80937
+                  type: ECOM_PURCHASE
+                  state: IN_PROGRESS
+                  declineReason: null
+                  creationTime: '2022-11-28T08:17:54.241Z'
+                  modificationTime: '2022-11-28T08:17:54.241Z'
+                  purgeTime: '2022-11-28T08:17:54.241Z'
+                  transactionAmount:
+                    amount: 1.4
+                    currency: SGD
+                  fees:
+                  - amount: 0.1
+                    currency: SGD
+                    fee_type: ATM_ACQUIRER
+                  transactionAmountWithFees:
+                    amount: 1.5
+                    currency: SGD
+                  merchant:
+                    name: Test Payment
+                    location:
+                      country: France
+                      city: Rouen
+                      zipCode: '00000'
+                      region: null
+                      state: null
+                    category:
+                      name: MISCELLANEOUS_FOOD_STORES_CONVEN
+                      code: '5999'
+                      description: 5999 R Miscellaneous and Special
+                  authorisationMethod: MANUAL_ENTRY
+                  approvalCode: '913647'
+                  billingAmount:
+                    amount: 1.1
+                    currency: EUR
+                  arn: 04300014127798385983852
+                  pinValidationResult: ONLINE_PIN_VALIDATED
+                  balanceChannelReferenceId: 6e71018d-2f4d-4fc3-6711-f517f4664712
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    CardTransactionV3:
+      title: Card Transaction (V3)
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: ID of the transaction
+          example: '342671'
+        cardToken:
+          type: string
+          description: Unique identifier of the card
+          example: 59123122-223d-45f9-b840-0ad4a4f80937
+        type:
+          type: string
+          description: '[Type](/api-reference/card-transaction#card-transaction-type) of the transaction. One of:
+
+            - `ACCOUNT_CREDIT`
+
+            - `ACCOUNT_FUNDING`
+
+            - `CASH_ADVANCE`
+
+            - `CASH_WITHDRAWAL`
+
+            - `CHARGEBACK`
+
+            - `CREDIT_TRANSACTION`
+
+            - `ECOM_PURCHASE`
+
+            - `POS_PURCHASE`
+
+            - `REFUND`
+
+            '
+          enum:
+          - ACCOUNT_CREDIT
+          - ACCOUNT_FUNDING
+          - CASH_ADVANCE
+          - CASH_WITHDRAWAL
+          - CHARGEBACK
+          - CREDIT_TRANSACTION
+          - ECOM_PURCHASE
+          - POS_PURCHASE
+          - REFUND
+          example: ECOM_PURCHASE
+        declineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [decline reason](/api-reference/card-transaction#card-transaction-decline-reasons) if applicable
+          example: null
+        detailedDeclineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [detailed decline reason](/api-reference/card-transaction#card-transaction-detailed-decline-reasons) if applicable
+          example: null
+        createdDate:
+          type: string
+          format: date-time
+          description: When the transaction was created
+          example: '2022-11-28T08:17:54.241236Z'
+        state:
+          type: string
+          description: 'The current [state](/api-reference/card-transaction#card-transaction-state) of the transaction. One of:
+
+            - `IN_PROGRESS`
+
+            - `COMPLETED`
+
+            - `DECLINED`
+
+            - `CANCELLED`
+
+            - `UNKNOWN`
+
+            '
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DECLINED
+          - CANCELLED
+          - UNKNOWN
+          example: IN_PROGRESS
+        cardLastDigits:
+          type: string
+          description: Last 4 digits of the card
+          example: '3086'
+        transactionAmount:
+          type: object
+          description: Transaction amount, excluding all embedded fees such as ATM fees that are not applied by Wise
+          properties:
+            amount:
+              type: number
+              description: Transaction amount
+              example: 1.5
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        fees:
+          type: array
+          description: Array of fees
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+                description: Fee amount
+                example: 0.1
+              currency:
+                type: string
+                description: Currency code
+                example: SGD
+              fee_type:
+                type: string
+                description: Fee type
+                example: ATM_ACQUIRER
+        transactionAmountWithFees:
+          type: object
+          description: Transaction amount including fees
+          properties:
+            value:
+              type: number
+              description: Transaction amount including fees
+              example: 1.5
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        merchant:
+          type: object
+          description: Merchant information
+          properties:
+            name:
+              type: string
+              description: Name of the merchant
+              example: Test Payment
+            location:
+              type: object
+              description: Merchant location
+              properties:
+                country:
+                  type:
+                  - string
+                  - 'null'
+                  description: Country where merchant is located
+                  example: France
+                city:
+                  type:
+                  - string
+                  - 'null'
+                  description: City where merchant is located
+                  example: Rouen
+                zipCode:
+                  type:
+                  - string
+                  - 'null'
+                  description: Zip code where merchant is located
+                  example: '00000'
+                region:
+                  type:
+                  - string
+                  - 'null'
+                  description: Region where merchant is located
+                  example: null
+                state:
+                  type:
+                  - string
+                  - 'null'
+                  description: State where merchant is located
+                  example: null
+            category:
+              type: object
+              description: Merchant category
+              properties:
+                name:
+                  type: string
+                  description: Category of the merchant
+                  example: RMiscellaneousAndSpecial
+                code:
+                  type: string
+                  description: MCC code of the merchant
+                  example: '5999'
+                description:
+                  type: string
+                  description: Description of the merchant category
+                  example: 5999 R Miscellaneous and Special
+        authorisationMethod:
+          type: string
+          description: Authorisation method
+          example: MANUAL_ENTRY
+        balanceTransactionId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Associated balance transaction ID if applicable
+          example: 2598366
+        debits:
+          type: array
+          description: Array of debits
+          items:
+            type: object
+            properties:
+              balanceId:
+                type: integer
+                format: int64
+                description: Balance ID
+                example: 52832
+              debitedAmount:
+                type: object
+                description: Amount taken from the balance
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.06
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+              forAmount:
+                type: object
+                description: Amount converted to
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.5
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: SGD
+              rate:
+                type: number
+                description: Exchange rate of debitedAmount to forAmount
+                example: 1.43073
+              fee:
+                type: object
+                description: Conversion fee
+                properties:
+                  amount:
+                    type: number
+                    description: Conversion fee amount
+                    example: 0.01
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+        credit:
+          type:
+          - object
+          - 'null'
+          description: Credit details, present for refund transactions
+          properties:
+            balanceId:
+              type: integer
+              format: int64
+              description: Balance ID
+              example: 52832
+            creditedAmount:
+              type: object
+              description: Amount credited to the balance
+              properties:
+                amount:
+                  type: number
+                  description: Amount
+                  example: 1.5
+                currency:
+                  type: string
+                  description: Currency code
+                  example: SGD
+        relayAuthorisationData:
+          type:
+          - object
+          - 'null'
+          description: Relayed authorisation response data, only available if the partner has opted in for [relayed authorisation](/guides/product/issue-cards/relayed-authorisation)
+          properties:
+            responseCode:
+              type: string
+              description: '[ResponseCode](/guides/product/issue-cards/relayed-authorisation#authorisation-response) of the relayed authorisation. One of:
+
+                - `APPROVED`
+
+                - `PROCESSING_ERROR`
+
+                - `NON_SUPPORTED_CURRENCY`
+
+                - `NON_SUPPORTED_MCC_FOR_COUNTRY`
+
+                - `BLOCKED_COUNTRY`
+
+                - `TRANSACTION_TYPE_NOT_SUPPORTED`
+
+                - `SUSPECTED_FRAUD`
+
+                '
+              enum:
+              - APPROVED
+              - PROCESSING_ERROR
+              - NON_SUPPORTED_CURRENCY
+              - NON_SUPPORTED_MCC_FOR_COUNTRY
+              - BLOCKED_COUNTRY
+              - TRANSACTION_TYPE_NOT_SUPPORTED
+              - SUSPECTED_FRAUD
+              example: APPROVED
+            fallback:
+              type: boolean
+              description: Indicating whether there was a fallback applied by Wise
+              example: true
+    CardTransaction:
+      title: Card Transaction
+      type: object
+      additionalProperties: true
+      description: 'The `debits` and `credits` fields are only present when retrieving a single transaction by ID, and will not be present in the list transactions response.
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the transaction
+          example: 342671
+        cardToken:
+          type: string
+          description: Unique identifier of the card
+          example: 59123122-223d-45f9-b840-0ad4a4f80937
+        type:
+          type: string
+          description: '[Type](/api-reference/card-transaction#card-transaction-type) of the transaction. One of:
+
+            - `ACCOUNT_CREDIT`
+
+            - `ACCOUNT_FUNDING`
+
+            - `CASH_ADVANCE`
+
+            - `CASH_WITHDRAWAL`
+
+            - `CHARGEBACK`
+
+            - `CREDIT_TRANSACTION`
+
+            - `ECOM_PURCHASE`
+
+            - `POS_PURCHASE`
+
+            - `REFUND`
+
+            '
+          enum:
+          - ACCOUNT_CREDIT
+          - ACCOUNT_FUNDING
+          - CASH_ADVANCE
+          - CASH_WITHDRAWAL
+          - CHARGEBACK
+          - CREDIT_TRANSACTION
+          - ECOM_PURCHASE
+          - POS_PURCHASE
+          - REFUND
+          example: ECOM_PURCHASE
+        state:
+          type: string
+          description: 'The current [state](/api-reference/card-transaction#card-transaction-state) of the transaction. One of:
+
+            - `IN_PROGRESS`
+
+            - `COMPLETED`
+
+            - `DECLINED`
+
+            - `CANCELLED`
+
+            - `UNKNOWN`
+
+            '
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DECLINED
+          - CANCELLED
+          - UNKNOWN
+          example: IN_PROGRESS
+        declineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [decline reason](/api-reference/card-transaction#card-transaction-decline-reasons) if applicable
+          example: null
+        detailedDeclineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [detailed decline reason](/api-reference/card-transaction#card-transaction-detailed-decline-reasons) if applicable
+          example: null
+        creationTime:
+          type: string
+          format: date-time
+          description: When the transaction was created
+          example: '2022-11-28T08:17:54.241Z'
+        modificationTime:
+          type: string
+          format: date-time
+          description: When the transaction was last updated
+          example: '2022-11-28T08:17:54.241Z'
+        purgeTime:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Time at which reserved funds will be released after the authorisation hold expires
+          example: '2022-11-28T08:17:54.241Z'
+        transactionAmount:
+          type: object
+          description: Transaction amount, including any embedded fees such as ATM fees that are not applied by Wise
+          properties:
+            amount:
+              type: number
+              description: Transaction amount
+              example: 1.4
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        fees:
+          type: array
+          description: Array of fees
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+                description: Fee amount
+                example: 0.1
+              currency:
+                type: string
+                description: Currency code
+                example: SGD
+              fee_type:
+                type: string
+                description: Fee type
+                example: ATM_ACQUIRER
+        transactionAmountWithFees:
+          type: object
+          description: Transaction amount including all fees
+          properties:
+            amount:
+              type: number
+              description: Transaction amount including all fees
+              example: 1.5
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        merchant:
+          type: object
+          description: Merchant information
+          properties:
+            name:
+              type: string
+              description: Name of the merchant
+              example: Test Payment
+            location:
+              type: object
+              description: Merchant location
+              properties:
+                country:
+                  type:
+                  - string
+                  - 'null'
+                  description: Country where merchant is located
+                  example: France
+                city:
+                  type:
+                  - string
+                  - 'null'
+                  description: City where merchant is located
+                  example: Rouen
+                zipCode:
+                  type:
+                  - string
+                  - 'null'
+                  description: Zip code where merchant is located
+                  example: '00000'
+                region:
+                  type:
+                  - string
+                  - 'null'
+                  description: Region where merchant is located
+                  example: null
+                state:
+                  type:
+                  - string
+                  - 'null'
+                  description: State where merchant is located
+                  example: null
+            category:
+              type: object
+              description: Merchant category
+              properties:
+                name:
+                  type: string
+                  description: Category of the merchant
+                  example: MISCELLANEOUS_FOOD_STORES_CONVEN
+                code:
+                  type: string
+                  description: MCC code of the merchant
+                  example: '5999'
+                description:
+                  type: string
+                  description: Description of the merchant category
+                  example: 5999 R Miscellaneous and Special
+        authorisationMethod:
+          type: string
+          description: Authorisation method
+          example: MANUAL_ENTRY
+        approvalCode:
+          type:
+          - string
+          - 'null'
+          description: Also called authorization code. This can be used to prove ownership of a customer's card/account to a merchant
+          example: '913647'
+        billingAmount:
+          type: object
+          description: Billing amount
+          properties:
+            amount:
+              type: number
+              description: Billing amount
+              example: 1.1
+            currency:
+              type: string
+              description: Currency code
+              example: EUR
+        arn:
+          type:
+          - string
+          - 'null'
+          description: Acquirer reference number
+          example: 04300014127798385983852
+        pinValidationResult:
+          type:
+          - string
+          - 'null'
+          description: 'PIN validation result. One of:
+
+            - `ONLINE_PIN_VALIDATED`
+
+            - `ONLINE_PIN_INVALID`
+
+            - `OFFLINE_PIN_VALIDATED`
+
+            - `OFFLINE_PIN_INVALID`
+
+            - `NOT_RECEIVED`
+
+            '
+          enum:
+          - ONLINE_PIN_VALIDATED
+          - ONLINE_PIN_INVALID
+          - OFFLINE_PIN_VALIDATED
+          - OFFLINE_PIN_INVALID
+          - NOT_RECEIVED
+          example: ONLINE_PIN_VALIDATED
+        balanceChannelReferenceId:
+          type:
+          - string
+          - 'null'
+          description: Balance channel reference ID associated with the card transaction
+          example: 6e71018d-2f4d-4fc3-6711-f517f4664712
+        debits:
+          type: array
+          description: 'Array of debits. Only present when retrieving a single transaction by ID.
+
+
+            The debits list is a non-aggregated list of debit movements, meaning that the `balanceId` is not unique in the list. For example, a cancelled transaction may have a list of 2 debits where the absolute values of `debitedAmount.amount`, `forAmount.amount` and `fee.amount` are the same, but one is the negation of the other due to a reservation (first debit) which was then released (second debit with negated amounts). You can choose to perform the aggregation in your system or display the full list of debits to the end customer.
+
+            '
+          items:
+            type: object
+            properties:
+              balanceId:
+                type: integer
+                format: int64
+                description: Balance ID
+                example: 52832
+              debitedAmount:
+                type: object
+                description: Amount taken from the balance
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.1
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+              forAmount:
+                type: object
+                description: Amount converted to
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.5
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: SGD
+              rate:
+                type: number
+                description: Exchange rate of debitedAmount to forAmount
+                example: 1.36363636364
+              fee:
+                type: object
+                description: Conversion fee
+                properties:
+                  amount:
+                    type: number
+                    description: Conversion fee amount
+                    example: 0.04
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+              creationTime:
+                type: string
+                format: date-time
+                description: Creation time of debit
+                example: '2022-11-28T08:17:54.241Z'
+        credits:
+          type: array
+          description: Array of credits. Only present when retrieving a single transaction by ID
+          items:
+            type: object
+            properties:
+              balanceId:
+                type: integer
+                format: int64
+                description: Balance ID
+                example: 52832
+              creditedAmount:
+                type: object
+                description: Amount credited to the balance
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.5
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: SGD
+              creationTime:
+                type: string
+                format: date-time
+                description: Creation time of credit
+                example: '2022-11-28T08:17:54.241Z'
+        relayAuthorisationData:
+          type:
+          - object
+          - 'null'
+          description: Relayed authorisation response data, only available if the partner has opted in for [relayed authorisation](/guides/product/issue-cards/relayed-authorisation)
+          properties:
+            responseCode:
+              type: string
+              description: '[ResponseCode](/guides/product/issue-cards/relayed-authorisation#authorisation-response) of the relayed authorisation. One of:
+
+                - `APPROVED`
+
+                - `PROCESSING_ERROR`
+
+                - `NON_SUPPORTED_CURRENCY`
+
+                - `NON_SUPPORTED_MCC_FOR_COUNTRY`
+
+                - `BLOCKED_COUNTRY`
+
+                - `TRANSACTION_TYPE_NOT_SUPPORTED`
+
+                - `SUSPECTED_FRAUD`
+
+                '
+              enum:
+              - APPROVED
+              - PROCESSING_ERROR
+              - NON_SUPPORTED_CURRENCY
+              - NON_SUPPORTED_MCC_FOR_COUNTRY
+              - BLOCKED_COUNTRY
+              - TRANSACTION_TYPE_NOT_SUPPORTED
+              - SUSPECTED_FRAUD
+              example: APPROVED
+            fallback:
+              type: boolean
+              description: Indicating whether there was a fallback applied by Wise
+              example: true
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

@@ -1,0 +1,1140 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds card-order API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: card-order
+  x-displayName: Card Orders
+  description: 'With this set of APIs, you will be able to create cards for your customers. You can also retrieve and view the status of your current card orders, as well as the list of available card programs for the user.
+
+
+    {% admonition type="info" %}
+
+    On production, each personal profile can order at most 1 physical card and 3 virtual cards. On sandbox, we allow up to 10 physical cards and 30 virtual cards for testing purpose. However, no more than 3 virtual cards can be ordered per day. This limit includes cards and card orders.
+
+    {% /admonition %}
+
+
+    Card order status flow {% #card-order-status-flow .title-3 .m-t-5 %}
+
+
+    The card order response will contain the `status` field. The initial status is `PLACED` or `REQUIREMENTS_FULFILLED` depending on the requirement fulfillment state:
+
+
+    - `PLACED` - The card order is created. The card will be generated once it has fulfilled all the requirements
+
+    - `REQUIREMENTS_FULFILLED` - The card order has fulfilled all the requirements and the card should be generated in a short while
+
+    - `CARD_DETAILS_CREATED` - The card has been generated
+
+    - `PRODUCED` - The physical card has been produced and waiting to be picked up by delivery vendor (physical card only)
+
+    - `COMPLETED` - The card has been activated and is ready to use. The card order is completed
+
+    - `CANCELLED` - The card order has been cancelled. This can happen if you reach out to Wise Support to cancel a card order
+
+    - `RETURNED` - Delivery failed, the physical card has been returned and will be blocked (physical card only)
+
+
+    ![Card order status state machine](/images/diagrams/card-order-status-flow.png)
+
+    '
+paths:
+  /v3/spend/profiles/{profileId}/card-orders:
+    post:
+      tags:
+      - card-order
+      summary: Create a card order
+      operationId: cardOrderCreate
+      description: 'Creates a new card order. The `program` field value is retrieved from the [retrieve all card programs](/api-reference/card-order/cardorderprogramsget) endpoint.
+
+
+        {% admonition type="warning" %}
+
+        This request requires an extra field in the header, `X-idempotence-uuid`. This should be generated and used for any subsequent retries in the event that the initial request fails.
+
+        {% /admonition %}
+
+
+        When you issue a card under a business profile, the cardholder will automatically default to the [business representative](/api-reference/profile/profilebusinesscreate).
+
+
+        If the cardholder is not the business representative, create a cardholder [personal profile](/api-reference/profile/profilepersonalcreate) and add the profileId of the cardholder profile to the `cardHolderProfileId` field on the card order request.
+
+
+        For country-specific address fields and validation rules, see the [card address validation guide](/guides/developer/api-guides/card-address-validation).
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: X-idempotence-uuid
+        in: header
+        required: true
+        description: Idempotency key. Should be generated and used for any subsequent retries.
+        schema:
+          type: string
+          format: uuid
+        example: 054064c9-e01e-49fb-8fd9-b0990b9442f4
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for creating a card order.
+              required:
+              - program
+              - cardHolderName
+              - address
+              properties:
+                program:
+                  type: string
+                  description: The name of the card program.
+                  example: VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API
+                cardHolderName:
+                  type: string
+                  description: The cardholder's name.
+                  example: John Smith
+                embossedName:
+                  type: string
+                  description: The cardholder's name to print on the card (physical card only). The field length should be between 1 and 22 characters (spaces included).
+                  example: Smith John
+                phoneNumber:
+                  type: string
+                  description: 'For partners onboarded after 1/3/2025, we will use the profile phone number for any Card-related One-Time Password (OTP) requests. See [3ds](/guides/product/issue-cards/3ds).
+
+                    Ensure that the phone number is valid and starts with a "+" followed by the country code.
+
+                    '
+                  example: '+441234567890'
+                address:
+                  type: object
+                  description: The cardholder's billing address or delivery address. Fields vary by country. See the [card address validation guide](/guides/developer/api-guides/card-address-validation).
+                  additionalProperties: true
+                  properties:
+                    firstLine:
+                      type: string
+                      example: 56 Shoreditch High St
+                    secondLine:
+                      type:
+                      - string
+                      - 'null'
+                      example: The Tea Bldg
+                    thirdLine:
+                      type:
+                      - string
+                      - 'null'
+                      example: null
+                    city:
+                      type: string
+                      example: London
+                    postCode:
+                      type: string
+                      example: E1 6JJ
+                    state:
+                      type:
+                      - string
+                      - 'null'
+                      example: null
+                    country:
+                      type: string
+                      description: ISO 3166-1 alpha-2 country code.
+                      example: GB
+                deliveryOption:
+                  type: string
+                  description: 'The delivery method for the card order. The delivery method will be defined during scoping phase. Please reach out to your Implementation Manager for more information.
+
+
+                    Only specify this field for `KIOSK_COLLECTION`. If not specified, the default delivery method for your region will be used.
+
+                    - `POSTAL_SERVICE_STANDARD` - Default delivery method. Not traceable.
+
+                    - `POSTAL_SERVICE_WITH_TRACKING` - Available in certain regions. Default in Brazil.
+
+                    - `KIOSK_COLLECTION` - Available in select regions. See the [kiosk collection guide](/guides/product/issue-cards/card-kiosk-collection).
+
+                    '
+                  enum:
+                  - POSTAL_SERVICE_STANDARD
+                  - POSTAL_SERVICE_WITH_TRACKING
+                  - KIOSK_COLLECTION
+                  example: null
+                lifetimeLimit:
+                  type: number
+                  description: Optionally sets a lifetime spending limit on the card. A lifetime limit of 0 means that a card cannot be used until the lifetime limit is updated.
+                  example: 100
+                cardHolderProfileId:
+                  type: integer
+                  format: int64
+                  description: The cardholder profile for this card. This is used for business profiles.
+                  example: 654321
+                replacementDetails:
+                  type: object
+                  description: The replacement details for this card.
+                  properties:
+                    cardToken:
+                      type: string
+                      description: Token of the card to replace.
+                      example: 4a75fdb7-5791-49ac-832c-81c4347e4df0
+                    reason:
+                      type: string
+                      description: 'Reason for replacing the card:
+
+                        - `CARD_DAMAGED`
+
+                        - `CARD_EXPIRING`
+
+                        '
+                      enum:
+                      - CARD_DAMAGED
+                      - CARD_EXPIRING
+                      example: CARD_DAMAGED
+      responses:
+        '200':
+          description: OK - Card order created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOrder'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      tags:
+      - card-order
+      summary: Retrieve all card orders
+      operationId: cardOrderList
+      description: Retrieves a list of card orders created for the specified `profileId`.
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: pageSize
+        in: query
+        description: The maximum number of card orders to return per page. This number can be between 10 - 100, and will default to 10.
+        schema:
+          type: integer
+          format: int32
+        example: 10
+      - name: pageNumber
+        in: query
+        description: The page number to retrieve the next set of card orders. The number has to be greater or equal to 1, and will default to 1.
+        schema:
+          type: integer
+          format: int32
+        example: 1
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved card orders.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: The total number of card orders for this profile.
+                    example: 5
+                  cardOrders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CardOrder'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}:
+    get:
+      tags:
+      - card-order
+      summary: Retrieve a card order
+      operationId: cardOrderGet
+      description: Retrieves a card order based on the `cardOrderId`.
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardOrderId
+        in: path
+        required: true
+        description: The card order ID.
+        schema:
+          type: integer
+          format: int64
+        example: 142
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved card order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardOrder'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/card-orders/availability:
+    get:
+      tags:
+      - card-order
+      summary: Retrieve available card programs
+      operationId: cardOrderProgramsGet
+      description: Retrieves the list of available card programs for each `profileId`.
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved available card programs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cardPrograms:
+                    type: array
+                    description: List of available card programs. A Card Program is what Wise refers to all the cards that you will be issuing with us, grouped by product type and by issuing country.
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: The name of the card program.
+                          example: VISA_DEBIT_BUSINESS_UK_1_CARDS_API
+                        scheme:
+                          type: string
+                          description: 'The network of the card program:
+
+                            - `MASTERCARD`
+
+                            - `VISA`
+
+                            '
+                          enum:
+                          - MASTERCARD
+                          - VISA
+                          example: VISA
+                        defaultCurrency:
+                          type: string
+                          description: The default currency assigned to the card program.
+                          example: GBP
+                        cardType:
+                          type: string
+                          description: 'The type of the card:
+
+                            - `VIRTUAL_NON_UPGRADEABLE`
+
+                            - `PHYSICAL`
+
+                            '
+                          enum:
+                          - VIRTUAL_NON_UPGRADEABLE
+                          - PHYSICAL
+                          example: VIRTUAL_NON_UPGRADEABLE
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}/requirements:
+    get:
+      tags:
+      - card-order
+      summary: Retrieve card order requirements
+      operationId: cardOrderRequirementsGet
+      description: 'Retrieves all card requirements for a `cardOrderId`. A valid card order needs all its requirements status to be `COMPLETED`.
+
+
+        The type of requirements are:
+
+        - `PIN (optional)`: [Set a PIN](/api-reference/card-order/cardorderpresetpin) on a virtual or physical card order. Contact the team if you need this feature.
+
+        - `VERIFICATION`: Verify your customer by providing KYC evidences. Refer to the [KYC guide](/guides/product/kyc).
+
+        - `ADDRESS`: Provide a valid address for your card order. Refer to [address validation](/api-reference/card-order/cardordervalidateaddress).
+
+
+        A requirement **status** has the following values:
+
+        - `NOT_INITIATED`
+
+        - `NEEDS_ACTION`
+
+        - `PENDING`
+
+        - `COMPLETED`
+
+        - `FAILED`
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardOrderId
+        in: path
+        required: true
+        description: The card order ID.
+        schema:
+          type: integer
+          format: int64
+        example: 142
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: OK - Successfully retrieved card order requirements.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requirements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: 'The type of requirement:
+
+                            - `PIN` - Set a PIN on the card order
+
+                            - `VERIFICATION` - Verify customer by providing KYC evidences
+
+                            - `ADDRESS` - Provide a valid address for the card order
+
+                            '
+                          enum:
+                          - PIN
+                          - VERIFICATION
+                          - ADDRESS
+                          example: PIN
+                        status:
+                          type: string
+                          description: 'The status of the requirement:
+
+                            - `NOT_INITIATED`
+
+                            - `NEEDS_ACTION`
+
+                            - `PENDING`
+
+                            - `COMPLETED`
+
+                            - `FAILED`
+
+                            '
+                          enum:
+                          - NOT_INITIATED
+                          - NEEDS_ACTION
+                          - PENDING
+                          - COMPLETED
+                          - FAILED
+                          example: NOT_INITIATED
+              example:
+                requirements:
+                - type: PIN
+                  status: NOT_INITIATED
+                - type: VERIFICATION
+                  status: PENDING
+                - type: ADDRESS
+                  status: COMPLETED
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}/status:
+    put:
+      tags:
+      - card-order
+      summary: Update card order status
+      operationId: cardOrderStatusUpdate
+      description: 'Updates the status of a card order based on its `cardOrderId`. The status can be updated to one of the following:
+
+        1. `CANCELLED`
+
+        2. `COMPLETED` (deprecated)
+
+
+        The behaviour for card order cancellation differs across card order statuses:
+
+        - `PLACED`: Card order can be cancelled with no further action required.
+
+        - `REQUIREMENTS_FULFILLED`, `CARD_DETAILS_CREATED`, `PRODUCED`: Card order can be cancelled, and its associated card will be blocked. However, the physical card may have already been produced and may be in delivery. If so, the card will still reach the end user''s address. This should be communicated to the end user to prevent confusion.
+
+        - `COMPLETED`, `RETURNED`: Card orders in these statuses cannot be cancelled.
+
+
+        {% admonition type="info" %}
+
+        Updating a card order status to `COMPLETED` is deprecated. Check with our team whether this is supported in your integration.
+
+        {% /admonition %}
+
+        '
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID (personal or business).
+        schema:
+          type: integer
+          format: int64
+        example: 123456
+      - name: cardOrderId
+        in: path
+        required: true
+        description: The card order ID.
+        schema:
+          type: integer
+          format: int64
+        example: 142
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  description: 'The intended new status of the card order:
+
+                    - `CANCELLED`
+
+                    - `COMPLETED` (deprecated)
+
+                    '
+                  enum:
+                  - CANCELLED
+                  - COMPLETED
+                  example: CANCELLED
+      responses:
+        '202':
+          description: Accepted - Card order status update has been accepted.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/spend/address/validate:
+    post:
+      tags:
+      - card-order
+      summary: Validate an address
+      operationId: cardOrderValidateAddress
+      description: 'Validates the format of an address for a card order. Make sure to follow country-specific address fields and validation as described in the [card address validation guide](/guides/developer/api-guides/card-address-validation).
+
+
+        For virtual cards, the address field will be used as a billing address. It will be used for AVS checks in countries where it is required.
+
+
+        For physical cards, the address field will be used as a delivery address. It will be used to deliver your card and for AVS checks in countries where it is required.
+
+
+        {% admonition type="warning" %}
+
+        We do not support PO BOX addresses.
+
+        {% /admonition %}
+
+        '
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Address to validate. Fields vary by country. See the [card address validation guide](/guides/developer/api-guides/card-address-validation).
+              additionalProperties: true
+              properties:
+                firstLine:
+                  type: string
+                  description: Card holder's address (max 30 characters).
+                  example: 56 Shoreditch High St
+                secondLine:
+                  type:
+                  - string
+                  - 'null'
+                  description: Card holder's address (max 30 characters).
+                  example: The Tea Bldg
+                thirdLine:
+                  type:
+                  - string
+                  - 'null'
+                  description: Card holder's address (max 30 characters).
+                  example: null
+                city:
+                  type: string
+                  description: Card holder's city (max 30 characters).
+                  example: London
+                postCode:
+                  type: string
+                  description: Card holder's postal code (max 10 characters).
+                  example: E1 6JJ
+                state:
+                  type:
+                  - string
+                  - 'null'
+                  description: Card holder's state (max 30 characters).
+                  example: null
+                country:
+                  type: string
+                  description: Card holder's country (ISO 3166-1 alpha-2, max 2 characters).
+                  example: GB
+      responses:
+        '200':
+          description: OK - Validation result returned. An empty errors collection means the address is valid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    description: Collection of validation errors. Empty if address is valid.
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          description: The field that failed validation.
+                          example: postCode
+                        message:
+                          type: string
+                          description: Description of the validation error.
+                          example: Please enter a valid postcode
+              example:
+                errors:
+                - field: city
+                  message: Required Field
+                - field: postCode
+                  message: Please enter a valid postcode
+                - field: firstLine
+                  message: Must be less than 30 characters
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /twcard-data/v1/sensitive-card-data/preset-pin:
+    post:
+      tags:
+      - card-order
+      summary: Set card PIN
+      operationId: cardOrderPresetPin
+      description: 'Sets a PIN during the card order flow. This endpoint will be accessible for partners that require to set a PIN during the card order flow.
+
+
+        Please follow [this guide](/guides/product/issue-cards/sensitive-card-details) to use this endpoint.
+
+
+        To use this endpoint, make sure to set the `api token` and the `card order id` in the headers.
+
+        '
+      servers:
+      - url: https://twcard.wise.com
+        description: Production Environment
+      - url: https://twcard.wise-sandbox.com
+        description: Sandbox Environment
+      security:
+      - UserToken: []
+      parameters:
+      - name: x-tw-twcard-order-id
+        in: header
+        required: true
+        description: The card order ID.
+        schema:
+          type: string
+        example: '142'
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body for setting a card PIN.
+              required:
+              - keyVersion
+              - encryptedPayload
+              properties:
+                keyVersion:
+                  type: integer
+                  description: The version of the key to use. It is always set to 1.
+                  example: 1
+                encryptedPayload:
+                  type: string
+                  description: Your [JWE payload](/guides/product/issue-cards/sensitive-card-details).
+                  example: eyJhbGciOiJSU0...
+      responses:
+        '200':
+          description: OK - PIN set successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cardOrderId:
+                    type: string
+                    description: The card order ID.
+                    example: '142'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    CardOrder:
+      type: object
+      title: Card Order
+      x-tags:
+      - card-order
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the card order.
+          example: 142
+        profileId:
+          type: integer
+          format: int64
+          description: Profile ID.
+          example: 123456
+        clientId:
+          type: string
+          description: Client ID.
+          example: your-client-id
+        cardProgram:
+          type: object
+          description: The card program associated with this card order. A Card Program is what Wise refers to all the cards that you will be issuing with us, grouped by product type and by issuing country.
+          properties:
+            name:
+              type: string
+              description: The name of the card program.
+              example: VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API
+            scheme:
+              type: string
+              description: 'The network of the card program:
+
+                - `MASTERCARD`
+
+                - `VISA`
+
+                '
+              enum:
+              - MASTERCARD
+              - VISA
+              example: VISA
+            defaultCurrency:
+              type: string
+              description: The default currency assigned to the card program.
+              example: GBP
+            cardType:
+              type: string
+              description: 'The type of the card:
+
+                - `VIRTUAL_NON_UPGRADEABLE`
+
+                - `PHYSICAL`
+
+                '
+              enum:
+              - VIRTUAL_NON_UPGRADEABLE
+              - PHYSICAL
+              example: PHYSICAL
+        address:
+          type: object
+          description: Address set during card order. Fields vary by country. See the [card address validation guide](/guides/developer/api-guides/card-address-validation) for country-specific fields and validation rules.
+          additionalProperties: true
+          properties:
+            firstLine:
+              type: string
+              description: Card holder's address.
+              example: 56 Shoreditch High St
+            secondLine:
+              type:
+              - string
+              - 'null'
+              description: Card holder's address.
+              example: The Tea Bldg
+            thirdLine:
+              type:
+              - string
+              - 'null'
+              description: Card holder's address.
+              example: null
+            city:
+              type: string
+              description: Card holder's city.
+              example: London
+            postCode:
+              type: string
+              description: Card holder's postal code.
+              example: E1 6JJ
+            state:
+              type:
+              - string
+              - 'null'
+              description: Card holder's state.
+              example: null
+            country:
+              type: string
+              description: Card holder's country (ISO 3166-1 alpha-2).
+              example: GB
+        cardToken:
+          type:
+          - string
+          - 'null'
+          description: Token of the card associated with card order. Nullable.
+          example: 4dc0be88-903f-49e4-8237-735f1139e3dd
+        replacesCard:
+          type:
+          - string
+          - 'null'
+          description: A string for replacement card. Not supported at the moment.
+          example: null
+        creationTime:
+          type: string
+          format: date-time
+          description: Time when the card order is created.
+          example: '2023-07-31T01:43:24.596321434Z'
+        modificationTime:
+          type: string
+          format: date-time
+          description: Time when the card order was last modified.
+          example: '2023-07-31T01:43:24.596321825Z'
+        status:
+          type: string
+          description: Status of the card order. See [card order status flow](/api-reference/card-order#card-order-status-flow) for details.
+          enum:
+          - PLACED
+          - REQUIREMENTS_FULFILLED
+          - CARD_DETAILS_CREATED
+          - PRODUCED
+          - COMPLETED
+          - CANCELLED
+          - RETURNED
+          example: PRODUCED
+        cardHolderName:
+          type: string
+          description: Name of the card holder.
+          example: John Smith
+        phoneNumber:
+          type: string
+          description: Phone number associated with the card order.
+          example: '+441234567890'
+        lifetimeLimit:
+          type:
+          - number
+          - 'null'
+          description: Maximum amount of spending on the card once issued. Nullable.
+          example: 100
+        deliveryEstimate:
+          type: string
+          format: date-time
+          description: 'The estimated time when the card will be delivered. There are few scenarios to be mindful of:
+
+
+            1. For virtual card the delivery estimate will be close to the creationTime, as it does not require delivery.
+
+            2. For physical card in `PLACED` status, the delivery estimate is calculated assuming that the order requirements will be fulfilled today (refreshed daily).
+
+            3. For physical card after `PLACED` status, we provide a best effort estimation, and it should not be used as delivery timing as we will have separate delivery tracking (subject to region availability) for physical card that is coming soon.
+
+            '
+          example: '2023-10-30T07:11:00.848681Z'
+        deliveryDetails:
+          type: object
+          description: Delivery details of a physical card order. For virtual cards, this value is null.
+          properties:
+            deliveryOption:
+              type: string
+              description: The delivery option used on the card order.
+              enum:
+              - POSTAL_SERVICE_STANDARD
+              - POSTAL_SERVICE_WITH_TRACKING
+              - KIOSK_COLLECTION
+              example: POSTAL_SERVICE_WITH_TRACKING
+            deliveryVendor:
+              type:
+              - string
+              - 'null'
+              description: The name of the delivery vendor.
+              example: DHL
+            trackingUrl:
+              type:
+              - string
+              - 'null'
+              description: The URL to track the card delivery.
+              example: https://www.dhl.com/gb-en/home/tracking/tracking-express.html?submit=1&tracking-id=1999473803
+            trackingNumber:
+              type:
+              - string
+              - 'null'
+              description: The tracking number of the card delivery.
+              example: '1999473803'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

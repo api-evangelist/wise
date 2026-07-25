@@ -1,0 +1,502 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds case API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: case
+  x-displayName: Partner Cases
+  description: 'Partner Cases are part of the Partner Support API, allowing partners to open, retrieve and respond to support and operations queries.
+
+
+    The endpoints described here allow partners to directly integrate their back end tooling with Wise''s, allowing faster responses, better structure to data, and operational efficiencies.
+
+
+    {% admonition type="warning" %}
+
+    The Partner Support APIs are currently in a closed Beta and subject to change. Please speak with your implementation manager if you would like to integrate with these APIs.
+
+    {% /admonition %}
+
+
+    Case Statuses {% #case-statuses .title-3 .m-t-5 %}
+
+
+    Partner cases can move through different statuses.
+
+
+    | Status | Transitions to | Description |
+
+    |--------|---------------|-------------|
+
+    | `CREATING` | OPEN | Cases being created by Wise from a Partner call. Once created, cases move into the open status. |
+
+    | `OPEN` | PENDING, SOLVED, CLOSED | Cases being actioned by Wise. Partners do not need to action these cases. Note that we may update a case in this status and not change it. |
+
+    | `PENDING` | OPEN, SOLVED, CLOSED | Cases that require additional information from the partner. You should action these cases by reviewing the newest comment and updating the case. |
+
+    | `SOLVED` | OPEN, PENDING, CLOSED | Cases that have been solved and scheduled for closure. These can be re-opened by the partner or Wise if needed before closing. |
+
+    | `CLOSED` | — | Cases that have been solved and closed. Once closed, they cannot be reopened and a new case should be created if needed. |
+
+
+    {% img src="/images/diagrams/case-flow.png" /%}
+
+    '
+paths:
+  /v1/cases:
+    post:
+      operationId: caseCreate
+      summary: Create a partner case
+      description: 'Cases are used to collect or transmit additional information between Partners and Wise. Use this endpoint to create a new case.
+
+
+        {% admonition type="warning" %}
+
+        Please do not include PII in the `subject` of a case. Any specific details regarding the case that need to be communicated should be included in the `description`.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - case
+      security:
+      - ClientCredentialsToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Type of the partner case. Value must be `GENERAL_ENQUIRY`. More case types will be added in the future.
+                  example: GENERAL_ENQUIRY
+                subject:
+                  type: string
+                  description: The subject of the case. Do not include PII in the subject of cases.
+                  example: Inquiry about Transfer 12345
+                details:
+                  type: object
+                  description: Details related to the case.
+                  properties:
+                    transferId:
+                      type:
+                      - integer
+                      - 'null'
+                      format: int64
+                      description: ID of the transfer the case relates to. Can also be `null`.
+                      example: 58114690
+                    profileId:
+                      type:
+                      - integer
+                      - 'null'
+                      format: int64
+                      description: ID of the profile the case relates to. Can also be `null`.
+                      example: 14556049
+                    userId:
+                      type: integer
+                      format: int64
+                      description: ID of the user the case relates to. Can not be `null`.
+                      example: 1234
+                externalId:
+                  type: string
+                  description: An ID provided by the external partner for partner internal tracking.
+                  example: partner_external_id_12345
+                description:
+                  type: string
+                  description: The description of the request. The maximum size of the description is 65,535 characters. If additional characters are sent, the field will be truncated.
+                  example: Initial summary of the issue
+      responses:
+        '200':
+          description: Created partner case.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/case'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v1/cases/{caseId}:
+    get:
+      operationId: caseGet
+      summary: Retrieve a partner case by ID
+      description: 'This endpoint returns a partner case based on the specified case ID.
+
+        '
+      tags:
+      - case
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: caseId
+        in: path
+        required: true
+        description: Partner Case ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Partner case object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/case'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/cases/{caseId}/comments:
+    get:
+      operationId: caseCommentsGet
+      summary: Retrieve partner case comments
+      description: 'This endpoint returns a comments list object, which is an array of comments that have been associated with the case. Comments are ordered newest to oldest and are not paginated (all comments returned at once).
+
+        '
+      tags:
+      - case
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: caseId
+        in: path
+        required: true
+        description: Partner Case ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Comments list object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type:
+                    - string
+                    - 'null'
+                    description: Message providing context for the response if the comments list is empty due to the case status being in `CREATING`. `null` if case has been created.
+                    example: null
+                  comments:
+                    type: array
+                    description: Array of comments associated with the case.
+                    items:
+                      type: object
+                      description: Comment object.
+                      properties:
+                        id:
+                          type: integer
+                          format: int64
+                          description: ID of the comment.
+                          example: 16554865464081
+                        plainBody:
+                          type: string
+                          description: The plain body of the comment. This can include simple markdown.
+                          example: 'We have resolved the issue with this transfer.
+
+
+                            Thank you!'
+                        author:
+                          type: string
+                          description: The author of the comment. Can be either `PARTNER` or `WISE_AGENT`.
+                          example: WISE_AGENT
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: When the comment was created. Note that comments cannot be updated.
+                          example: '2023-06-28T15:22:29.901'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    put:
+      operationId: caseCommentCreate
+      summary: Add a partner case comment
+      description: 'This endpoint allows for a comment to be placed on a partner case.
+
+        '
+      tags:
+      - case
+      security:
+      - ClientCredentialsToken: []
+      parameters:
+      - name: caseId
+        in: path
+        required: true
+        description: Partner Case ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  description: The comment that you want to add to the case. This can include markdown. The maximum size of the comment is 65,535 characters. If additional characters are sent, the field will be truncated.
+                  example: 'Please see the attached information as requested.
+
+
+                    Transfer Details....'
+      responses:
+        '200':
+          description: Successfully updated. No response body.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  schemas:
+    case:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Partner Case ID. Generated by Wise.
+          example: 123456789
+        status:
+          type: string
+          description: '[Status of the case](/api-reference/case#case-statuses).'
+          enum:
+          - CREATING
+          - OPEN
+          - PENDING
+          - SOLVED
+          - CLOSED
+          example: PENDING
+        type:
+          type: string
+          description: Type of the partner case. More case types will be added in the future.
+          enum:
+          - GENERAL_ENQUIRY
+          example: GENERAL_ENQUIRY
+        externalId:
+          type: string
+          description: An ID provided by the external partner for partner internal tracking.
+          example: partner_12344567
+        createdAt:
+          type: string
+          format: date-time
+          description: When the partner case was originally created.
+          example: '2023-06-28T15:21:24.901'
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the partner case was last updated.
+          example: '2023-06-28T15:21:24.901'
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

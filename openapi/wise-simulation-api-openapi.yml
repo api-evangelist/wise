@@ -1,0 +1,1708 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds simulation API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: simulation
+  x-displayName: Simulations
+  description: 'Use these endpoints to simulate key actions in the sandbox environment, including transfer state changes, balance top-ups, card transactions, KYC reviews, and incoming payments.
+
+
+    {% admonition type="info" %}
+
+    These features are limited to sandbox only.
+
+    {% /admonition %}
+
+    '
+paths:
+  /v1/simulation/transfers/{transferId}/{status}:
+    get:
+      operationId: simulationTransferStateChange
+      summary: Simulate transfer state change
+      description: 'Changes the transfer status to the specified state. The available state transitions are:
+
+
+        - `processing` — from `incoming_payment_waiting`
+
+        - `funds_converted` — from `processing`. Refer to regional guides for special regional requirements.
+
+        - `outgoing_payment_sent` — from `funds_converted`
+
+        - `bounced_back` — from `outgoing_payment_sent`
+
+        - `funds_refunded` — from `bounced_back`. Will not trigger a refund webhook.
+
+
+        {% admonition type="warning" %}
+
+        Simulation does not work with email transfers.
+
+        {% /admonition %}
+
+
+        {% admonition type="warning" %}
+
+        You need to fund the transfer before calling simulation endpoints. Calling the `processing` endpoint is required even after the funding call has changed the transfer state to processing automatically.
+
+        {% /admonition %}
+
+
+        {% admonition type="info" %}
+
+        While transfer state simulation calls will respond with 200 in real time, the process internally is asynchronous. Please ensure you give at least 5 seconds in between simulation calls.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: transferId
+        in: path
+        required: true
+        description: The ID of the transfer to simulate.
+        schema:
+          type: integer
+          format: int64
+      - name: status
+        in: path
+        required: true
+        description: The target transfer status.
+        schema:
+          type: string
+          enum:
+          - processing
+          - funds_converted
+          - outgoing_payment_sent
+          - bounced_back
+          - funds_refunded
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Transfer with updated status.
+          content:
+            application/json:
+              example:
+                id: 15574445
+                user: 294205
+                targetAccount: 7993919
+                sourceAccount: null
+                quote: 113379
+                status: processing
+                reference: good times
+                rate: 1.2151
+                created: '2017-03-14 15:25:51'
+                business: null
+                transferRequest: null
+                details:
+                  reference: good times
+                hasActiveIssues: false
+                sourceValue: 1000
+                sourceCurrency: EUR
+                targetValue: 895.32
+                targetCurrency: GBP
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/profiles/{profileId}/verifications:
+    post:
+      operationId: simulationVerification
+      summary: Simulate verification for a profile
+      description: 'Changes a specific profile''s verification state to `PASSED`.
+
+
+        This is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).
+
+
+        Accepts both user and application API tokens.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The ID of the profile to verify.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Verification state changed successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/verify-profile:
+    post:
+      operationId: simulationVerifyProfile
+      summary: Simulate verification for all profiles
+      description: 'Verifies all profiles associated with the authenticated user, changing their verification state to `PASSED`.
+
+
+        This is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).
+
+
+        Accepts user API tokens only. The profiles are identified via the token.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      responses:
+        '200':
+          description: Verification state changed successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v1/simulation/balance/topup:
+    post:
+      operationId: simulationBalanceTopup
+      summary: Simulate a balance top-up
+      description: 'Simulates a top-up so that a balance can be used to fund transfers and/or card spend.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - profileId
+              - balanceId
+              - currency
+              - amount
+              properties:
+                profileId:
+                  type: integer
+                  format: int64
+                  description: The profile ID linked to the balance account.
+                balanceId:
+                  type: integer
+                  format: int64
+                  description: The ID of the balance account that is going to receive the funds.
+                currency:
+                  type: string
+                  description: The currency to top up the balance account in. Must be the same currency as the balance account.
+                amount:
+                  type: number
+                  description: The amount to top up the balance account with.
+                channel:
+                  type: string
+                  enum:
+                  - TRANSFER
+                  - CARD
+                  description: Type of top-up. Not providing a channel will default to `CARD`.
+            example:
+              profileId: 2
+              balanceId: 5
+              currency: EUR
+              amount: 100
+              channel: TRANSFER
+      responses:
+        '200':
+          description: Simulated balance top-up result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: integer
+                    format: int64
+                    description: The ID of the top-up transaction.
+                  state:
+                    type: string
+                    description: The state of the transaction. `COMPLETED` is always returned when using this endpoint.
+                  balancesAfter:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int64
+                          description: The ID of the balance account.
+                        value:
+                          type: number
+                          description: The new amount available in the balance account.
+                        currency:
+                          type: string
+                          description: The currency of the balance account.
+              example:
+                transactionId: 5
+                state: COMPLETED
+                balancesAfter:
+                - id: 5
+                  value: 100
+                  currency: EUR
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/authorisation:
+    post:
+      operationId: simulationCardTransactionAuthorisation
+      summary: Simulate a card transaction authorisation
+      description: 'Simulates a card transaction authorisation request in the sandbox environment. It can simulate ATM withdrawals, POS purchases, e-commerce transactions, and refunds. This is an authorisation hold, where funds are held, but not yet captured by the acquirer.
+
+
+        The `cardNumber` represents the 16-digit Primary Account Number (PAN) of the card, and must be a valid PAN retrieved from sensitive card details. Please follow the [detailed guide](/guides/product/issue-cards/sensitive-card-details) on retrieving sensitive card details.
+
+
+        #### Refund
+
+
+        A refund is a 2-step process: first authorise with `transactionType` set to `REFUND`, then clear using the [clearing endpoint](/api-reference/simulation/simulationcardtransactionclearing) with the same transaction type.
+
+
+        {% admonition type="warning" %}
+
+        Refund simulation doesn''t work with Mastercard.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pos:
+                  type: string
+                  description: 'The point-of-sale used for the transaction.
+
+                    - For POS transactions: `CHIP_AND_PIN`
+
+                    - For e-commerce transactions: `E_COMMERCE_NO_3DS`
+
+                    - For ATM transactions: `CHIP_AND_PIN`
+
+                    - For refund transactions: `CHIP_AND_PIN` or `E_COMMERCE_NO_3DS`
+
+                    '
+                transactionType:
+                  type: string
+                  description: 'The type of the transaction.
+
+                    - For POS and e-commerce transactions: `GOODS_AND_SERVICES`
+
+                    - For ATM transactions: `CASH_WITHDRAWAL`
+
+                    - For refund transactions: `REFUND`
+
+                    '
+                amount:
+                  type: object
+                  properties:
+                    value:
+                      type: number
+                      description: Transaction amount.
+                    currency:
+                      type: string
+                      description: Currency code.
+                mcc:
+                  type: integer
+                  format: int32
+                  description: Merchant category code.
+                cardNumber:
+                  type: string
+                  description: Primary Account Number of the card.
+            examples:
+              POS purchase:
+                summary: POS purchase
+                value:
+                  pos: CHIP_AND_PIN
+                  transactionType: GOODS_AND_SERVICES
+                  amount:
+                    value: 10
+                    currency: SGD
+                  mcc: 5499
+                  cardNumber: '4242424242424242'
+              E-commerce purchase:
+                summary: E-commerce purchase
+                value:
+                  pos: E_COMMERCE_NO_3DS
+                  transactionType: GOODS_AND_SERVICES
+                  amount:
+                    value: 10
+                    currency: SGD
+                  mcc: 5499
+                  cardNumber: '4242424242424242'
+              ATM withdrawal:
+                summary: ATM withdrawal
+                value:
+                  pos: CHIP_AND_PIN
+                  transactionType: CASH_WITHDRAWAL
+                  amount:
+                    value: 10
+                    currency: SGD
+                  mcc: 6011
+                  cardNumber: '4242424242424242'
+              Refund:
+                summary: Refund
+                value:
+                  pos: CHIP_AND_PIN
+                  transactionType: REFUND
+                  amount:
+                    value: 10
+                    currency: SGD
+                  mcc: 5499
+                  cardNumber: '4242424242424242'
+      responses:
+        '200':
+          description: Simulated card authorisation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reference:
+                    type: object
+                    description: The transaction reference. This can be used in a following request for reversal and clearing.
+                  error:
+                    type:
+                    - string
+                    - 'null'
+                    description: An error returned by the transaction, if it exists.
+              example:
+                reference:
+                  transaction:
+                    acquirer:
+                      institutionId: '430010'
+                      name: ACQUIRER NAME
+                      city: CITY NAME
+                      merchantCategoryCode: 5499
+                      country: GB
+                      acceptorTerminalId: TERMID01
+                      acceptorIdCode: CARD ACCEPTOR
+                      forwardingInstitutionId: '400050'
+                    card:
+                      token: 59123122-223d-45f9-b840-0ad4a4f80937
+                      schemeName: VISA
+                      pan: '4242424242424242'
+                      pin: '1234'
+                      cvv1: '123'
+                      icvv: '456'
+                      cvv2: '789'
+                      expiration:
+                      - 2029
+                      - 7
+                      sequenceNumber: 1
+                      profileId: 2
+                      userId: 5
+                      cardStatus: ACTIVE
+                      country: SG
+                      currencies:
+                      - SGD
+                    pos:
+                      type: CHIP_AND_PIN
+                      acceptsOnlinePins: true
+                      maxPinLength: 12
+                      supports3ds: false
+                      hasChip: true
+                    transactionStartTime: 1667541087.0476434
+                    stan: '363054'
+                    schemeTransactionId: '932290252416153'
+                    retrievalReferenceNum: '230805363054'
+                  requestMti: '0200'
+                  authorizationIdResponse: '123646'
+                error: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/clearing:
+    post:
+      operationId: simulationCardTransactionClearing
+      summary: Simulate a card transaction clearing
+      description: 'Simulates a transaction clearing request in the sandbox environment. This is done after the authorisation. The `ref` field can be copied from the `reference` object in the authorisation response.
+
+
+        To clear a previous authorisation, the `ref` details must match the previous authorisation request. The `amount` does not have to match the previous authorisation request, it can be more or less than the authorisation request amount.
+
+
+        {% admonition type="warning" %}
+
+        Clearing simulation doesn''t work with Mastercard.
+
+        {% /admonition %}
+
+
+        #### Refund
+
+
+        A refund is a 2-step process: first [authorise](/api-reference/simulation/simulationcardtransactionauthorisation) with `transactionType` set to `REFUND`, then clear using this endpoint with the same transaction type.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: object
+                  properties:
+                    value:
+                      type: number
+                      description: Transaction amount.
+                    currency:
+                      type: string
+                      description: Currency code.
+                transactionType:
+                  type: string
+                  description: The type of the transaction. Use the same transaction type from the previous authorisation request.
+                ref:
+                  type: object
+                  description: The transaction reference. This can be obtained from a previous authorisation request.
+            example:
+              amount:
+                value: 10
+                currency: SGD
+              transactionType: GOODS_AND_SERVICES
+              ref:
+                transaction:
+                  acquirer:
+                    institutionId: '430010'
+                    name: ACQUIRER NAME
+                    city: CITY NAME
+                    merchantCategoryCode: 5499
+                    country: GB
+                    acceptorTerminalId: TERMID01
+                    acceptorIdCode: CARD ACCEPTOR
+                    forwardingInstitutionId: '400050'
+                  card:
+                    token: 59123122-223d-45f9-b840-0ad4a4f80937
+                    schemeName: VISA
+                    pan: '4242424242424242'
+                    pin: '1234'
+                    cvv1: '123'
+                    icvv: '456'
+                    cvv2: '789'
+                    expiration:
+                    - 2029
+                    - 7
+                    sequenceNumber: 1
+                    profileId: 2
+                    userId: 5
+                    cardStatus: ACTIVE
+                    country: SG
+                    currencies:
+                    - SGD
+                  pos:
+                    type: CHIP_AND_PIN
+                    acceptsOnlinePins: true
+                    maxPinLength: 12
+                    supports3ds: false
+                    hasChip: true
+                  transactionStartTime: 1667541087.0476434
+                  stan: '363054'
+                  schemeTransactionId: '932290252416153'
+                  retrievalReferenceNum: '230805363054'
+                requestMti: '0200'
+                authorizationIdResponse: '123646'
+      responses:
+        '200':
+          description: Simulated transaction clearing result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reference:
+                    type: object
+                    description: The transaction reference.
+                  error:
+                    type:
+                    - string
+                    - 'null'
+                    description: An error returned by the transaction, if it exists.
+              example:
+                reference:
+                  transaction:
+                    acquirer:
+                      institutionId: '430010'
+                      name: ACQUIRER NAME
+                      city: CITY NAME
+                      merchantCategoryCode: 5499
+                      country: GB
+                      acceptorTerminalId: TERMID01
+                      acceptorIdCode: CARD ACCEPTOR
+                      forwardingInstitutionId: '400050'
+                    card:
+                      token: 59123122-223d-45f9-b840-0ad4a4f80937
+                      schemeName: VISA
+                      pan: '4242424242424242'
+                      pin: '1234'
+                      cvv1: '123'
+                      icvv: '456'
+                      cvv2: '789'
+                      expiration:
+                      - 2029
+                      - 7
+                      sequenceNumber: 1
+                      profileId: 2
+                      userId: 5
+                      cardStatus: ACTIVE
+                      country: SG
+                      currencies:
+                      - SGD
+                    pos:
+                      type: CHIP_AND_PIN
+                      acceptsOnlinePins: true
+                      maxPinLength: 12
+                      supports3ds: false
+                      hasChip: true
+                    transactionStartTime: 1667541087.0476434
+                    stan: '363054'
+                    schemeTransactionId: '932290252416153'
+                    retrievalReferenceNum: '230805363054'
+                  requestMti: '0200'
+                  authorizationIdResponse: '123646'
+                error: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions/reversal:
+    post:
+      operationId: simulationCardTransactionReversal
+      summary: Simulate a card transaction reversal
+      description: 'Simulates a transaction reversal request in the sandbox environment. The `amount.value` field can be set to 0 for a full reversal, or a positive value that represents the intended final value of the transaction after a partial reversal.
+
+
+        For example, if a transaction value was originally 10 SGD, and the intended final value is 3 SGD, `amount.value` should be set to 3. This means there is a partial refund of 7 SGD.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: object
+                  properties:
+                    value:
+                      type: number
+                      description: Transaction amount. Set to 0 for full reversal, or the intended final value for partial reversal.
+                    currency:
+                      type: string
+                      description: Currency code.
+                transactionType:
+                  type: string
+                  description: The type of the transaction. Use the same transaction type from the previous authorisation request.
+                ref:
+                  type: object
+                  description: The transaction reference. This can be obtained from a previous authorisation request.
+            example:
+              amount:
+                value: 3
+                currency: SGD
+              transactionType: GOODS_AND_SERVICES
+              ref:
+                transaction:
+                  acquirer:
+                    institutionId: '430010'
+                    name: ACQUIRER NAME
+                    city: CITY NAME
+                    merchantCategoryCode: 5499
+                    country: GB
+                    acceptorTerminalId: TERMID01
+                    acceptorIdCode: CARD ACCEPTOR
+                    forwardingInstitutionId: '400050'
+                  card:
+                    token: 59123122-223d-45f9-b840-0ad4a4f80937
+                    schemeName: VISA
+                    pan: '4242424242424242'
+                    pin: '1234'
+                    cvv1: '123'
+                    icvv: '456'
+                    cvv2: '789'
+                    expiration:
+                    - 2029
+                    - 7
+                    sequenceNumber: 1
+                    profileId: 2
+                    userId: 5
+                    cardStatus: ACTIVE
+                    country: SG
+                    currencies:
+                    - SGD
+                  pos:
+                    type: CHIP_AND_PIN
+                    acceptsOnlinePins: true
+                    maxPinLength: 12
+                    supports3ds: false
+                    hasChip: true
+                  transactionStartTime: 1667541087.0476434
+                  stan: '363054'
+                  schemeTransactionId: '932290252416153'
+                  retrievalReferenceNum: '230805363054'
+                requestMti: '0200'
+                authorizationIdResponse: '123646'
+      responses:
+        '200':
+          description: Simulated transaction reversal result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reference:
+                    type: object
+                    description: The transaction reference.
+                  error:
+                    type:
+                    - string
+                    - 'null'
+                    description: An error returned by the transaction, if it exists.
+              example:
+                reference:
+                  transaction:
+                    acquirer:
+                      institutionId: '430010'
+                      name: ACQUIRER NAME
+                      city: CITY NAME
+                      merchantCategoryCode: 5499
+                      country: GB
+                      acceptorTerminalId: TERMID01
+                      acceptorIdCode: CARD ACCEPTOR
+                      forwardingInstitutionId: '400050'
+                    card:
+                      token: 59123122-223d-45f9-b840-0ad4a4f80937
+                      schemeName: VISA
+                      pan: '4242424242424242'
+                      pin: '1234'
+                      cvv1: '123'
+                      icvv: '456'
+                      cvv2: '789'
+                      expiration:
+                      - 2029
+                      - 7
+                      sequenceNumber: 1
+                      profileId: 2
+                      userId: 5
+                      cardStatus: ACTIVE
+                      country: SG
+                      currencies:
+                      - SGD
+                    pos:
+                      type: CHIP_AND_PIN
+                      acceptsOnlinePins: true
+                      maxPinLength: 12
+                      supports3ds: false
+                      hasChip: true
+                    transactionStartTime: 1667541087.0476434
+                    stan: '363054'
+                    schemeTransactionId: '932290252416153'
+                    retrievalReferenceNum: '230805363054'
+                  requestMti: '0200'
+                  authorizationIdResponse: '123646'
+                error: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/simulation/spend/profiles/{profileId}/cards/{cardToken}/transactions:
+    get:
+      operationId: simulationCardTransactions
+      summary: List simulated card transactions
+      description: 'Returns a list of simulated card transactions, in descending order of creation time.
+
+
+        To retrieve more details of a transaction, use the [get card transaction by ID](/api-reference/card-transaction/cardtransactionget) endpoint.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        description: The maximum number of transactions to return. The default value is 10.
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of simulated card transactions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    transactionId:
+                      type: integer
+                      format: int64
+                      description: ID of the transaction.
+                    creationTime:
+                      type: number
+                      description: Time when the card transaction was created.
+              example:
+              - transactionId: 5028
+                creationTime: 1723600773.748887
+              - transactionId: 5027
+                creationTime: 1723600659.095692
+              - transactionId: 5026
+                creationTime: 1723600648.133955
+              - transactionId: 5025
+                creationTime: 1723545470.449374
+              - transactionId: 5024
+                creationTime: 1723545430.790566
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/spend/profiles/{profileId}/cards/{cardToken}/production:
+    post:
+      operationId: simulationCardProduction
+      summary: Simulate card production state change
+      description: 'Simulates a card production status change in the sandbox environment.
+
+
+        {% admonition type="warning" %}
+
+        Please ensure that you have created a physical card order with KIOSK_COLLECTION delivery method and that you produce the card before calling this endpoint to simulate various card production statuses.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: cardToken
+        in: path
+        required: true
+        description: The card token.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - PRODUCED
+                  - PRODUCTION_ERROR
+                  description: The intended production status of the card.
+                errorCode:
+                  type: string
+                  description: The [error code](/api-reference/card-kiosk-collection/cardkioskcollectionproduce) to simulate. This field should be set only if the status is `PRODUCTION_ERROR`.
+            example:
+              status: PRODUCTION_ERROR
+              errorCode: PRT_NOT_REACHABLE
+      responses:
+        '200':
+          description: Card production state changed successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements:
+    get:
+      operationId: simulationKycReviewRequirementsList
+      summary: List KYC review requirements
+      description: 'Lists all blocking requirements for a KYC (Know Your Customer) review. These outstanding KYC requirements typically act as "blocking requirements", preventing actions like creating transfers.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The ID of the existing KYC review.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of KYC review requirements.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requirements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          description: KYC review item key.
+                        state:
+                          type: string
+                          enum:
+                          - NOT_PROVIDED
+                          - IN_REVIEW
+                          - VERIFIED
+                          - REJECTED
+                          description: State of the KYC review item.
+                        description:
+                          type:
+                          - string
+                          - 'null'
+                          description: Description of the KYC review item.
+              example:
+                requirements:
+                - key: ID_DOCUMENT_WITH_LIVENESS
+                  state: IN_REVIEW
+                  description: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: KYC review not found.
+          content:
+            application/json:
+              example:
+                code: kyc_review.not_found
+                category: CLIENT
+                description: KycReview not found
+                details: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements/add:
+    post:
+      operationId: simulationKycReviewRequirementsAdd
+      summary: Simulate adding new requirement
+      description: 'Creates a new requirement for a KYC (Know Your Customer) review for a business profile.
+
+
+        {% admonition type="warning" %}
+
+        This can only be used for business profiles. It creates a static `BUSINESS_USE_CASE` requirement only.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID requiring the new requirement to be added.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The ID of the existing KYC review.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestedAction:
+                  type: string
+                  enum:
+                  - APPROVE
+                  - REJECT
+                  description: The action to be carried out.
+                requirement:
+                  type: string
+                  description: Requirement to simulate hosted journey for.
+      responses:
+        '202':
+          description: Requirement added successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                code: invalid-request
+                category: CLIENT
+                description: Profile 123L is a personal type, not permitted to simulate evidence request
+                details: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/requirements/submit:
+    post:
+      operationId: simulationKycReviewRequirementsSubmit
+      summary: Simulate requirement submission
+      description: 'Simulates providing everything needed for a particular KYC requirement. This can be used in place of going through a hosted journey on the browser.
+
+
+        {% admonition type="info" %}
+
+        This functionality only works for the following requirements: `TRANSFER_PURPOSE`, `ID_DOCUMENT_WITH_LIVENESS`, `SOURCE_OF_FUNDS`, and any other that has the `___` delimiter in them.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The ID of the existing KYC review.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requirement:
+                  type: string
+                  description: Requirement to simulate hosted journey for.
+            example:
+              requirement: ACCOUNT_PURPOSE
+      responses:
+        '202':
+          description: Requirement submitted successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                code: invalid-request
+                category: CLIENT
+                description: Invalid request. KycRequirement {ACCOUNT_PURPOSE} was not found for KycReview
+                details: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/simulation/profiles/{profileId}/kyc-reviews/{kycReviewId}/verify:
+    post:
+      operationId: simulationKycReviewVerify
+      summary: Simulate verifying a KYC review
+      description: 'Verifies requirement(s) on an existing KYC (Know Your Customer) review. Can be used after a user has provided input for a requirement through the hosted journey or simulated the requirement submission.
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: kycReviewId
+        in: path
+        required: true
+        description: The ID of the existing KYC review.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestedAction:
+                  type: string
+                  enum:
+                  - APPROVE
+                  - REJECT
+                  description: The action to be carried out.
+                requirements:
+                  type: array
+                  items:
+                    type: string
+                  description: Zero or more requirements to be verified. If not provided, all blocking requirements are verified.
+            example:
+              requestedAction: APPROVE
+              requirements:
+              - ACCOUNT_PURPOSE_V2
+      responses:
+        '202':
+          description: KYC review verified successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                code: kyc_review.state_update_not_allowed
+                category: CLIENT
+                description: 'Invalid action passed in request, action: APPROVED'
+                details: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/profiles/{profileId}/bank-transactions/import:
+    post:
+      operationId: simulationBankTransactionImport
+      summary: Simulate incoming bank transfer
+      description: 'Simulates a bank transfer into a profile''s account details. This will create a payment into the user''s account details and balance for the specified amount and currency.
+
+
+        Please refer to the [Bank Account Details API reference](/api-reference/bank-account-details) for more information on setting up bank details to receive money.
+
+
+        {% admonition type="info" %}
+
+        This functionality only works for the following currencies: `USD`, `EUR`, `GBP`. Returns a 400 error when account details for the specified currency do not exist.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  description: The currency of the bank account details that you want to make payment to.
+                amount:
+                  type: number
+                  description: The payment amount.
+            example:
+              currency: USD
+              amount: 2000
+      responses:
+        '201':
+          description: Bank transaction imported successfully. No content returned.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                code: not.valid
+                message: No account details found for profile currency pair
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/simulation/profiles/{profileId}/swift-in:
+    post:
+      operationId: simulationSwiftIn
+      summary: Simulate incoming Swift payment
+      description: 'Simulates an incoming Swift transfer into a profile''s account details. This will create a payment into the user''s account details and balance for the specified amount and currency. Using sandbox, you can test the initial tech build for webhook subscriptions, balance statements, and sweeping funds.
+
+
+        If the request is successful the transfer is logged in our back office, which triggers a [swift-in#credit](/guides/developer/webhooks/event-types#swift-in-credit) event and results in a balance update.
+
+
+        {% admonition type="info" %}
+
+        While most fields are optional, default values will be provided as needed.
+
+        {% /admonition %}
+
+        '
+      tags:
+      - simulation
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: The profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - currencyCode
+              - amount
+              properties:
+                currencyCode:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  description: Currency received by Wise. 3-letter ISO currency code.
+                amount:
+                  type: number
+                  description: Amount received by Wise.
+                beneficiaryName:
+                  type: string
+                  description: Name of the ultimate beneficiary.
+                beneficiaryAccount:
+                  type: string
+                  description: Account number of the ultimate beneficiary. It can be either an IBAN or local account number.
+                beneficiaryAddress:
+                  type: object
+                  description: Address of the ultimate beneficiary.
+                  properties:
+                    addressLine:
+                      type: string
+                      description: 'Address line: street, house, apartment.'
+                    city:
+                      type: string
+                      description: City name.
+                    postalCode:
+                      type: string
+                      description: Postal code.
+                    country:
+                      type: string
+                      description: Country code (ISO 3166-1 alpha-2).
+                senderName:
+                  type: string
+                  description: Name of the sender.
+                senderBic:
+                  type: string
+                  description: BIC of the sender's bank.
+                senderAccount:
+                  type: string
+                  description: Account number of the sender. It can be either an IBAN or local account number.
+                senderAddress:
+                  type: object
+                  description: Address of the sender.
+                  properties:
+                    addressLine:
+                      type: string
+                      description: 'Address line: street, house, apartment.'
+                    city:
+                      type: string
+                      description: City name.
+                    postalCode:
+                      type: string
+                      description: Postal code.
+                    country:
+                      type: string
+                      description: Country code (ISO 3166-1 alpha-2).
+                paymentReference:
+                  type: string
+                  description: Custom payment reference.
+                charges:
+                  type: array
+                  description: List of fees declared by correspondents (e.g., handling fee).
+                  items:
+                    type: object
+                    required:
+                    - amount
+                    - currency
+                    - agent
+                    properties:
+                      amount:
+                        type: number
+                        description: Fee amount.
+                      currency:
+                        type: string
+                        minLength: 3
+                        maxLength: 3
+                        description: Fee currency. 3-letter ISO currency code.
+                      agent:
+                        type: string
+                        description: BIC of the agent incurring the fee.
+                previousInstructingAgents:
+                  type: array
+                  maxItems: 3
+                  description: List of previous instructing agents. Maximum 3 items.
+                  items:
+                    type: string
+                    description: BIC of a previous instructing agent.
+            example:
+              currencyCode: EUR
+              amount: 100
+              beneficiaryName: John Doe
+              beneficiaryAccount: '8599680548'
+              beneficiaryAddress:
+                addressLine: 1234 Elm St, IL
+                city: Springfield
+                postalCode: '62704'
+                country: US
+              senderName: Jane Doe
+              senderBic: DEUTDEDBFRA
+              senderAccount: DE89370400440532013000
+              senderAddress:
+                addressLine: 5678 Oak St
+                city: Springfield
+                postalCode: '62704'
+                country: US
+              charges:
+              - currency: EUR
+                amount: 1
+                agent: DEUTDEDBFRA
+              previousInstructingAgents:
+              - COBADEFFXXX
+              paymentReference: Test123
+      responses:
+        '200':
+          description: Swift payment simulated successfully.
+          content:
+            application/json:
+              example:
+                id: 123
+                messageReference: null
+                mur: null
+                uetr: f87c3c37-d97b-4da6-a788-94004414e648
+                messageType: pacs.008.001.08
+                sender: null
+                receiver: null
+                state: RECEIVED
+                direction: INCOMING
+                jsonMessage: null
+                finMessage: null
+                processTime: '2026-02-27T09:24:38.484276Z'
+                amount: 100
+                currency: EUR
+                valueDate: null
+                payoutInstructionId: null
+                transferId: null
+                actor: SYSTEM
+                actorId: null
+                actorOktaId: null
+                source: SWIFT_CLOUD
+                attributes: null
+                ackMessage: false
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                errors:
+                - arguments: []
+                  code: not.valid
+                  message: must be greater than or equal to 0
+                  path: amount
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

@@ -1,0 +1,3808 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds profile API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: profile
+  x-displayName: Profiles
+  description: 'A profile represents an identity that can send and receive money through Wise — either a personal profile (an individual) or a business profile (a company). Most API endpoints require a `profileId` parameter, which is the ID of either profile type.
+
+
+    '
+paths:
+  /v1/profiles:
+    post:
+      operationId: profileCreateV1
+      summary: Create a profile (V1)
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please see the [Create Personal Profile](/api-reference/profile/profilepersonalcreate) and [Create Business Profile](/api-reference/profile/profilebusinesscreate) v2 endpoints.
+
+        {% /admonition %}
+
+
+        Create personal or business user profile. Set `type` to `"personal"` or `"business"`.
+
+
+        One person cannot have multiple active duplicate user profiles, creating multiple profiles with the same details will fail. When this happens, you should show an error message to the user informing them that they may have an existing Wise account. The customer should then be allowed to [link to an existing Wise account](/guides/product/kyc/partner-kyc/accessing-accounts#link-account).
+
+
+        {% admonition type="info" %}
+
+        For personal profiles, you must submit the profile''s address using [POST /v1/addresses](/api-reference/address/addresscreate). Failure to do so will result in an incomplete registration and delayed transactions.
+
+        {% /admonition %}
+
+
+        For business profiles, you must always create a personal profile first. Business profiles cannot be created without a personal profile.
+
+
+        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid category and sub-category values for business profiles.
+
+        '
+      deprecated: true
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Personal
+                type: object
+                required:
+                - type
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - personal
+                    example: personal
+                  details:
+                    type: object
+                    description: Personal profile details.
+                    properties:
+                      firstName:
+                        type: string
+                        maxLength: 30
+                        description: First name (including middle names).
+                        example: Oliver
+                      lastName:
+                        type: string
+                        maxLength: 30
+                        description: Last name.
+                        example: Wilson
+                      preferredName:
+                        type: string
+                        maxLength: 30
+                        description: Preferred first name, if different to the legal first name.
+                        example: Olivia
+                      dateOfBirth:
+                        type: string
+                        description: Date of birth.
+                        example: '1977-07-01'
+                      phoneNumber:
+                        type: string
+                        description: Phone number in international phone number format.
+                        example: '+3725064992'
+                      firstNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: First name in Katakana (required for from-JPY personal transfers).
+                        example: null
+                      lastNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: Last name in Katakana (required for from-JPY personal transfers).
+                        example: null
+              - title: Business
+                type: object
+                required:
+                - type
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - business
+                    example: business
+                  details:
+                    type: object
+                    description: Business profile details.
+                    properties:
+                      name:
+                        type: string
+                        description: Business name.
+                        example: ABC Logistics Ltd
+                      registrationNumber:
+                        type: string
+                        description: Business registration number.
+                        example: '12144939'
+                      acn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Company Number (only for Australian businesses).
+                        example: null
+                      abn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Business Number (only for Australian businesses).
+                        example: null
+                      arbn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Registered Body Number (only for Australian businesses).
+                        example: null
+                      companyType:
+                        type: string
+                        description: Company legal form.
+                        enum:
+                        - LIMITED
+                        - PARTNERSHIP
+                        - SOLE_TRADER
+                        - LIMITED_BY_GUARANTEE
+                        - LIMITED_LIABILITY_COMPANY
+                        - FOR_PROFIT_CORPORATION
+                        - NON_PROFIT_CORPORATION
+                        - LIMITED_PARTNERSHIP
+                        - LIMITED_LIABILITY_PARTNERSHIP
+                        - GENERAL_PARTNERSHIP
+                        - SOLE_PROPRIETORSHIP
+                        - PRIVATE_LIMITED_COMPANY
+                        - PUBLIC_LIMITED_COMPANY
+                        - TRUST
+                        - OTHER
+                      companyRole:
+                        type: string
+                        description: Role of person.
+                        enum:
+                        - OWNER
+                        - DIRECTOR
+                        - OTHER
+                      descriptionOfBusiness:
+                        type: string
+                        deprecated: true
+                        description: Sector / field of activity.
+                      webpage:
+                        type: string
+                        description: Business webpage. Required if companyType is OTHER.
+                        example: https://abc-logistics.com
+                      businessCategory:
+                        type: string
+                        description: '[Business category](/guides/developer/api-guides/business-categories).'
+                        example: CONSULTING_IT_BUSINESS_SERVICES
+                      businessSubCategory:
+                        type: string
+                        description: '[Business sub-category](/guides/developer/api-guides/business-categories).'
+                        example: DESIGN
+      responses:
+        '200':
+          description: Created profile.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Personal
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Profile ID.
+                      example: 30000001
+                    type:
+                      type: string
+                      enum:
+                      - personal
+                      example: personal
+                    details:
+                      type: object
+                      description: Personal profile details.
+                      properties:
+                        firstName:
+                          type: string
+                          example: Oliver
+                        lastName:
+                          type: string
+                          example: Wilson
+                        dateOfBirth:
+                          type: string
+                          example: '1977-07-01'
+                        phoneNumber:
+                          type: string
+                          example: '+3725064992'
+                        avatar:
+                          type: string
+                          example: ''
+                        occupation:
+                          type: string
+                          deprecated: true
+                          example: ''
+                        occupations:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                                example: Software Engineer
+                              format:
+                                type: string
+                                example: FREE_FORM
+                        primaryAddress:
+                          type:
+                          - integer
+                          - 'null'
+                          format: int64
+                          description: Address object ID.
+                          example: null
+                        firstNameInKana:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        lastNameInKana:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                - title: Business
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Profile ID.
+                      example: 30000002
+                    type:
+                      type: string
+                      enum:
+                      - business
+                      example: business
+                    details:
+                      type: object
+                      description: Business profile details.
+                      properties:
+                        name:
+                          type: string
+                          example: ABC Logistics Ltd
+                        registrationNumber:
+                          type: string
+                          example: '12144939'
+                        acn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        abn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        arbn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        companyType:
+                          type: string
+                          example: LIMITED
+                        companyRole:
+                          type: string
+                          example: OWNER
+                        descriptionOfBusiness:
+                          type: string
+                          deprecated: true
+                          example: Information and communication
+                        webpage:
+                          type: string
+                          example: https://abc-logistics.com
+                        primaryAddress:
+                          type: integer
+                          format: int64
+                          description: Address object ID.
+                          example: 4000001
+                        businessCategory:
+                          type: string
+                          description: '[Business category](/guides/developer/api-guides/business-categories).'
+                          example: CONSULTING_IT_BUSINESS_SERVICES
+                        businessSubCategory:
+                          type: string
+                          description: '[Business sub-category](/guides/developer/api-guides/business-categories).'
+                          example: DESIGN
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+    put:
+      operationId: profileUpdateV1
+      summary: Update a profile (V1)
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please see the [Update Personal Profile](/api-reference/profile/profilepersonalupdate) and [Update Business Profile](/api-reference/profile/profilebusinessupdate) v2 endpoints.
+
+        {% /admonition %}
+
+
+        Update user profile information. Request and response is same as described in the create profile endpoint, with the addition of the `id` field.
+
+
+        {% admonition type="info" %}
+
+        If user profile has been verified then there are restrictions on what information is allowed to change, where permitted, use the update window functionality to submit updated data.
+
+        {% /admonition %}
+
+        '
+      deprecated: true
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - title: Personal
+                type: object
+                required:
+                - type
+                - id
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Profile ID.
+                    example: 30000001
+                  type:
+                    type: string
+                    enum:
+                    - personal
+                    example: personal
+                  details:
+                    type: object
+                    description: Personal profile details.
+                    properties:
+                      firstName:
+                        type: string
+                        maxLength: 30
+                        description: First name (including middle names).
+                        example: Oliver
+                      lastName:
+                        type: string
+                        maxLength: 30
+                        description: Last name.
+                        example: Wilson
+                      preferredName:
+                        type: string
+                        maxLength: 30
+                        description: Preferred first name, if different to the legal first name.
+                        example: Olivia
+                      dateOfBirth:
+                        type: string
+                        description: Date of birth.
+                        example: '1977-07-01'
+                      phoneNumber:
+                        type: string
+                        description: Phone number in international phone number format.
+                        example: '+3725064992'
+                      firstNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: First name in Katakana (required for from-JPY personal transfers).
+                        example: null
+                      lastNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: Last name in Katakana (required for from-JPY personal transfers).
+                        example: null
+              - title: Business
+                type: object
+                required:
+                - type
+                - id
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Profile ID.
+                    example: 14590075
+                  type:
+                    type: string
+                    enum:
+                    - business
+                    example: business
+                  details:
+                    type: object
+                    description: Business profile details.
+                    properties:
+                      name:
+                        type: string
+                        description: Business name.
+                        example: ABC Logistics Ltd
+                      registrationNumber:
+                        type: string
+                        description: Business registration number.
+                        example: '12144939'
+                      acn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Company Number (only for Australian businesses).
+                        example: null
+                      abn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Business Number (only for Australian businesses).
+                        example: null
+                      arbn:
+                        type:
+                        - string
+                        - 'null'
+                        description: Australian Registered Body Number (only for Australian businesses).
+                        example: null
+                      companyType:
+                        type: string
+                        description: Company legal form.
+                        enum:
+                        - LIMITED
+                        - PARTNERSHIP
+                        - SOLE_TRADER
+                        - LIMITED_BY_GUARANTEE
+                        - LIMITED_LIABILITY_COMPANY
+                        - FOR_PROFIT_CORPORATION
+                        - NON_PROFIT_CORPORATION
+                        - LIMITED_PARTNERSHIP
+                        - LIMITED_LIABILITY_PARTNERSHIP
+                        - GENERAL_PARTNERSHIP
+                        - SOLE_PROPRIETORSHIP
+                        - PRIVATE_LIMITED_COMPANY
+                        - PUBLIC_LIMITED_COMPANY
+                        - TRUST
+                        - OTHER
+                      companyRole:
+                        type: string
+                        description: Role of person.
+                        enum:
+                        - OWNER
+                        - DIRECTOR
+                        - OTHER
+                      descriptionOfBusiness:
+                        type: string
+                        deprecated: true
+                        description: Sector / field of activity.
+                      webpage:
+                        type: string
+                        description: Business webpage. Required if companyType is OTHER.
+                        example: https://abc-logistics.com
+                      businessCategory:
+                        type: string
+                        description: '[Business category](/guides/developer/api-guides/business-categories).'
+                        example: CONSULTING_IT_BUSINESS_SERVICES
+                      businessSubCategory:
+                        type: string
+                        description: '[Business sub-category](/guides/developer/api-guides/business-categories).'
+                        example: DESIGN
+      responses:
+        '200':
+          description: Updated profile.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - title: Personal
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Profile ID.
+                      example: 30000001
+                    type:
+                      type: string
+                      enum:
+                      - personal
+                      example: personal
+                    details:
+                      type: object
+                      description: Personal profile details.
+                      properties:
+                        firstName:
+                          type: string
+                          example: Oliver
+                        lastName:
+                          type: string
+                          example: Wilson
+                        dateOfBirth:
+                          type: string
+                          example: '1977-07-01'
+                        phoneNumber:
+                          type: string
+                          example: '+3725064992'
+                        avatar:
+                          type: string
+                          example: ''
+                        occupation:
+                          type: string
+                          deprecated: true
+                          example: ''
+                        occupations:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                                example: Software Engineer
+                              format:
+                                type: string
+                                example: FREE_FORM
+                        primaryAddress:
+                          type:
+                          - integer
+                          - 'null'
+                          format: int64
+                          description: Address object ID.
+                          example: null
+                        firstNameInKana:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        lastNameInKana:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                - title: Business
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                      description: Profile ID.
+                      example: 30000002
+                    type:
+                      type: string
+                      enum:
+                      - business
+                      example: business
+                    details:
+                      type: object
+                      description: Business profile details.
+                      properties:
+                        name:
+                          type: string
+                          example: ABC Logistics Ltd
+                        registrationNumber:
+                          type: string
+                          example: '12144939'
+                        acn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        abn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        arbn:
+                          type:
+                          - string
+                          - 'null'
+                          example: null
+                        companyType:
+                          type: string
+                          example: LIMITED
+                        companyRole:
+                          type: string
+                          example: OWNER
+                        descriptionOfBusiness:
+                          type: string
+                          deprecated: true
+                          example: Information and communication
+                        webpage:
+                          type: string
+                          example: https://abc-logistics.com
+                        primaryAddress:
+                          type: integer
+                          format: int64
+                          description: Address object ID.
+                          example: 4000001
+                        businessCategory:
+                          type: string
+                          description: '[Business category](/guides/developer/api-guides/business-categories).'
+                          example: CONSULTING_IT_BUSINESS_SERVICES
+                        businessSubCategory:
+                          type: string
+                          description: '[Business sub-category](/guides/developer/api-guides/business-categories).'
+                          example: DESIGN
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v2/profiles:
+    get:
+      operationId: profileList
+      summary: List profiles for a user account
+      description: 'List of all profiles belonging to user.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      responses:
+        '200':
+          description: Array of profile objects. Note that there might be more than one business profile returned in the response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/profile'
+              example:
+              - type: PERSONAL
+                id: 14575282
+                publicId: a1b2c3d4-e5f6-7890-1234-567890abcdef
+                userId: 9889627
+                address:
+                  id: 36086782
+                  addressFirstLine: 24 Willow Creek Lane
+                  city: Bristol
+                  countryIso2Code: GB
+                  countryIso3Code: gbr
+                  postCode: BS1 6AE
+                  stateCode: null
+                email: sarah.jenkins@example.com
+                createdAt: '2023-01-15T10:30:00'
+                updatedAt: '2025-06-18T14:20:00'
+                avatar: https://example.com/avatars/sarah_jenkins.png
+                currentState: VISIBLE
+                contactDetails:
+                  email: sarah.contact@example.com
+                  phoneNumber: '+447700900123'
+                firstName: Sarah
+                lastName: Jenkins
+                preferredName: Sal
+                dateOfBirth: '1985-05-20'
+                phoneNumber: '+447700900456'
+                secondaryAddresses: []
+                fullName: Sarah Jenkins
+              - type: BUSINESS
+                id: 14599371
+                publicId: f0e9d8c7-b6a5-4321-fedc-ba9876543210
+                userId: 9889627
+                address:
+                  id: 36152772
+                  addressFirstLine: 15 Tech Hub Studios
+                  city: Manchester
+                  countryIso2Code: GB
+                  countryIso3Code: gbr
+                  postCode: M1 7JA
+                  stateCode: null
+                email: info@innovate-solutions.co.uk
+                createdAt: '2024-03-10T09:00:00'
+                updatedAt: '2025-06-18T14:22:00'
+                contactDetails:
+                  email: contact@innovate-solutions.co.uk
+                  phoneNumber: '+441617891234'
+                businessName: Innovate Solutions Ltd
+                registrationNumber: SC1234567890ABCD
+                descriptionOfBusiness: SOFTWARE_DEVELOPMENT
+                webpage: https://www.innovate-solutions.co.uk
+                companyType: LIMITED_COMPANY
+                businessFreeFormDescription: We create cutting-edge software for businesses.
+                firstLevelCategory: TECHNOLOGY
+                secondLevelCategory: SOFTWARE_SERVICES
+                operationalAddresses:
+                - id: 36152773
+                  addressFirstLine: Unit 5, Innovation Park
+                  city: Leeds
+                  countryIso2Code: GB
+                  countryIso3Code: gbr
+                  postCode: LS1 4YZ
+                  stateCode: null
+                fullName: Innovate Solutions Ltd
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+  /v2/profiles/personal-profile:
+    post:
+      operationId: profilePersonalCreate
+      summary: Create a personal profile
+      description: 'Create a personal profile for the authenticated user. A personal profile represents an individual and is required before creating transfers or business profiles.
+
+
+        {% admonition type="info" %}
+
+        Use the `X-idempotence-uuid` header to safely retry requests. If omitted and a profile already exists, the API returns `409 Conflict`. You can then retrieve existing profiles via [List profiles](/api-reference/profile/profilelist).
+
+        {% /admonition %}
+
+
+        Field notes {% .title-4 .m-t-3 %}
+
+
+        - **First and last names** are limited to 30 characters each. Truncate if necessary (e.g. when a customer has many middle names).
+
+        - **`occupations`** is required for CA, IN, JP, ID, IL, MX, and within the US for the state NM.
+
+        - **`contactDetails`** are used for mandatory customer notifications and to help identify your customer when contacting Wise support.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: X-idempotence-uuid
+        in: header
+        required: false
+        description: Unique idempotency key for the request.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - firstName
+              - lastName
+              - dateOfBirth
+              - address
+              - contactDetails
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 30
+                  description: First name (including middle names).
+                  example: Oliver
+                lastName:
+                  type: string
+                  maxLength: 30
+                  description: Last name.
+                  example: Wilson
+                preferredName:
+                  type: string
+                  maxLength: 30
+                  description: Preferred first name, if different to the legal first name.
+                  example: Olivia
+                firstNameInKana:
+                  type:
+                  - string
+                  - 'null'
+                  description: First name in Katakana. Required for from-JPY personal transfers.
+                  example: null
+                lastNameInKana:
+                  type:
+                  - string
+                  - 'null'
+                  description: Last name in Katakana. Required for from-JPY personal transfers.
+                  example: null
+                address:
+                  type: object
+                  required:
+                  - addressFirstLine
+                  - city
+                  - countryIso3Code
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 50 Sunflower Ave
+                    city:
+                      type: string
+                      description: City.
+                      example: Phoenix
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code (lower case).
+                      example: usa
+                    postCode:
+                      type: string
+                      description: Postal code.
+                      example: '10025'
+                    stateCode:
+                      type: string
+                      maxLength: 5
+                      description: State code. Required for US, CA, BR and AU addresses.
+                      example: AZ
+                nationality:
+                  type: string
+                  description: 3 letter country code (lower case).
+                  example: usa
+                dateOfBirth:
+                  type: string
+                  description: Date of birth.
+                  example: '1977-07-01'
+                externalCustomerId:
+                  type: string
+                  description: An external reference identifier mapping the customer of this profile to your system.
+                  example: 12345-oliver-wilson
+                contactDetails:
+                  type: object
+                  required:
+                  - email
+                  - phoneNumber
+                  properties:
+                    email:
+                      type: string
+                      description: Contact email address. Please speak with your integration account manager for details on how customer communication is handled for your integration.
+                      example: o.wilson@example.com
+                    phoneNumber:
+                      type: string
+                      description: Contact phone number in international phone number format, example "+1408XXXXXXX".
+                      example: '+3725064992'
+                occupations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Occupation field code - this field accepts any job or occupation that the customer does, as the only occupation format currently accepted is `"FREE_FORM"`.
+                        example: Software Engineer
+                      format:
+                        type: string
+                        description: Occupation field format. As of now, it only accepts the value `"FREE_FORM"`.
+                        example: FREE_FORM
+      responses:
+        '200':
+          description: Created personal profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Unique profile ID.
+                    example: 30000001
+                  type:
+                    type: string
+                    description: Profile type.
+                    enum:
+                    - PERSONAL
+                    example: PERSONAL
+                  details:
+                    type: object
+                    description: Profile details.
+                    properties:
+                      firstName:
+                        type: string
+                        description: First name (including middle names).
+                        example: Oliver
+                      lastName:
+                        type: string
+                        description: Last name.
+                        example: Wilson
+                      preferredName:
+                        type: string
+                        description: Preferred first name.
+                        example: Olivia
+                      firstNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: First name in Katakana.
+                        example: null
+                      lastNameInKana:
+                        type:
+                        - string
+                        - 'null'
+                        description: Last name in Katakana.
+                        example: null
+                      address:
+                        type: object
+                        properties:
+                          addressFirstLine:
+                            type: string
+                            example: 50 Sunflower Ave
+                          city:
+                            type: string
+                            example: Phoenix
+                          countryIso3Code:
+                            type: string
+                            example: usa
+                          postCode:
+                            type: string
+                            example: '10025'
+                          stateCode:
+                            type: string
+                            example: AZ
+                      nationality:
+                        type: string
+                        description: 3 letter country code (lower case).
+                        example: usa
+                      dateOfBirth:
+                        type: string
+                        description: Date of birth.
+                        example: '1977-07-01'
+                      externalCustomerId:
+                        type: string
+                        description: External reference identifier in your system.
+                        example: 12345-oliver-wilson
+                      contactDetails:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            example: o.wilson@example.com
+                          phoneNumber:
+                            type: string
+                            example: '+3725064992'
+                      occupations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              example: Software Engineer
+                            format:
+                              type: string
+                              example: FREE_FORM
+                      localizedInformation:
+                        type: array
+                        description: Localized information for the profile.
+                        items:
+                          type: object
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/business-profile:
+    post:
+      operationId: profileBusinessCreate
+      summary: Create a business profile
+      description: 'It is required that you first create a personal profile with details of the authorized representative of the business. It is currently not possible to create a business profile without first creating a personal profile.
+
+
+        {% admonition type="info" %}
+
+        This request accepts an optional field in the header, `X-idempotence-uuid`. This should be unique for each Profile you create. In the event that the request fails, you should use the same value again when retrying. If the `X-idempotence-uuid` header is not provided and a Profile already exists, then you will receive a response with an HTTP status code `409`. If this happens, you can retrieve the profiles with the ''List profiles for a user account'' API `GET /v2/profiles`.
+
+        {% /admonition %}
+
+
+        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: X-idempotence-uuid
+        in: header
+        required: false
+        description: Unique idempotency key for the request.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessName:
+                  type: string
+                  description: Business name.
+                  example: ABC Logistics Ltd
+                businessNameInKatakana:
+                  type:
+                  - string
+                  - 'null'
+                  description: Business name in Katakana (only for Japanese businesses).
+                  example: null
+                businessFreeFormDescription:
+                  type: string
+                  description: 'Business free form description. Required if `companyType` is `OTHER`. If this is not provided for an `OTHER` companyType, the profile should not be allowed to create a transfer.
+
+                    For the rest of the companyTypes, it is highly recommended to always provide the business'' description, to avoid payment issues such as suspensions. Wise will send a request for information (RFI) if this detail is not provided.
+
+                    '
+                  example: Biz free form desc
+                registrationNumber:
+                  type: string
+                  description: Business registration number.
+                  example: '12144939'
+                acn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Company Number (only for Australian businesses).
+                  example: null
+                abn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Business Number (only for Australian businesses).
+                  example: null
+                arbn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Registered Body Number (only for Australian businesses).
+                  example: null
+                companyType:
+                  type: string
+                  description: Company legal form.
+                  enum:
+                  - LIMITED
+                  - PARTNERSHIP
+                  - SOLE_TRADER
+                  - LIMITED_BY_GUARANTEE
+                  - LIMITED_LIABILITY_COMPANY
+                  - FOR_PROFIT_CORPORATION
+                  - NON_PROFIT_CORPORATION
+                  - LIMITED_PARTNERSHIP
+                  - LIMITED_LIABILITY_PARTNERSHIP
+                  - GENERAL_PARTNERSHIP
+                  - SOLE_PROPRIETORSHIP
+                  - PRIVATE_LIMITED_COMPANY
+                  - PUBLIC_LIMITED_COMPANY
+                  - TRUST
+                  - OTHER
+                  example: LIMITED
+                companyRole:
+                  type: string
+                  description: Role of person.
+                  enum:
+                  - OWNER
+                  - DIRECTOR
+                  - OTHER
+                  example: OWNER
+                address:
+                  type: object
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 1 A road
+                    city:
+                      type: string
+                      description: City.
+                      example: London
+                    countryIso2Code:
+                      type: string
+                      description: 2 letter country code.
+                      example: gb
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code. Must be lowercase.
+                      example: gbr
+                    postCode:
+                      type: string
+                      description: Postal code.
+                      example: '11111'
+                    stateCode:
+                      type: string
+                      description: State code.
+                externalCustomerId:
+                  type: string
+                  description: An external reference identifier mapping the customer of this profile to your system.
+                  example: 67890-biz-acct
+                actorEmail:
+                  type: string
+                  description: Email of the actor.
+                  example: biz-acct@abcl.com
+                firstLevelCategory:
+                  type: string
+                  description: '[Category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: CONSULTING_IT_BUSINESS_SERVICES
+                secondLevelCategory:
+                  type: string
+                  description: '[Secondary category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: DESIGN
+                operationalAddresses:
+                  type: array
+                  description: List of operational addresses.
+                  items:
+                    type: object
+                    properties:
+                      addressFirstLine:
+                        type: string
+                        example: 1 A road
+                      city:
+                        type: string
+                        example: London
+                      countryIso2Code:
+                        type: string
+                        example: gb
+                      countryIso3Code:
+                        type: string
+                        example: gbr
+                      postCode:
+                        type: string
+                        example: '11111'
+                      stateCode:
+                        type: string
+                webpage:
+                  type: string
+                  description: 'Business webpage. Required if `companyType` is `OTHER`. If this is not provided for an `OTHER` companyType, the profile should not be allowed to create a transfer.
+
+                    For the rest of the companyTypes, it is highly recommended to always provide the business'' website, to avoid payment issues such as suspensions. Wise will send a request for information (RFI) if this detail is not provided.
+
+                    '
+                  example: https://abc-logistics.com
+      responses:
+        '200':
+          description: Created business profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/business-profile'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/business-profile:
+    post:
+      operationId: profileBusinessCreateV3
+      summary: Create a business profile (V3)
+      description: 'Create a business profile and its authorized representative in a single request.
+
+
+        {% admonition type="info" %}
+
+        This request accepts an optional field in the header, `X-idempotence-uuid`. This should be unique for each Profile you create. In the event that the request fails, you should use the same value again when retrying. If the `X-idempotence-uuid` header is not provided and a Profile already exists, then you will receive a response with an HTTP status code `409`.
+
+        {% /admonition %}
+
+
+        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: X-idempotence-uuid
+        in: header
+        required: false
+        description: Unique idempotency key for the request.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businessName:
+                  type: string
+                  description: Business name.
+                  example: ABC Logistics Ltd
+                businessNameInKatakana:
+                  type:
+                  - string
+                  - 'null'
+                  description: Business name in Katakana (only for Japanese businesses).
+                  example: null
+                businessFreeFormDescription:
+                  type: string
+                  description: 'Business free form description. Required if `companyType` is `OTHER`. If this is not provided for an `OTHER` companyType, the profile should not be allowed to create a transfer.
+
+                    For the rest of the companyTypes, it is highly recommended to always provide the business'' description, to avoid payment issues such as suspensions. Wise will send a request for information (RFI) if this detail is not provided.
+
+                    '
+                  example: Biz free form desc
+                registrationNumber:
+                  type: string
+                  description: Business registration number.
+                  example: '12144939'
+                acn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Company Number (only for Australian businesses).
+                  example: null
+                abn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Business Number (only for Australian businesses).
+                  example: null
+                arbn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Registered Body Number (only for Australian businesses).
+                  example: null
+                companyType:
+                  type: string
+                  description: Company legal form.
+                  enum:
+                  - LIMITED
+                  - PARTNERSHIP
+                  - SOLE_TRADER
+                  - LIMITED_BY_GUARANTEE
+                  - LIMITED_LIABILITY_COMPANY
+                  - FOR_PROFIT_CORPORATION
+                  - NON_PROFIT_CORPORATION
+                  - LIMITED_PARTNERSHIP
+                  - LIMITED_LIABILITY_PARTNERSHIP
+                  - GENERAL_PARTNERSHIP
+                  - SOLE_PROPRIETORSHIP
+                  - PRIVATE_LIMITED_COMPANY
+                  - PUBLIC_LIMITED_COMPANY
+                  - TRUST
+                  - OTHER
+                  example: LIMITED
+                companyRole:
+                  type: string
+                  description: Role of person.
+                  enum:
+                  - OWNER
+                  - DIRECTOR
+                  - OTHER
+                  example: OWNER
+                address:
+                  type: object
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 1 A road
+                    city:
+                      type: string
+                      description: City.
+                      example: London
+                    countryIso2Code:
+                      type: string
+                      description: 2 letter country code.
+                      example: gb
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code. Must be lowercase.
+                      example: gbr
+                    postCode:
+                      type: string
+                      description: Postal code.
+                      example: '11111'
+                    stateCode:
+                      type: string
+                      description: State code.
+                externalCustomerId:
+                  type: string
+                  description: An external reference identifier mapping the customer of this profile to your system.
+                  example: 67890-biz-acct
+                actorEmail:
+                  type: string
+                  description: Email of the actor.
+                  example: biz-acct@abcl.com
+                firstLevelCategory:
+                  type: string
+                  description: '[Category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: CONSULTING_IT_BUSINESS_SERVICES
+                secondLevelCategory:
+                  type: string
+                  description: '[Secondary category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: DESIGN
+                operationalAddresses:
+                  type: array
+                  description: List of operational addresses.
+                  items:
+                    type: object
+                    properties:
+                      addressFirstLine:
+                        type: string
+                        example: 1 A road
+                      city:
+                        type: string
+                        example: London
+                      countryIso2Code:
+                        type: string
+                        example: gb
+                      countryIso3Code:
+                        type: string
+                        example: gbr
+                      postCode:
+                        type: string
+                        example: '11111'
+                      stateCode:
+                        type: string
+                webpage:
+                  type: string
+                  description: 'Business webpage. Required if `companyType` is `OTHER`. If this is not provided for an `OTHER` companyType, the profile should not be allowed to create a transfer.
+
+                    For the rest of the companyTypes, it is highly recommended to always provide the business'' website, to avoid payment issues such as suspensions. Wise will send a request for information (RFI) if this detail is not provided.
+
+                    '
+                  example: https://abc-logistics.com
+                businessRepresentative:
+                  type: object
+                  description: Business representative details. Provide either the full representative details or just the `businessRepresentativeId` to link an existing representative.
+                  properties:
+                    businessRepresentativeId:
+                      type: integer
+                      description: ID of a Business Representative. This can be obtained from a previous call to create a business profile, in which case the same Business Representative is linked to the current business effectively sharing it across multiple businesses. When the Business Representative ID is provided, it is the only field required and none of the other fields should be provided.
+                    firstName:
+                      type: string
+                      description: First name of the person representing the business (including middle names). Required unless Business Representative ID is provided.
+                      example: Oliver
+                    lastName:
+                      type: string
+                      description: Last name of the person representing the business. Required unless Business Representative ID is provided.
+                      example: Wilson
+                    preferredName:
+                      type: string
+                      description: Preferred first name, if different to the legal first name.
+                      example: Olivia
+                    address:
+                      type: object
+                      properties:
+                        addressFirstLine:
+                          type: string
+                          description: First line of address. Required unless Business Representative ID is provided.
+                          example: 50 Sunflower Ave
+                        city:
+                          type: string
+                          description: City. Required unless Business Representative ID is provided.
+                          example: Phoenix
+                        countryIso3Code:
+                          type: string
+                          description: 3 letter country code (lower case). Required unless Business Representative ID is provided.
+                          example: usa
+                        postCode:
+                          type: string
+                          description: Postal code.
+                          example: '10025'
+                        stateCode:
+                          type: string
+                          description: State code (max 5 chars). Required for US, CA, BR and AU addresses unless Business Representative ID is provided.
+                          example: AZ
+                    contactDetails:
+                      type: object
+                      properties:
+                        email:
+                          type: string
+                          description: Contact email address. Required unless Business Representative ID is provided.
+                          example: o.wilson@example.com
+                        phoneNumber:
+                          type: string
+                          description: Contact phone number in international phone number format. Required unless Business Representative ID is provided.
+                          example: '+3725064992'
+                    dateOfBirth:
+                      type: string
+                      description: Date of birth. Required unless Business Representative ID is provided.
+                      example: '1977-07-01'
+            examples:
+              withRepresentativeDetails:
+                summary: With Business Representative details
+                value:
+                  businessName: ABC Logistics Ltd
+                  businessNameInKatakana: null
+                  businessFreeFormDescription: Biz free form desc
+                  registrationNumber: '12144939'
+                  acn: null
+                  abn: null
+                  arbn: null
+                  companyType: LIMITED
+                  companyRole: OWNER
+                  address:
+                    addressFirstLine: 1 A road
+                    city: London
+                    countryIso2Code: gb
+                    countryIso3Code: gbr
+                    postCode: '11111'
+                  externalCustomerId: 67890-biz-acct
+                  actorEmail: biz-acct@abcl.com
+                  firstLevelCategory: CONSULTING_IT_BUSINESS_SERVICES
+                  secondLevelCategory: DESIGN
+                  operationalAddresses:
+                  - addressFirstLine: 1 A road
+                    city: London
+                    countryIso2Code: gb
+                    countryIso3Code: gbr
+                    postCode: '11111'
+                  webpage: https://abc-logistics.com
+                  businessRepresentative:
+                    firstName: Oliver
+                    lastName: Wilson
+                    preferredName: Olivia
+                    address:
+                      addressFirstLine: 50 Sunflower Ave
+                      city: Phoenix
+                      countryIso3Code: usa
+                      postCode: '10025'
+                      stateCode: AZ
+                    dateOfBirth: '1977-07-01'
+                    contactDetails:
+                      email: o.wilson@example.com
+                      phoneNumber: '+3725064992'
+              withRepresentativeId:
+                summary: With Business Representative ID
+                value:
+                  businessName: ABC Logistics Ltd
+                  businessNameInKatakana: null
+                  businessFreeFormDescription: Biz free form desc
+                  registrationNumber: '12144939'
+                  acn: null
+                  abn: null
+                  arbn: null
+                  companyType: LIMITED
+                  companyRole: OWNER
+                  address:
+                    addressFirstLine: 1 A road
+                    city: London
+                    countryIso2Code: gb
+                    countryIso3Code: gbr
+                    postCode: '11111'
+                  externalCustomerId: 67890-biz-acct
+                  actorEmail: biz-acct@abcl.com
+                  firstLevelCategory: CONSULTING_IT_BUSINESS_SERVICES
+                  secondLevelCategory: DESIGN
+                  operationalAddresses:
+                  - addressFirstLine: 1 A road
+                    city: London
+                    countryIso2Code: gb
+                    countryIso3Code: gbr
+                    postCode: '11111'
+                  webpage: https://abc-logistics.com
+                  businessRepresentative:
+                    businessRepresentativeId: 123
+      responses:
+        '200':
+          description: Created business profile.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}:
+    get:
+      operationId: profileGet
+      summary: Retrieve a profile by ID
+      description: 'Get profile info by ID.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Profile object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/profile'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/personal-profile:
+    put:
+      operationId: profilePersonalUpdate
+      summary: Update a personal profile
+      description: 'Update user profile information for a personal profile.
+
+
+        {% admonition type="warning" %}
+
+        If user profile has been verified then there are restrictions on what information is allowed to change. Where permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).
+
+        {% /admonition %}
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Personal profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  maxLength: 30
+                  description: First name (including middle names).
+                  example: Oliver
+                lastName:
+                  type: string
+                  maxLength: 30
+                  description: Last name.
+                  example: Wilson
+                preferredName:
+                  type: string
+                  maxLength: 30
+                  description: Preferred first name, if different to the legal first name.
+                  example: Olivia
+                firstNameInKana:
+                  type:
+                  - string
+                  - 'null'
+                  description: First name in Katakana. Required for from-JPY personal transfers.
+                  example: null
+                lastNameInKana:
+                  type:
+                  - string
+                  - 'null'
+                  description: Last name in Katakana. Required for from-JPY personal transfers.
+                  example: null
+                address:
+                  type: object
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 50 Sunflower Ave
+                    city:
+                      type: string
+                      description: City.
+                      example: Phoenix
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code (ISO3, lower case).
+                      example: usa
+                    postCode:
+                      type: string
+                      description: Postal code or ZIP code.
+                      example: '10025'
+                    stateCode:
+                      type: string
+                      maxLength: 5
+                      description: State code. Required for US, CA, BR and AU addresses.
+                      example: AZ
+                nationality:
+                  type: string
+                  description: 3 letter country code (ISO3, lower case).
+                  example: usa
+                dateOfBirth:
+                  type: string
+                  description: Date of birth.
+                  example: '1977-07-01'
+                contactDetails:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      description: Contact email address. Please speak with your integration account manager for details on how customer communication is handled for your integration.
+                      example: o.wilson@example.com
+                    phoneNumber:
+                      type: string
+                      description: Contact phone number in international phone number format, example "+1408XXXXXXX".
+                      example: '+3725064992'
+                externalCustomerId:
+                  type: string
+                  description: An external reference identifier mapping the customer of this profile to your system.
+                  example: 12345-oliver-wilson
+                occupations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Occupation field code - this field accepts any job or occupation that the customer does, as the only occupation format currently accepted is `"FREE_FORM"`.
+                        example: Software Engineer
+                      format:
+                        type: string
+                        description: Occupation field format. As of now, it only accepts the value `"FREE_FORM"`.
+                        example: FREE_FORM
+      responses:
+        '200':
+          description: Updated personal profile.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/profiles/{profileId}/business-profile:
+    put:
+      operationId: profileBusinessUpdate
+      summary: Update a business profile
+      description: 'Update user profile information for a business profile.
+
+
+        {% admonition type="warning" %}
+
+        If user profile has been verified then there are restrictions on what information is allowed to change.
+
+        {% /admonition %}
+
+
+        Where permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).
+
+
+        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: Business profile ID. This must match the business profile ID supplied in the URL.
+                  example: 14599371
+                businessName:
+                  type: string
+                  description: Business name.
+                  example: ABC Logistics Ltd
+                businessNameInKatakana:
+                  type:
+                  - string
+                  - 'null'
+                  description: Business name in Katakana (only for Japanese businesses).
+                  example: null
+                businessFreeFormDescription:
+                  type: string
+                  description: Business free form description.
+                  example: Biz free form desc
+                registrationNumber:
+                  type: string
+                  description: Business registration number.
+                  example: '12144939'
+                acn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Company Number (only for Australian businesses).
+                  example: null
+                abn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Business Number (only for Australian businesses).
+                  example: null
+                arbn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Australian Registered Body Number (only for Australian businesses).
+                  example: null
+                companyType:
+                  type: string
+                  description: Company legal form.
+                  enum:
+                  - LIMITED
+                  - PARTNERSHIP
+                  - SOLE_TRADER
+                  - LIMITED_BY_GUARANTEE
+                  - LIMITED_LIABILITY_COMPANY
+                  - FOR_PROFIT_CORPORATION
+                  - NON_PROFIT_CORPORATION
+                  - LIMITED_PARTNERSHIP
+                  - LIMITED_LIABILITY_PARTNERSHIP
+                  - GENERAL_PARTNERSHIP
+                  - SOLE_PROPRIETORSHIP
+                  - PRIVATE_LIMITED_COMPANY
+                  - PUBLIC_LIMITED_COMPANY
+                  - TRUST
+                  - OTHER
+                  example: LIMITED
+                address:
+                  type: object
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 1 A road
+                    city:
+                      type: string
+                      description: City.
+                      example: London
+                    countryIso2Code:
+                      type: string
+                      description: 2 letter country code.
+                      example: gb
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code. Must be lowercase.
+                      example: gbr
+                    postCode:
+                      type: string
+                      description: Postal code.
+                      example: '11111'
+                    stateCode:
+                      type: string
+                      maxLength: 5
+                      description: State code.
+                companyRole:
+                  type: string
+                  description: Role of person.
+                  enum:
+                  - OWNER
+                  - DIRECTOR
+                  - OTHER
+                  example: OWNER
+                externalCustomerId:
+                  type: string
+                  description: An external reference identifier mapping the customer of this profile to your system.
+                  example: 67890-biz-acct
+                firstLevelCategory:
+                  type: string
+                  description: '[Category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: CONSULTING_IT_BUSINESS_SERVICES
+                secondLevelCategory:
+                  type: string
+                  description: '[Secondary category](/guides/developer/api-guides/business-categories) of the business.'
+                  example: DESIGN
+                operationalAddresses:
+                  type: array
+                  description: List of operational addresses.
+                  items:
+                    type: object
+                    properties:
+                      addressFirstLine:
+                        type: string
+                        example: 1 A road
+                      city:
+                        type: string
+                        example: London
+                      countryIso2Code:
+                        type: string
+                        example: gb
+                      countryIso3Code:
+                        type: string
+                        example: gbr
+                      postCode:
+                        type: string
+                        example: '11111'
+                      stateCode:
+                        type: string
+                        maxLength: 5
+                webpage:
+                  type: string
+                  description: 'Business webpage. Required if `companyType` is `OTHER`. If this is not provided for an `OTHER` companyType, the profile should not be allowed to create a transfer.
+
+                    For the rest of the companyTypes, it is highly recommended to always provide the business'' website, to avoid payment issues such as suspensions. Wise will send a request for information (RFI) if this detail is not provided.
+
+                    '
+                  example: https://abc-logistics.com
+      responses:
+        '200':
+          description: Updated business profile.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/business-profile/business-representative:
+    get:
+      operationId: profileBusinessRepresentativeGet
+      summary: Retrieve business representative
+      description: 'Get Business Representative info by Business Profile ID.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Business representative object.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    put:
+      operationId: profileBusinessRepresentativeUpdate
+      summary: Update business representative
+      description: 'Update or transfer the Business Representative for the specified Business Profile.
+
+
+        Set `updateContext` to `UPDATE_DETAILS` to update the existing Business Representative''s details, or `TRANSFER_OF_AUTHORISATION` to transfer authority of the Business Profile to a new Business Representative.
+
+
+        {% admonition type="info" %}
+
+        If the Business Representative has been verified then there are restrictions on what information is allowed to change.
+
+        {% /admonition %}
+
+
+        {% admonition type="info" %}
+
+        If this Business Representative is shared across multiple Business Profiles, then changes will be reflected for all of the Business Profiles.
+
+        {% /admonition %}
+
+
+        When using `TRANSFER_OF_AUTHORISATION`, this will overwrite the existing Business Representative. The new Business Representative will need to be verified for KYC purposes.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                updateContext:
+                  type: string
+                  description: Context of the update.
+                  enum:
+                  - UPDATE_DETAILS
+                  - TRANSFER_OF_AUTHORISATION
+                  example: UPDATE_DETAILS
+                firstName:
+                  type: string
+                  description: First name of the person representing the business (including middle names).
+                  example: Oliver
+                lastName:
+                  type: string
+                  description: Last name of the person representing the business.
+                  example: Wilson
+                preferredName:
+                  type: string
+                  description: Preferred first name, if different to the legal first name.
+                  example: Olivia
+                address:
+                  type: object
+                  properties:
+                    addressFirstLine:
+                      type: string
+                      description: First line of address.
+                      example: 50 Sunflower Ave
+                    city:
+                      type: string
+                      description: City.
+                      example: Phoenix
+                    countryIso3Code:
+                      type: string
+                      description: 3 letter country code (lower case).
+                      example: usa
+                    postCode:
+                      type: string
+                      description: Postal code.
+                      example: '10025'
+                    stateCode:
+                      type: string
+                      description: State code (max 5 chars). Required for US, CA, BR and AU addresses.
+                      example: AZ
+                contactDetails:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      description: Contact email address of the person representing the business. Please speak with your integration account manager for details on how customer communication is handled for your integration.
+                      example: o.wilson@example.com
+                    phoneNumber:
+                      type: string
+                      description: Contact phone number in international phone number format, example "+1408XXXXXXX" of the person representing the business. Please speak with your integration account manager for details on how customer communication is handled for your integration.
+                      example: '+3725064992'
+                dateOfBirth:
+                  type: string
+                  description: Date of birth.
+                  example: '1977-07-01'
+                actorEmail:
+                  type: string
+                  description: Email of the actor.
+                  example: biz-acct@abcl.com
+            examples:
+              updateDetails:
+                summary: Update Details
+                value:
+                  updateContext: UPDATE_DETAILS
+                  contactDetails:
+                    email: o.wilson@example.com
+                    phoneNumber: '+3725064992'
+              transferOfAuthorisation:
+                summary: Transfer of Authorisation
+                value:
+                  updateContext: TRANSFER_OF_AUTHORISATION
+                  firstName: Oliver
+                  lastName: Wilson
+                  preferredName: Olivia
+                  address:
+                    addressFirstLine: 50 Sunflower Ave
+                    city: Phoenix
+                    countryIso3Code: usa
+                    postCode: '10025'
+                    stateCode: AZ
+                  dateOfBirth: '1977-07-01'
+                  contactDetails:
+                    email: o.wilson@example.com
+                    phoneNumber: '+3725064992'
+      responses:
+        '200':
+          description: Business representative updated successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/verification-documents:
+    post:
+      operationId: profileVerificationDocumentCreate
+      summary: Create an identification document
+      description: 'Add an identification document to a personal profile. Not applicable to business profiles.
+
+
+        For SSN submissions, only `type` and `uniqueIdentifier` (9 digits, no letters or symbols) are required.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: Person first name in document.
+                  example: Oliver
+                lastName:
+                  type: string
+                  description: Person last name in document.
+                  example: Wilson
+                type:
+                  type: string
+                  description: Document type.
+                  enum:
+                  - DRIVERS_LICENCE
+                  - IDENTITY_CARD
+                  - GREEN_CARD
+                  - MY_NUMBER
+                  - PASSPORT
+                  - SSN
+                  - EMIRATES_EMPLOYER
+                  - EMIRATES_PLACE_OF_BIRTH
+                  - CPF_CNPJ
+                  - FINANCIAL_CAPACITY_BR
+                  - OTHER
+                  example: IDENTITY_CARD
+                uniqueIdentifier:
+                  type: string
+                  maxLength: 30
+                  description: Document number or value. Must be digits only when SSN or FINANCIAL_CAPACITY_BR.
+                  example: AA299822313
+                issueDate:
+                  type: string
+                  description: Document issue date.
+                  example: '2017-12-31'
+                issuerCountry:
+                  type: string
+                  description: Issued by country code. For example "US".
+                  example: EE
+                issuerState:
+                  type: string
+                  description: Issued by state code. For example "NY".
+                  example: ''
+                expiryDate:
+                  type: string
+                  description: Document expiry date.
+                  example: '2027-12-31'
+                nationality:
+                  type: string
+                  description: 2 characters ISO country code.
+                employerName:
+                  type: string
+                  description: The name of the employer. Type must be EMIRATES_EMPLOYER.
+                employerCity:
+                  type: string
+                  description: The city of the employer. Type must be EMIRATES_EMPLOYER.
+                employerCountry:
+                  type: string
+                  description: 2 characters ISO country code. Type must be EMIRATES_EMPLOYER.
+                birthCity:
+                  type: string
+                  description: The city of birth of the customer.
+                birthCountry:
+                  type: string
+                  description: 2 characters ISO country code.
+            examples:
+              identityCard:
+                summary: Identity Card
+                value:
+                  firstName: Oliver
+                  lastName: Wilson
+                  type: IDENTITY_CARD
+                  uniqueIdentifier: AA299822313
+                  issueDate: '2017-12-31'
+                  issuerCountry: EE
+                  issuerState: ''
+                  expiryDate: '2027-12-31'
+              cpfCnpj:
+                summary: CPF or CNPJ
+                value:
+                  type: CPF_CNPJ
+                  uniqueIdentifier: 938.936.652-69
+              financialCapacityBr:
+                summary: Financial Capacity Brazil
+                value:
+                  type: FINANCIAL_CAPACITY_BR
+                  uniqueIdentifier: '150000.00'
+      responses:
+        '200':
+          description: Identification document created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type:
+                    - string
+                    - 'null'
+                    example: null
+                  success:
+                    type: boolean
+                    example: true
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    put:
+      operationId: profileVerificationDocumentUpdate
+      summary: Update an identification document
+      description: "Update an existing identification document on a personal profile. Not\napplicable to business profiles.\n\nThis endpoint performs a full replacement of the document details. Any\nfields not provided in the request body will be set to null on the stored\ndocument. Partners must provide all fields they wish to retain. \n\nOnly partners with a KYC partner onboarding model\nare permitted to use this endpoint. Non-KYC partners will receive a 400 error.\n"
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - clientId
+              properties:
+                clientId:
+                  type: string
+                  description: The partner's client ID.
+                  example: mercury
+                firstName:
+                  type: string
+                  description: Person first name in document.
+                  example: Oliver
+                lastName:
+                  type: string
+                  description: Person last name in document.
+                  example: Wilson
+                type:
+                  type: string
+                  description: Document type.
+                  enum:
+                  - DRIVERS_LICENCE
+                  - IDENTITY_CARD
+                  - GREEN_CARD
+                  - MY_NUMBER
+                  - PASSPORT
+                  - SSN
+                  - EMIRATES_EMPLOYER
+                  - EMIRATES_PLACE_OF_BIRTH
+                  - CPF_CNPJ
+                  - FINANCIAL_CAPACITY_BR
+                  - OTHER
+                  example: IDENTITY_CARD
+                uniqueIdentifier:
+                  type: string
+                  maxLength: 30
+                  description: Document number or value. Must be digits only when SSN or FINANCIAL_CAPACITY_BR.
+                  example: AA299822313
+                issueDate:
+                  type: string
+                  description: Document issue date.
+                  example: '2017-12-31'
+                issuerCountry:
+                  type: string
+                  description: Issued by country code. For example "US".
+                  example: EE
+                issuerState:
+                  type: string
+                  description: Issued by state code. For example "NY".
+                  example: ''
+                expiryDate:
+                  type: string
+                  description: Document expiry date.
+                  example: '2027-12-31'
+                nationality:
+                  type: string
+                  description: 2 characters ISO country code.
+                sex:
+                  type: string
+                  description: Sex as stated in the document.
+                  enum:
+                  - MALE
+                  - FEMALE
+                  example: MALE
+                placeOfBirth:
+                  type: string
+                  description: Place of birth as stated in the document.
+                  example: London
+            examples:
+              identityCard:
+                summary: Update Identity Card
+                value:
+                  clientId: mercury
+                  firstName: Oliver
+                  lastName: Wilson
+                  type: IDENTITY_CARD
+                  uniqueIdentifier: AA299822313
+                  issueDate: '2017-12-31'
+                  issuerCountry: EE
+                  issuerState: ''
+                  expiryDate: '2027-12-31'
+                  nationality: GB
+                  sex: MALE
+              driversLicence:
+                summary: Update Drivers Licence
+                value:
+                  clientId: mercury
+                  firstName: Oliver
+                  lastName: Wilson
+                  type: DRIVERS_LICENCE
+                  uniqueIdentifier: DL12345
+                  issueDate: '2020-01-15'
+                  issuerCountry: US
+                  issuerState: NY
+                  expiryDate: '2028-01-15'
+      responses:
+        '200':
+          description: Identification document updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type:
+                    - string
+                    - 'null'
+                    example: null
+                  success:
+                    type: boolean
+                    example: true
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: "Validation error. Possible error codes:\n- `not.allowed.for.clientId` — Partner is not found or is not a KYC\n  partner.\n- `not.allowed.for.uniqueIdentifier` — Document number exceeds maximum\n  length (30 characters).\n- `NotNull` — A required field (`type` or `clientId`) is missing.\n"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: not.allowed.for.clientId
+                        message:
+                          type: string
+                        field:
+                          type: string
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/directors:
+    post:
+      operationId: profileDirectorCreate
+      summary: Create business directors
+      description: 'Adds new directors to the business profile.
+
+
+        Returns the list of all directors associated with the business profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                    description: Director first name.
+                    example: John
+                  lastName:
+                    type: string
+                    description: Director last name.
+                    example: Doe
+                  dateOfBirth:
+                    type: string
+                    description: Date of birth.
+                    example: '1982-05-20'
+                  countryOfResidenceIso3Code:
+                    type: string
+                    description: 3 character country code.
+                    example: usa
+            example:
+            - firstName: John
+              lastName: Doe
+              dateOfBirth: '1982-05-20'
+              countryOfResidenceIso3Code: usa
+            - firstName: Jane
+              lastName: Doe
+              dateOfBirth: '1981-12-07'
+              countryOfResidenceIso3Code: usa
+      responses:
+        '200':
+          description: List of all directors associated with the business profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/director'
+              example:
+              - id: 10
+                firstName: John
+                lastName: Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+              - id: 11
+                firstName: Jane
+                lastName: Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: profileDirectorList
+      summary: List business directors
+      description: 'Returns the list of director objects associated with the business profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of director objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/director'
+              example:
+              - id: 10
+                firstName: John
+                lastName: Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+              - id: 11
+                firstName: Jane
+                lastName: Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    put:
+      operationId: profileDirectorUpdate
+      summary: Update business directors
+      description: 'Overrides directors in the business profile.
+
+
+        Returns the list of all directors associated with the business profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                    description: Director first name.
+                    example: John
+                  lastName:
+                    type: string
+                    description: Director last name.
+                    example: Doe
+                  dateOfBirth:
+                    type: string
+                    description: Date of birth.
+                    example: '1982-05-20'
+                  countryOfResidenceIso3Code:
+                    type: string
+                    description: 3 character country code.
+                    example: usa
+            example:
+            - firstName: John
+              lastName: Doe
+              dateOfBirth: '1982-05-20'
+              countryOfResidenceIso3Code: usa
+            - firstName: Jane
+              lastName: Doe
+              dateOfBirth: '1981-12-07'
+              countryOfResidenceIso3Code: usa
+      responses:
+        '200':
+          description: List of all directors associated with the business profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/director'
+              example:
+              - id: 14
+                firstName: John
+                lastName: Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+              - id: 15
+                firstName: Jane
+                lastName: Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/ubos:
+    post:
+      operationId: profileUboCreate
+      summary: Create business ultimate owners
+      description: 'Adds new ultimate beneficial owners to the business profile.
+
+
+        Returns the list of all ultimate beneficial owners associated with the business profile.
+
+
+        All the shareholders that have at least 25% ownership should be submitted via this API.
+
+
+        Note that in some cases, we do not require the `ownershipPercentage`. In these cases, `null` should be passed as the value.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Owner full name.
+                    example: John Doe
+                  dateOfBirth:
+                    type: string
+                    description: Date of birth.
+                    example: '1982-05-20'
+                  countryOfResidenceIso3Code:
+                    type: string
+                    description: 3 character country code.
+                    example: usa
+                  addressFirstLine:
+                    type: string
+                    description: First line of address.
+                    example: 123 Fake St
+                  postCode:
+                    type: string
+                    description: Address post code.
+                    example: FK 12345
+                  ownershipPercentage:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: Percentage of ownership.
+                    example: 30
+            examples:
+              twoOwners:
+                summary: Two beneficial owners (30/70 split)
+                value:
+                - name: John Doe
+                  dateOfBirth: '1982-05-20'
+                  countryOfResidenceIso3Code: usa
+                  addressFirstLine: 123 Fake St
+                  postCode: FK 12345
+                  ownershipPercentage: 30
+                - name: Jane Doe
+                  dateOfBirth: '1981-12-07'
+                  countryOfResidenceIso3Code: usa
+                  addressFirstLine: 125 Fake St
+                  postCode: FK 12545
+                  ownershipPercentage: 70
+      responses:
+        '200':
+          description: List of all ultimate beneficial owners associated with the business profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ubo'
+              example:
+              - id: 013ab1c2688d0185b582ee7e0bcb28b2
+                name: John Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 123 Fake St
+                postCode: FK 12345
+                ownershipPercentage: 30
+              - id: 912ce3f31c8b3a10572137e78417caa3
+                name: Jane Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 125 Fake St
+                postCode: FK 12545
+                ownershipPercentage: 70
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: profileUboList
+      summary: List business ultimate owners
+      description: 'Returns the list of all ultimate beneficial owners associated with the business profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of ultimate beneficial owner objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ubo'
+              example:
+              - id: 013ab1c2688d0185b582ee7e0bcb28b2
+                name: John Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 123 Fake St
+                postCode: FK 12345
+                ownershipPercentage: 30
+              - id: 912ce3f31c8b3a10572137e78417caa3
+                name: Jane Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 125 Fake St
+                postCode: FK 12545
+                ownershipPercentage: 70
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    put:
+      operationId: profileUboUpdate
+      summary: Update business ultimate owners
+      description: 'Overrides ultimate beneficial owners in the business profile.
+
+
+        Returns the list of all ultimate beneficial owners associated with the business profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Business profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Owner full name.
+                    example: John Doe
+                  dateOfBirth:
+                    type: string
+                    description: Date of birth.
+                    example: '1982-05-20'
+                  countryOfResidenceIso3Code:
+                    type: string
+                    description: 3 character country code.
+                    example: usa
+                  addressFirstLine:
+                    type: string
+                    description: First line of address.
+                    example: 123 Fake St
+                  postCode:
+                    type: string
+                    description: Address post code.
+                    example: FK 12345
+                  ownershipPercentage:
+                    type:
+                    - integer
+                    - 'null'
+                    format: int32
+                    description: Percentage of ownership.
+                    example: 30
+            examples:
+              twoOwners:
+                summary: Two beneficial owners (30/70 split)
+                value:
+                - name: John Doe
+                  dateOfBirth: '1982-05-20'
+                  countryOfResidenceIso3Code: usa
+                  addressFirstLine: 123 Fake St
+                  postCode: FK 12345
+                  ownershipPercentage: 30
+                - name: Jane Doe
+                  dateOfBirth: '1981-12-07'
+                  countryOfResidenceIso3Code: usa
+                  addressFirstLine: 125 Fake St
+                  postCode: FK 12545
+                  ownershipPercentage: 70
+      responses:
+        '200':
+          description: List of all ultimate beneficial owners associated with the business profile.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ubo'
+              example:
+              - id: ff01cf3f206b40c090a14a1e51163e9e
+                name: John Doe
+                dateOfBirth: '1982-05-20'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 123 Fake St
+                postCode: FK 12345
+                ownershipPercentage: 30
+              - id: c36b687d28ad44ad8c3864411f5f2612
+                name: Jane Doe
+                dateOfBirth: '1981-12-07'
+                countryOfResidenceIso3Code: usa
+                addressFirstLine: 125 Fake St
+                postCode: FK 12545
+                ownershipPercentage: 70
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/update-window:
+    post:
+      operationId: profileUpdateWindowOpen
+      summary: Open an update window
+      description: 'Opens the update window for updating the profile information: details, addresses, directors, owners, others.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Update window opened successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    delete:
+      operationId: profileUpdateWindowClose
+      summary: Close an update window
+      description: 'Deletes the update window for updating the profile.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Update window closed successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/extension-requirements:
+    get:
+      operationId: profileExtensionRequirementsGet
+      summary: Retrieve profile extension requirements
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+
+        {% /admonition %}
+
+
+        After having a profile created, in some situations we can need more specific information about it. In order to know which fields are required for a given profile, and to send the information over, we expose a few endpoints:
+
+
+        - `GET /v1/profiles/{profileId}/extension-requirements`
+
+        - `POST /v1/profiles/{profileId}/extension-requirements`
+
+
+        and
+
+
+        - `POST /v1/profiles/{profileId}/extensions`
+
+        - `GET /v1/profiles/{profileId}/extensions`
+
+
+        The `GET` and `POST` profile extension-requirements endpoints help you to figure out which fields are required to create a valid profile for different regions. You can use this data to build a dynamic user interface on top of these endpoints.
+
+
+        The `POST` and `GET` profile extensions endpoints allow you to send the extra profile information and retrieve it, respectively.
+
+
+        **This format for dynamic forms is the same as the one used for recipient creation.** See [Recipient Requirements](/api-reference/recipient/recipientaccountrequirementsget).
+
+
+        Using profile extension requirements {% .title-4 .m-t-3 %}
+
+
+        1. First create a profile. See [Create Personal Profile](/api-reference/profile/profilepersonalcreate) and [Create Business Profile](/api-reference/profile/profilebusinesscreate).
+
+        2. Call `GET /v1/profiles/{profileId}/extension-requirements` to get the list of fields you need to fill with values in the "details" section for adding information that will make a profile valid.
+
+        3. Some fields require multiple levels of fields in the details request. This should be handled by the client based on the `refreshRequirementsOnChange` field. A top level field can have this field set to true, indicating that there are additional fields required depending on the selected value. To manage this you should create a request with all of the initially requested data and call the POST `extension-requirements` endpoint. You will be returned a response similar the previously returned data from GET `extension-requirements` but with additional fields.
+
+        4. Once you have built your full profile extension details object you can add it to add information to the profile.
+
+
+        Building a user interface {% .title-4 .m-t-3 %}
+
+
+        When requesting the form data from the `extension-requirements` endpoint, the response defines different types of extensions that can be added. Each extension type then has multiple fields describing the form elements required to be shown to collect information from the user. Each field will have a type value, these tell you the field type that your front end needs to render to be able to collect the data. A number of field types are permitted, these are:
+
+
+        | type   | UI element                        |
+
+        |--------|-----------------------------------|
+
+        | text   | A free text box                   |
+
+        | select | A selection box/dialog            |
+
+        | radio  | A radio button choice between options |
+
+        | date   | A text box with a date picker     |
+
+
+        Example data is also included in each field which should be shown to the user, along with a regex or min and max length constraints that should be applied as field level validations. You can optionally implement the dynamic validation using the `validationAsync` field, however these checks will also be done when a completed profile extension is submitted to `POST /v1/profiles/{profileId}/extensions`.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Extension requirements response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: '"profile-extensions-requirements"'
+                      example: profile-extensions-requirements
+                    usageInfo:
+                      type:
+                      - string
+                      - 'null'
+                      example: null
+                    fields:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Field description.
+                          group:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                key:
+                                  type: string
+                                  description: Key is name of the field you should include in the JSON.
+                                name:
+                                  type: string
+                                  description: Display name.
+                                type:
+                                  type: string
+                                  description: Display type of field (e.g. text, select, etc).
+                                refreshRequirementsOnChange:
+                                  type: boolean
+                                  description: Tells you whether you should call POST extension-requirements once the field value is set to discover required lower level fields.
+                                required:
+                                  type: boolean
+                                  description: Indicates if the field is mandatory or not.
+                                displayFormat:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Display format pattern.
+                                example:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Example value.
+                                minLength:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  format: int32
+                                  description: Min valid length of field value.
+                                maxLength:
+                                  type:
+                                  - integer
+                                  - 'null'
+                                  format: int32
+                                  description: Max valid length of field value.
+                                validationRegexp:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Regexp validation pattern.
+                                validationAsync:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Deprecated. This validation will instead be performed when submitting the request.
+                                valuesAllowed:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    type: object
+                                    properties:
+                                      key:
+                                        type: string
+                                        description: Value key.
+                                      name:
+                                        type: string
+                                        description: Value name.
+              example:
+              - type: profile-extensions-requirements
+                usageInfo: null
+                fields:
+                - name: Tell us what you're using TransferWise for
+                  group:
+                  - key: accountPurpose
+                    name: Account Purpose
+                    type: select
+                    refreshRequirementsOnChange: false
+                    required: true
+                    displayFormat: null
+                    example: null
+                    minLength: null
+                    maxLength: null
+                    validationRegexp: null
+                    validationAsync: null
+                    valuesAllowed:
+                    - key: CONTRIBUTING_TO_PERSONAL_SAVINGS
+                      name: Contributing to personal savings
+                    - key: GENERAL_MONTHLY_LIVING_EXPENSES
+                      name: General monthly living expenses
+                    - key: PAYING_FOR_GOODS_OR_SERVICES_ABROAD
+                      name: Paying for goods or services abroad
+                    - key: SENDING_MONEY_REGULARLY_TO_FAMILY
+                      name: Sending money regularly to family
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    post:
+      operationId: profileExtensionRequirementsPost
+      summary: Update profile extensions dynamically
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+
+        {% /admonition %}
+
+
+        Post extension requirements to discover additional required fields based on selected values. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated extension requirements based on submitted values.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/extensions:
+    post:
+      operationId: profileExtensionsCreate
+      summary: Submit profile extensions
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+
+        {% /admonition %}
+
+
+        Submit the extra profile information gathered from the extension requirements. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                details:
+                  type: object
+                  description: Extension details object with key-value pairs.
+            example:
+              details:
+                accountPurpose: SENDING_MONEY_REGULARLY_TO_FAMILY
+      responses:
+        '200':
+          description: Profile extensions submitted successfully.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      operationId: profileExtensionsGet
+      summary: Retrieve profile extensions
+      deprecated: true
+      description: '{% admonition type="warning" %}
+
+        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+
+        {% /admonition %}
+
+
+        Retrieve the extra profile information previously submitted via extensions. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Profile extensions object.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/verification-status/bank-transfer:
+    post:
+      operationId: profileVerificationStatusCheck
+      summary: Check profile verification status
+      description: 'You can check the verification status of a profile using this API. This is a profile-specific API resource which should be accessed using an access token acquired for the profile.
+
+
+        We do not expose any finer details of customer verification.
+
+        '
+      tags:
+      - profile
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - name: source_currencies
+        in: query
+        required: true
+        description: Comma-separated list of ISO 4217 currency codes.
+        schema:
+          type: string
+        example: GBP,USD,EUR
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Verification status response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  routes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source_currency:
+                          type: string
+                          description: ISO 4217 currency code.
+                          example: GBP
+                        maximum_entitled_amount:
+                          type: number
+                          description: Maximum entitled amount that can be transferred with the user's given verification state.
+                          example: 100000
+                        current_status:
+                          type: string
+                          description: 'Current verification status.
+
+
+                            - `verified` — Profile is verified. `maximum_entitled_amount` can be ignored (note that some regional limits may still apply).
+
+                            - `not_verified` with `maximum_entitled_amount: 0` — Profile is not verified. Any payments from the user will be delayed by verification.
+
+                            - `not_verified` with `maximum_entitled_amount > 0` — Profile is not yet verified but the user can make payments up to a cumulative limit. Once reached, further payments may be delayed by additional verification requirements.
+
+                            '
+                          enum:
+                          - verified
+                          - not_verified
+                          example: verified
+                  request_id:
+                    type: string
+                    description: Request identifier.
+                    example: e66da5f6-2456-403c-bfcb-908885ee1a61
+              example:
+                routes:
+                - source_currency: GBP
+                  maximum_entitled_amount: 100000
+                  current_status: verified
+                - source_currency: USD
+                  maximum_entitled_amount: 0
+                  current_status: not_verified
+                - source_currency: EUR
+                  maximum_entitled_amount: 10000
+                  current_status: not_verified
+                request_id: e66da5f6-2456-403c-bfcb-908885ee1a61
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    business-profile:
+      title: Business Profile
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Type of profile.
+          enum:
+          - BUSINESS
+          example: BUSINESS
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the profile.
+          example: 14599371
+        publicId:
+          type: string
+          description: Publicly accessible identifier for the profile.
+          example: f0e9d8c7-b6a5-4321-fedc-ba9876543210
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user associated with this profile.
+          example: 9889627
+        address:
+          description: Main registered address of the business.
+          $ref: '#/components/schemas/address'
+        email:
+          type: string
+          description: Primary email address for the business.
+          example: info@innovate-solutions.co.uk
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created (ISO 8601 format).
+          example: '2024-03-10T09:00:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated (ISO 8601 format).
+          example: '2025-06-18T14:22:00'
+        currentState:
+          type: string
+          description: Current status of this profile.
+          enum:
+          - HIDDEN
+          - VISIBLE
+          - DEACTIVATED
+          example: VISIBLE
+        contactDetails:
+          type: object
+          description: Contact information for the business.
+          properties:
+            email:
+              type: string
+              description: Contact email address.
+              example: contact@innovate-solutions.co.uk
+            phoneNumber:
+              type: string
+              description: Contact phone number.
+              example: '+441617891234'
+        businessName:
+          type: string
+          description: Registered business name.
+          example: Innovate Solutions Ltd
+        registrationNumber:
+          type: string
+          description: Business registration number.
+          example: SC1234567890ABCD
+        descriptionOfBusiness:
+          type: string
+          description: Brief description of the business.
+          example: SOFTWARE_DEVELOPMENT
+        webpage:
+          type: string
+          description: Business website URL.
+          example: https://www.innovate-solutions.co.uk
+        companyType:
+          type: string
+          description: Type of company.
+          example: LIMITED_COMPANY
+        companyRole:
+          type: string
+          description: Role of the person managing the business profile.
+          enum:
+          - OWNER
+          - DIRECTOR
+          - OTHER
+          example: OWNER
+        businessFreeFormDescription:
+          type: string
+          description: Free-form description of the business activities.
+          example: We create cutting-edge software for businesses.
+        firstLevelCategory:
+          type: string
+          description: Primary [business category](/guides/developer/api-guides/business-categories).
+          example: CONSULTING_IT_BUSINESS_SERVICES
+        secondLevelCategory:
+          type: string
+          description: Secondary [business category](/guides/developer/api-guides/business-categories).
+          example: IT_DEVELOPMENT
+        operationalAddresses:
+          type: array
+          description: An array of operational addresses for the business.
+          items:
+            $ref: '#/components/schemas/address'
+        fullName:
+          type: string
+          description: Full legal name of the business.
+          example: Innovate Solutions Ltd
+    ubo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the ultimate beneficial owner.
+          example: 013ab1c2688d0185b582ee7e0bcb28b2
+        name:
+          type: string
+          description: Owner full name.
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+        addressFirstLine:
+          type: string
+          description: First line of address.
+          example: 123 Fake St
+        postCode:
+          type: string
+          description: Address post code.
+          example: FK 12345
+        ownershipPercentage:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Percentage of ownership.
+          example: 30
+    profile:
+      title: Profile
+      x-tags:
+      - profile
+      description: 'A profile represents an identity that can send and receive money through Wise. There are two types: **Personal** (an individual) and **Business** (a company). The fields returned vary depending on the profile type.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          PERSONAL: '#/components/schemas/personal-profile'
+          BUSINESS: '#/components/schemas/business-profile'
+      oneOf:
+      - $ref: '#/components/schemas/personal-profile'
+      - $ref: '#/components/schemas/business-profile'
+    address:
+      type: object
+      description: Address associated with a profile.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the address.
+          example: 36086782
+        addressFirstLine:
+          type: string
+          description: First line of the address.
+          example: 24 Willow Creek Lane
+        city:
+          type: string
+          description: City of the address.
+          example: Bristol
+        countryIso2Code:
+          type: string
+          description: Two-letter ISO country code.
+          example: GB
+        countryIso3Code:
+          type: string
+          description: Three-letter ISO country code.
+          example: gbr
+        postCode:
+          type: string
+          description: Postal code of the address.
+          example: BS1 6AE
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: State code of the address (can be null for some countries).
+          example: null
+    personal-profile:
+      title: Personal Profile
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Type of profile.
+          enum:
+          - PERSONAL
+          example: PERSONAL
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the profile.
+          example: 14575282
+        publicId:
+          type: string
+          description: Publicly accessible identifier for the profile.
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user associated with this profile.
+          example: 9889627
+        address:
+          description: Main registered address of the profile.
+          $ref: '#/components/schemas/address'
+        email:
+          type: string
+          description: Primary email address for the profile.
+          example: sarah.jenkins@example.com
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created (ISO 8601 format).
+          example: '2023-01-15T10:30:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated (ISO 8601 format).
+          example: '2025-06-18T14:20:00'
+        avatar:
+          type:
+          - string
+          - 'null'
+          description: Link to person avatar image.
+          example: null
+        currentState:
+          type: string
+          description: Current status of this profile.
+          enum:
+          - HIDDEN
+          - VISIBLE
+          - DEACTIVATED
+          example: VISIBLE
+        contactDetails:
+          type: object
+          description: Contact information for the profile.
+          properties:
+            email:
+              type: string
+              description: Contact email address.
+              example: sarah.contact@example.com
+            phoneNumber:
+              type: string
+              description: Contact phone number.
+              example: '+447700900123'
+        firstName:
+          type: string
+          description: First name of the profile holder.
+          example: Sarah
+        lastName:
+          type: string
+          description: Last name of the profile holder.
+          example: Jenkins
+        preferredName:
+          type: string
+          description: Preferred name of the profile holder.
+          example: Sal
+        dateOfBirth:
+          type: string
+          description: Date of birth of the profile holder.
+          example: '1985-05-20'
+        phoneNumber:
+          type: string
+          description: Phone number of the profile holder.
+          example: '+447700900456'
+        secondaryAddresses:
+          type: array
+          description: An array of secondary addresses associated with the profile.
+          items:
+            $ref: '#/components/schemas/address'
+        fullName:
+          type: string
+          description: Full name of the profile holder.
+          example: Sarah Jenkins
+    director:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the director. Automatically set.
+          example: 10
+        firstName:
+          type: string
+          description: Director first name.
+          example: John
+        lastName:
+          type: string
+          description: Director last name.
+          example: Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

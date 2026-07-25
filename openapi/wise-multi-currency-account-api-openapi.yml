@@ -1,0 +1,448 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds multi-currency-account API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: multi-currency-account
+  x-displayName: Multi Currency Account
+  description: 'The Wise multi-currency account (MCA) enables users to hold, convert, and fund transfers (single or batches) with balances in up to 56 currencies. Of the 50+ currency balances supported, 10+ come with local account details.
+
+
+    Please refer to our [multi-currency account guide](/guides/product/accounts/managing-accounts) for more information on the general use of the endpoints included below.
+
+
+    Please see the [Balances APIs](/api-reference/balance) for more details.
+
+    '
+paths:
+  /v2/borderless-accounts-configuration/profiles/{profileId}/available-currencies:
+    get:
+      operationId: mcaAvailableCurrenciesGet
+      summary: Retrieve available currencies
+      description: 'Lists all currencies that are available for balance accounts. This includes those that can have funds added from external accounts, as well as those that a balance can be held in.
+
+        '
+      tags:
+      - multi-currency-account
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of currencies available for balance accounts.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of currency codes.
+                items:
+                  type: string
+                  description: 3-letter currency code (e.g. EUR, GBP, USD).
+              example:
+              - EUR
+              - GBP
+              - USD
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v2/borderless-accounts-configuration/profiles/{profileId}/payin-currencies:
+    get:
+      operationId: mcaPayinCurrenciesGet
+      summary: Retrieve payin currencies
+      description: 'Lists all currencies available for balance accounts that also support bank account details. You can use this list to create a balance account for the currency included and then subsequently create bank account details.
+
+        '
+      tags:
+      - multi-currency-account
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: List of currencies available for payin with bank account details.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of currency codes.
+                items:
+                  type: string
+                  description: 3-letter currency code (e.g. EUR, GBP, USD).
+              example:
+              - EUR
+              - GBP
+              - USD
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/profiles/{profileId}/multi-currency-account:
+    get:
+      operationId: mcaGet
+      summary: Retrieve multi currency account for a profile
+      description: 'Returns the multi-currency account details for the specified profile. If the user does not yet have a multi-currency account, a `404 Not Found` will be returned.
+
+        '
+      tags:
+      - multi-currency-account
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        description: Profile ID.
+        schema:
+          type: integer
+          format: int64
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Multi currency account object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Multi currency account ID.
+                    example: 1
+                  profileId:
+                    type: integer
+                    format: int64
+                    description: Profile ID the multi currency account is attributed to.
+                    example: 33333333
+                  recipientId:
+                    type: integer
+                    format: int64
+                    description: Recipient ID of the multi currency account, to be used for transfer recipient.
+                    example: 12345678
+                  creationTime:
+                    type: string
+                    format: date-time
+                    description: Datetime when multi currency account was created.
+                    example: '2020-05-20T14:43:16.658Z'
+                  modificationTime:
+                    type: string
+                    format: date-time
+                    description: Datetime when multi currency account was last modified.
+                    example: '2020-05-20T14:43:16.658Z'
+                  active:
+                    type: boolean
+                    description: Whether multi currency account is active or not.
+                    example: true
+                  eligible:
+                    type: boolean
+                    description: Whether multi currency account is eligible or not.
+                    example: true
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v4/multi-currency-account/eligibility:
+    get:
+      operationId: mcaEligibilityGet
+      summary: Retrieve multi currency account eligibility
+      description: 'Checks eligibility for a multi-currency account for either a specific profile or for a location. Customers in some countries and states/provinces may not be eligible for a multi currency account.
+
+
+        To check a profile, pass the `profileId` as a query parameter.
+
+
+        To check a specific location, pass the `country` using 2-letter ISO 3166 codes. If the country is `US`, a valid 2-letter `state` parameter must also be passed.
+
+
+        - Example (France): `/v4/multi-currency-account/eligibility?country=FR`
+
+        - Example (USA, California): `/v4/multi-currency-account/eligibility?country=US&state=CA`
+
+        '
+      tags:
+      - multi-currency-account
+      security:
+      - UserToken: []
+      parameters:
+      - name: profileId
+        in: query
+        required: false
+        description: Profile ID to check eligibility for.
+        schema:
+          type: integer
+          format: int64
+      - name: country
+        in: query
+        required: false
+        description: 2-letter ISO 3166 country code to check eligibility for.
+        schema:
+          type: string
+        example: FR
+      - name: state
+        in: query
+        required: false
+        description: 2-letter state/province code. Required when `country` is `US`.
+        schema:
+          type: string
+        example: CA
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: Eligibility result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eligible:
+                    type: boolean
+                    description: Whether the profile is eligible for a multi currency account.
+                    example: true
+                  eligibilityCode:
+                    type: string
+                    description: Eligibility status code.
+                    enum:
+                    - eligible
+                    - invalid.profile.type
+                    - invalid.country
+                    - invalid.state
+                    example: eligible
+                  accountType:
+                    type: string
+                    description: Account type available.
+                    enum:
+                    - FULL
+                    - RECEIVE_ONLY
+                    - INELIGIBLE
+                    example: FULL
+                  ineligibilityReason:
+                    type:
+                    - string
+                    - 'null'
+                    description: Reason the profile is not eligible.
+                    example: null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

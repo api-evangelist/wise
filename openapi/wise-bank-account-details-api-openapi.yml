@@ -1,0 +1,940 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds bank-account-details API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: bank-account-details
+  x-displayName: Bank Account Details
+  description: 'Bank account details allow users to receive money into their Wise Multi-Currency Account. Each currency balance can have local bank details (for domestic payments) and international bank details (for SWIFT payments) where available.
+
+
+    Bank account details can be retrieved for existing balances, or new details can be ordered for currencies where they''re available but not yet issued.
+
+    '
+paths:
+  /v1/profiles/{profileId}/account-details-orders:
+    post:
+      tags:
+      - bank-account-details
+      summary: Create bank account details order
+      operationId: bankAccountDetailsOrderCreate
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      description: 'Creates an order which will issue account details. It should use the same currency as the balance previously created. Fulfilling all the requirements will complete the order, reaching status `DONE`.
+
+
+        The possible values for a requirement status are:
+
+        - `PENDING_USER`: The requirement has some pending action from the user.
+
+        - `PENDING_TW`: The requirement has some pending action from Wise.
+
+        - `DONE`: The requirement is completed.
+
+
+        The more common requirements are:
+
+        - `VERIFICATION`: The user needs to be fully verified before completing this requirement.
+
+        - `TOP_UP`: A fee will be charged and must be paid through wise.com before completing this requirement.
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile to create the bank account details order for.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - currency
+              properties:
+                currency:
+                  type: string
+                  description: Balance currency (ISO 4217 Alphabetic Code).
+                  example: EUR
+      responses:
+        '200':
+          description: Bank account details order created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Order status.
+                    enum:
+                    - PENDING_USER
+                    - PENDING_TW
+                    - DONE
+                    example: PENDING_USER
+                  currency:
+                    type: string
+                    description: Currency code (ISO 4217 Alphabetic Code).
+                    example: EUR
+                  requirements:
+                    type: array
+                    description: List of requirements to fulfill the order.
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: Requirement type.
+                          enum:
+                          - VERIFICATION
+                          - TOP_UP
+                          example: VERIFICATION
+                        status:
+                          type: string
+                          description: Requirement status.
+                          enum:
+                          - PENDING_USER
+                          - PENDING_TW
+                          - DONE
+                          example: PENDING_USER
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+    get:
+      tags:
+      - bank-account-details
+      summary: List bank account detail orders (v1)
+      operationId: bankAccountDetailsOrdersListV1
+      deprecated: true
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      description: 'Returns the bank account assignment requests for a profile and multi-currency account.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint is deprecated. Please use the [v3 endpoint](/api-reference/bank-account-details/bankaccountdetailsorderslist) instead.
+
+        {% /admonition %}
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile to list bank account detail orders for.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: A list of bank account detail orders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      description: Order status.
+                      enum:
+                      - PENDING_USER
+                      - PENDING_TW
+                      - DONE
+                      example: PENDING_USER
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217 Alphabetic Code).
+                      example: EUR
+                    requirements:
+                      type: array
+                      description: List of requirements for the order.
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            description: Requirement type.
+                            enum:
+                            - VERIFICATION
+                            - TOP_UP
+                            example: TOP_UP
+                          status:
+                            type: string
+                            description: Requirement status.
+                            enum:
+                            - PENDING_USER
+                            - PENDING_TW
+                            - DONE
+                            example: PENDING_USER
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/bank-details:
+    post:
+      tags:
+      - bank-account-details
+      summary: Create multiple bank account details
+      operationId: bankAccountDetailsBankDetailsCreate
+      security:
+      - UserToken: []
+      description: 'Creates and assigns a pair of local account details and international account details (where available) that are linked to the target balance specified in the request.
+
+
+        {% admonition type="warning" %}
+
+        Please reach out to our Support Team for access to this endpoint.
+
+        {% /admonition %}
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile to create bank account details for.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetAccountId
+              properties:
+                targetAccountId:
+                  type: integer
+                  format: int64
+                  description: ID of the currency balance to create account details on.
+                  example: 123456
+      responses:
+        '200':
+          description: Bank account details created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Account detail ID.
+                    example: '2'
+                  currency:
+                    type: string
+                    description: Account detail currency (ISO 4217 Alphabetic Code).
+                    example: GBP
+                  active:
+                    type: boolean
+                    description: Status of the account detail.
+                    example: true
+                  localDetails:
+                    type: object
+                    description: Local bank account details.
+                    properties:
+                      bankName:
+                        type: string
+                        description: Name of the bank.
+                        example: Wise
+                      bankAddress:
+                        type: string
+                        description: Address of the bank.
+                        example: TEA BUILDING, FLOOR 6, SHOREDITCH HIGH STREET
+                      sortCode:
+                        type: string
+                        description: Sort code of the bank.
+                        example: '231370'
+                      accountNumber:
+                        type: string
+                        description: Bank account number.
+                        example: '00000001'
+                      type:
+                        type: string
+                        description: Type of account detail.
+                        example: UK_ACCOUNT
+                  internationalDetails:
+                    type:
+                    - object
+                    - 'null'
+                    description: International bank account details. Only returned if SWIFT payments are supported for that currency.
+                    properties:
+                      bankName:
+                        type: string
+                        description: Name of the bank.
+                        example: Wise
+                      bankAddress:
+                        type: string
+                        description: Address of the bank.
+                        example: TEA BUILDING, FLOOR 6, SHOREDITCH HIGH STREET
+                      swiftCode:
+                        type: string
+                        description: Bank SWIFT code.
+                        example: TRWIGB22XXX
+                      iban:
+                        type: string
+                        description: IBAN.
+                        example: GB123450000000001
+                      type:
+                        type: string
+                        description: Type of account detail.
+                        example: IBAN
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/account-details:
+    get:
+      tags:
+      - bank-account-details
+      summary: Retrieve bank account details
+      operationId: bankAccountDetailsGet
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      description: 'Returns a list with all the `AVAILABLE` and `ACTIVE` account details for the given profile, including examples. Account receive options can also include local and international details to receive money on the currency balance.
+
+
+        Example bank account details are returned for any currency where bank account details have not been requested and issued. Examples will always include an `id` of `null`.
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile to retrieve bank account details for.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: A list of bank account details.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BankAccountDetails'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v3/profiles/{profileId}/account-details-orders:
+    get:
+      tags:
+      - bank-account-details
+      summary: List bank account detail orders
+      operationId: bankAccountDetailsOrdersList
+      security:
+      - UserToken: []
+      - PersonalToken: []
+      description: 'Returns the bank account assignment requests for a profile and multi-currency account.
+
+
+        The response includes bank-details orders in the following statuses: `PENDING_USER`, `PENDING_TW`, `REQUIREMENTS_FULFILLED`, `DONE`.
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile to list bank account detail orders for.
+      - name: currency
+        in: query
+        required: true
+        schema:
+          type: string
+          example: GBP
+        description: Currency code (ISO 4217 Alphabetic Code).
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      responses:
+        '200':
+          description: A list of bank account detail orders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      description: Order status.
+                      enum:
+                      - PENDING_USER
+                      - PENDING_TW
+                      - REQUIREMENTS_FULFILLED
+                      - DONE
+                      example: DONE
+                    currency:
+                      type: string
+                      description: Currency code (ISO 4217 Alphabetic Code).
+                      example: EUR
+                    requirements:
+                      type: array
+                      description: List of requirements for the order.
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            description: Requirement type.
+                            enum:
+                            - VERIFICATION
+                            - TOP_UP
+                            example: TOP_UP
+                          status:
+                            type: string
+                            description: Requirement status.
+                            enum:
+                            - PENDING_USER
+                            - PENDING_TW
+                            - DONE
+                            example: DONE
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+  /v1/profiles/{profileId}/account-details/payments/{paymentId}/returns:
+    post:
+      tags:
+      - bank-account-details
+      summary: Create payment return
+      operationId: bankAccountDetailsReturnsCreate
+      security:
+      - UserToken: []
+      description: 'Creates a return for a payment received to bank account details.
+
+
+        When you create a return, you must provide the ID of the payment you wish to return as well as the ID of the profile that received the payment. In addition, you can provide a `reason` for the return in the request body. When returning SWIFT payments, `reason` is a required field.
+
+        '
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 12345678
+        description: The ID of the profile that received the payment.
+      - name: paymentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 987654321
+        description: The ID of the payment to return.
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: 'Reason for the return. Required when returning SWIFT payments.
+
+                    '
+                  enum:
+                  - INCORRECT_ACCOUNT_NUMBER
+                  - CLOSED_ACCOUNT
+                  - BLOCKED_ACCOUNT
+                  - CANCELLATION_REQUEST
+                  - REGULATORY
+                  - CUSTOMER_REQUEST
+                  example: CLOSED_ACCOUNT
+      responses:
+        '201':
+          description: Payment return created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: ID of the return created.
+                    example: 4cc39f2b-3513-453d-8792-9ccc22e513c3
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          description: Error code.
+                          example: error.payment-return.invalid
+                        message:
+                          type: string
+                          description: Error message.
+                          example: A valid reason is required to return a Swift payment
+                        arguments:
+                          type: array
+                          description: Additional context values related to the error.
+                          items: {}
+                          example:
+                          - 987654321
+                          - 123456789
+                          - null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '404':
+          description: Payment not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          description: Error code.
+                          example: error.payment.not-found
+                        message:
+                          type: string
+                          description: Error message.
+                          example: No payment found with id [123456789] for profile id [987654321]
+                        arguments:
+                          type: array
+                          description: Additional context values related to the error.
+                          items: {}
+                          example:
+                          - 987654321
+                          - 123456789
+                          - null
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    BankAccountDetails:
+      type: object
+      title: Bank Account Details
+      x-tags:
+      - bank-account-details
+      description: Bank account details for receiving money into a Wise Multi-Currency Account.
+      properties:
+        id:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Bank account details ID. Returns `null` for preview account details that have not yet been issued.
+          example: 14000001
+        currency:
+          type: object
+          description: Currency information for the bank account details.
+          properties:
+            code:
+              type: string
+              description: Currency code (ISO 4217 Alphabetic Code).
+              example: EUR
+            name:
+              type: string
+              description: Currency name.
+              example: Euro
+        title:
+          type: string
+          description: Account title.
+          example: Your EUR account details
+        subtitle:
+          type: string
+          description: Account subtitle.
+          example: IBAN, SWIFT/BIC
+        status:
+          type: string
+          description: 'Account details status:
+
+            - `AVAILABLE`: Account details do not exist for the user but may be created
+
+            - `ACTIVE`: Account details are ready to be used by this user
+
+            '
+          enum:
+          - AVAILABLE
+          - ACTIVE
+          example: ACTIVE
+        deprecated:
+          type: boolean
+          description: When `true`, Wise has issued new account details for the same currency. Users should not use the deprecated account but may still have external references to it.
+          example: false
+        receiveOptions:
+          type: array
+          description: 'Available receive options for the given currency:
+
+            - `LOCAL`: Local bank details to receive money in the account currency
+
+            - `INTERNATIONAL`: SWIFT bank details to receive money internationally
+
+            '
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Receive option type.
+                enum:
+                - LOCAL
+                - INTERNATIONAL
+                example: LOCAL
+              title:
+                type: string
+                description: Display title for this receive option.
+                example: Local
+              description:
+                type:
+                - object
+                - 'null'
+                description: Description for this receive option.
+                properties:
+                  title:
+                    type: string
+                    description: Description title.
+                    example: Your EUR account details
+                  body:
+                    type: string
+                    description: Description body text.
+                    example: Receive from a bank in the Eurozone
+                  cta:
+                    type:
+                    - object
+                    - 'null'
+                    description: Call-to-action details.
+                    properties:
+                      label:
+                        type: string
+                        description: CTA label.
+                        example: IBAN
+                      content:
+                        type: string
+                        description: CTA content.
+                        example: BE12 3456 7890 1234
+              details:
+                type: array
+                description: 'Account details to display to users. This array varies by currency.
+
+                  For example, EUR returns `ACCOUNT_HOLDER`, `SWIFT_CODE`, `IBAN` and `BANK_NAME_AND_ADDRESS`.
+
+                  '
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Account detail type.
+                      example: IBAN
+                    title:
+                      type: string
+                      description: Label to display in the UI.
+                      example: IBAN
+                    body:
+                      type: string
+                      description: Value to display in the UI.
+                      example: BE12 3456 7890 1234
+                    description:
+                      type:
+                      - object
+                      - 'null'
+                      description: Tooltip/popup hint content when present.
+                      properties:
+                        title:
+                          type: string
+                          description: Description title.
+                          example: What is an IBAN?
+                        body:
+                          type: string
+                          description: Description body (may contain HTML).
+                          example: <p>IBAN stands for International Bank Account Number.</p>
+                        cta:
+                          type:
+                          - object
+                          - 'null'
+                          description: Call-to-action details.
+                          properties:
+                            label:
+                              type: string
+                              description: CTA label.
+                              example: IBAN
+                            content:
+                              type: string
+                              description: CTA content.
+                              example: BE12 3456 7890 1234
+                    hidden:
+                      type: boolean
+                      description: Whether the field should be hidden in the UI.
+                      example: false
+        bankFeatures:
+          type: array
+          description: Features enabled on the account.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                description: Feature identifier.
+                example: LOCAL_RECEIVE
+              title:
+                type: string
+                description: Human-readable feature name.
+                example: Receive locally
+              supported:
+                type: boolean
+                description: Whether the feature is supported.
+                example: true
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case

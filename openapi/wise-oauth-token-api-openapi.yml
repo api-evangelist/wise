@@ -1,0 +1,456 @@
+openapi: 3.1.0
+info:
+  title: Wise Platform 3ds oauth-token API
+  version: ''
+  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+servers:
+- url: https://api.wise.com
+  description: Production Environment
+- url: https://api.wise-sandbox.com
+  description: Sandbox Environment
+tags:
+- name: oauth-token
+  x-displayName: OAuth Token
+  description: 'Exchange client credentials or authorisation grants for OAuth 2.0 access tokens. All grant types use `POST /oauth/token` with basic authentication (your `client_id` and `client_secret`).
+
+
+    Depending on the grant type, this endpoint issues either a **client credentials token** or a **user token**.
+
+
+    Client credentials token {% .title-3 .m-t-5 %}
+
+
+    An application-level token for requests that aren''t tied to a specific Wise user, such as generating un-authenticated quotes and subscribing to application webhooks. Valid for 12 hours.
+
+
+    - `client_credentials` — the only grant type for this token.
+
+
+    User token {% .title-3 .m-t-5 %}
+
+
+    A token for making API calls on behalf of a specific Wise user, such as creating transfers and managing balances. Access tokens are valid for 12 hours and can be refreshed using a refresh token. Grant types:
+
+
+    - `registration_code` — for partners that create Wise users via API. Exchanges a registration code for a user access token and refresh token.
+
+    - `authorization_code` — for partners using the OAuth redirect flow. Exchanges an authorisation code for a user access token and refresh token.
+
+    - `refresh_token` — obtain a new user access token without requiring the user to re-authorise.
+
+
+    Managing token expiration {% #managing-token-expiration .title-3 .m-t-5 %}
+
+
+    Access tokens are valid for 12 hours. You can request a new access token whenever it''s close to expiring — there is no need to wait for the actual expiration to happen first. Depending on how your application uses the Wise Platform API, requesting a new access token before attempting a series of API calls on behalf of an individual user will avoid issues with expired access tokens.
+
+    '
+paths:
+  /oauth/token:
+    post:
+      operationId: oauthTokenCreate
+      summary: Create an OAuth token
+      description: 'Exchange credentials or authorisation grants for an OAuth 2.0 access token.
+
+
+        The `grant_type` field determines which parameters are required and which response fields are returned.
+
+
+        See [managing token expiration](/api-reference/oauth-token#managing-token-expiration) for guidance on refreshing tokens before they expire.
+
+        '
+      tags:
+      - oauth-token
+      security:
+      - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              discriminator:
+                propertyName: grant_type
+                mapping:
+                  client_credentials: '#/components/schemas/client-credentials-grant'
+                  registration_code: '#/components/schemas/registration-code-grant'
+                  authorization_code: '#/components/schemas/authorization-code-grant'
+                  refresh_token: '#/components/schemas/refresh-token-grant'
+              oneOf:
+              - $ref: '#/components/schemas/client-credentials-grant'
+              - $ref: '#/components/schemas/registration-code-grant'
+              - $ref: '#/components/schemas/authorization-code-grant'
+              - $ref: '#/components/schemas/refresh-token-grant'
+      responses:
+        '200':
+          description: Token created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token-response'
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: invalid_request
+                  error_description:
+                    type: string
+                    example: Missing grant type
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '401':
+          description: Invalid credentials. For example, the user reclaimed the account or an invalid registration code was used.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: invalid_grant
+                  error_description:
+                    type: string
+                    example: Invalid user credentials.
+          headers:
+            X-External-Correlation-Id:
+              $ref: '#/components/headers/X-External-Correlation-Id'
+            x-trace-id:
+              $ref: '#/components/headers/x-trace-id'
+        '429':
+          $ref: '#/components/responses/429'
+      parameters:
+      - $ref: '#/components/parameters/X-External-Correlation-Id'
+components:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    refresh-token-grant:
+      type: object
+      required:
+      - grant_type
+      - refresh_token
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - refresh_token
+          example: refresh_token
+        refresh_token:
+          type: string
+          description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
+    token-response:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Access token to be used when calling the API. Valid for 12 hours.
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        token_type:
+          type: string
+          description: Type of the token.
+          example: bearer
+        refresh_token:
+          type: string
+          description: 'Refresh token used to obtain new user access tokens without requiring the user to re-authorise. Valid for up to 20 years.
+
+
+            Only returned for user access token grant types (`registration_code`, `authorization_code`, `refresh_token`).
+
+            '
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        expires_in:
+          type: integer
+          format: int32
+          description: Access token expiry time in seconds.
+          example: 43199
+        expires_at:
+          type: string
+          description: Access token expiration timestamp (UTC).
+          example: '2025-04-11T03:43:28.148Z'
+        refresh_token_expires_in:
+          type: integer
+          format: int32
+          description: 'Refresh token expiry time in seconds.
+
+
+            Only returned for user access token grant types (`registration_code`, `authorization_code`, `refresh_token`).
+
+            '
+          example: 628639555
+        refresh_token_expires_at:
+          type: string
+          description: 'Refresh token expiration timestamp (UTC).
+
+
+            Only returned for user access token grant types (`registration_code`, `authorization_code`, `refresh_token`).
+
+            '
+          example: '2045-03-12T13:49:23.552Z'
+        scope:
+          type: string
+          description: Scope of the token.
+          example: transfers
+        created_at:
+          type: string
+          description: 'Token creation time in ISO 8601 format.
+
+
+            Only returned for user access token grant types (`registration_code`, `authorization_code`, `refresh_token`).
+
+            '
+          example: '2020-01-01T12:33:33.12345Z'
+    client-credentials-grant:
+      type: object
+      required:
+      - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - client_credentials
+          example: client_credentials
+    registration-code-grant:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - email
+      - registration_code
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - registration_code
+          example: registration_code
+        client_id:
+          type: string
+          description: Your API client ID.
+        email:
+          type: string
+          format: email
+          description: The email address of the user being registered.
+        registration_code:
+          type: string
+          description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
+    authorization-code-grant:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - code
+      - redirect_uri
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - authorization_code
+          example: authorization_code
+        client_id:
+          type: string
+          description: Your API client ID.
+        code:
+          type: string
+          description: Authorisation code provided upon redirect back from the authorisation flow.
+        redirect_uri:
+          type: string
+          description: Registered redirect URL coordinated with Wise during onboarding.
+          example: https://www.yourapp.com
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  securitySchemes:
+    UserToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'User Access Token for making API calls on behalf of a Wise user.
+
+
+        Can be obtained via two OAuth 2.0 flows:
+
+        - **registration_code grant**: For partners creating users via API
+
+        - **authorization_code grant**: For partners using Wise''s authorization page
+
+
+        Access tokens are valid for 12 hours and can be refreshed using a refresh token.
+
+        '
+    PersonalToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Personal API Token for individual personal or small business users.
+
+        Generated from Wise.com > Settings > Connect and manage apps > API tokens.
+
+        Has limited API access compared to OAuth tokens (PSD2 restrictions apply for EU/UK users).
+
+        '
+    ClientCredentialsToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Application-level token for partner operations that don''t require a specific user context, such as bulk settlement and card spend controls.
+
+
+        Obtained via `POST /oauth/token` with Basic Authentication (client-id:client-secret) and `grant_type=client_credentials`.
+
+
+        Valid for 12 hours. No refresh token — fetch a new token when expired.
+
+
+        See [create an OAuth token](/api-reference/oauth-token/oauthtokencreate) for details.
+
+        '
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic Authentication using your Client ID and Client Secret as the username and password.
+
+
+        Client credentials are provided by Wise when your partnership begins. See [Getting Started](/guides/developer) for details.
+
+        '
+x-tagGroups:
+- name: Authentication
+  tags:
+  - oauth-token
+- name: Enhanced Security
+  tags:
+  - jose
+- name: Users
+  tags:
+  - user
+  - claim-account
+- name: Profiles
+  tags:
+  - profile
+  - activity
+  - address
+- name: Verification
+  tags:
+  - kyc-review
+  - verification
+  - facetec
+- name: Strong Customer Authentication
+  tags:
+  - sca-ott
+  - sca-sessions
+  - sca-pin
+  - sca-facemaps
+  - sca-device-fingerprints
+  - sca-otp
+  - user-security
+- name: Balances
+  tags:
+  - balance
+  - balance-statement
+  - bank-account-details
+  - multi-currency-account
+- name: Cards
+  tags:
+  - card
+  - card-sensitive-details
+  - 3ds
+  - card-kiosk-collection
+  - card-order
+  - card-transaction
+  - spend-limits
+  - spend-controls
+  - digital-wallet
+  - disputes
+- name: Quotes
+  tags:
+  - quote
+  - rate
+  - comparison
+- name: Recipients
+  tags:
+  - recipient
+  - contact
+- name: Transfers
+  tags:
+  - transfer
+  - delivery-estimate
+  - currencies
+  - batch-group
+- name: Funding
+  tags:
+  - payin-deposit-detail
+  - direct-debit-account
+  - bulk-settlement
+  - payins
+- name: Webhooks
+  tags:
+  - webhook
+  - webhook-event
+- name: Simulations
+  tags:
+  - simulation
+- name: Partner Support
+  tags:
+  - case
