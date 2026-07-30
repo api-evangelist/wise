@@ -6,7 +6,20 @@ description: Wise (formerly TransferWise) provides cross-border payments and mul
   accounts for personal and business customers. The Wise Platform API exposes profiles,
   balances, transfers, recipients, quotes, multi-currency accounts, cards, statements,
   and webhooks.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: paid
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Paid · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/wise.png
 tags:
 - Payments
 - FX
@@ -17,177 +30,2704 @@ created: '2026-05-08'
 modified: '2026-05-30'
 specificationVersion: '0.19'
 apis:
-- aid: wise:profiles
-  name: Wise Profiles API
-  description: Manages Wise user identity records. A profile represents either a personal
-    or business entity that owns balances, can send and receive money, and can hold
-    recipients. Profiles are the root resource that other Wise Platform API calls
-    are scoped against.
+- aid: wise:wise-3ds-api
+  name: Wise 3ds API
+  description: >-
+    To manage certain aspects of the 3D Secure (3DS) authentication, you will need to integrate with the
+    following APIs.
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - Profiles
-  - Identity
-  - KYC
+  - 3ds
   properties:
+  - type: OpenAPI
+    url: openapi/wise-3ds-api-openapi.yml
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-  - url: graphql/wise-graphql.md
-    type: GraphQL
-- aid: wise:recipients
-  name: Wise Recipients API
-  description: Manages beneficiary bank account records. Recipients store the destination
-    account details (name, currency, account number, routing/IBAN/SWIFT details) used
-    as the target of a transfer. The API supports creating, retrieving, listing, and
-    deleting recipient accounts across 70+ supported currencies.
-  humanURL: https://docs.wise.com/api-docs/api-reference/recipient
-  baseURL: https://api.wise.com/v1
-  tags:
-  - Recipients
-  - Beneficiaries
-  - Bank Accounts
-  properties:
+  - type: GraphQL
+    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:quotes
-  name: Wise Quotes API
-  description: Calculates the exchange rate, fees, and estimated delivery time for
-    a prospective transfer between two currencies. A quote pins the FX rate for a
-    short window and is a required prerequisite to creating a transfer. Supports source-amount,
-    target-amount, and pay-in option variations.
-  humanURL: https://docs.wise.com/api-docs/api-reference/quote
-  baseURL: https://api.wise.com/v3
-  tags:
-  - Quotes
-  - FX
-  - Pricing
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/quote
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:transfers
-  name: Wise Transfers API
-  description: Creates and tracks cross-border money movements. A transfer ties a
-    quote to a recipient and is funded from a source balance or pay-in method. The
-    API exposes create, fund, cancel, list, and detail operations along with status
-    events.
-  humanURL: https://docs.wise.com/api-docs/api-reference/transfer
-  baseURL: https://api.wise.com/v1
-  tags:
-  - Transfers
-  - Payments
-  - Cross-Border
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/transfer
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:balances
-  name: Wise Balances API
-  description: Manages multi-currency balances held inside a profile. Supports listing
-    balances, retrieving the available and reserved amounts per currency, opening
-    and closing currency balances, and moving funds between balances within the same
-    profile.
-  humanURL: https://docs.wise.com/api-docs/api-reference/balance
-  baseURL: https://api.wise.com/v4
-  tags:
-  - Balances
-  - Multi-Currency
-  - Wallets
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/balance
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:multi-currency-account
-  name: Wise Multi-Currency Account API
-  description: Provisions local bank account details (account number / routing / IBAN
-    / SWIFT) for a profile across the supported receiving currencies, allowing a customer
-    to receive money like a local in 56+ currencies.
-  humanURL: https://docs.wise.com/api-docs/api-reference/multi-currency-account
-  baseURL: https://api.wise.com/v1
-  tags:
-  - Multi-Currency Account
-  - Receive Money
-  - Local Bank Details
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:statements
-  name: Wise Statements API
-  description: Generates and downloads transaction statements for a balance over an
-    arbitrary date range. Output formats include JSON, CSV, PDF, and MT940, supporting
-    reconciliation and accounting workflows.
-  humanURL: https://docs.wise.com/api-docs/api-reference/balance-statement
-  baseURL: https://api.wise.com/v1
-  tags:
-  - Statements
-  - Reporting
-  - Accounting
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/balance-statement
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:cards
-  name: Wise Cards API
-  description: Issues, lists, and manages Wise debit cards linked to a profile balance.
-    Includes operations for retrieving card details, freezing/unfreezing, replacing
-    cards, and managing spending controls.
-  humanURL: https://docs.wise.com/api-docs/api-reference/card
-  baseURL: https://api.wise.com/v3
-  tags:
-  - Cards
-  - Issuing
-  - Spending Controls
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/card
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
-- aid: wise:webhooks
-  name: Wise Webhooks API
-  description: Subscribes a partner application to event notifications for transfers,
-    balances, cards, and profile-state changes. Supports creating, listing, and deleting
-    webhook subscriptions and verifying signed payloads.
-  humanURL: https://docs.wise.com/api-docs/api-reference/subscription
-  baseURL: https://api.wise.com/v3
-  tags:
-  - Webhooks
-  - Events
-  - Notifications
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/subscription
-  - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
   - type: AsyncAPI
     url: asyncapi/wise-webhooks-asyncapi.yml
-- aid: wise:simulation
-  name: Wise Simulation API
-  description: Sandbox-only endpoints for advancing the lifecycle of test transfers
-    (simulating funding, processing, completion, and failure paths) without moving
-    real money. Used to exercise integration logic end-to-end against api.sandbox.transferwise.tech.
-  humanURL: https://docs.wise.com/api-docs/api-reference/simulation
-  baseURL: https://api.sandbox.transferwise.tech
-  tags:
-  - Simulation
-  - Sandbox
-  - Testing
-  properties:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-activity-api
+  name: Wise activity API
+  description: Activity represents a snapshot of a performed action for a profile.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - activity
+  properties:
   - type: OpenAPI
-    url: openapi/wise-platform-openapi.yml
+    url: openapi/wise-activity-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-address-api
+  name: Wise address API
+  description: >-
+    Manage physical addresses associated with user profiles.
+
+
+    Address requirements vary by country — use the address requirements endpoints to dynamically discover
+    which fields are needed before creating an address.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - address
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-address-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-balance-api
+  name: Wise balance API
+  description: >-
+    Create and manage balance accounts within a multi-currency account.
+
+
+    Each profile can hold multiple balance accounts in different currencies. A `STANDARD` balance is limited
+    to one per currency, while `SAVINGS` balances (Jars) allow multiple in the same currency. Creating
+    the first balance for a profile automatically creates the multi-currency account.
+
+
+    Balances include an `investmentState` field. Only balances with `NOT_INVESTED` can be operated on
+    via the API. Invested balances should be shown but not actionable.
+
+
+    For a complete guide on multi-currency accounts, see [Multi-Currency Accounts](/guides/product/accounts).
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - balance
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-balance-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-balance-statement-api
+  name: Wise balance-statement API
+  description: >-
+    Balance statements contain transactional activities on a Wise Multi-Currency Account, including deposits,
+    withdrawals, conversions, card transactions, and fees.
+
+
+    Statements can be retrieved in multiple formats: JSON, CSV, PDF, XLSX, CAMT.053, MT940, or QIF.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - balance-statement
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-balance-statement-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-bank-account-details-api
+  name: Wise bank-account-details API
+  description: >-
+    Bank account details allow users to receive money into their Wise Multi-Currency Account. Each currency
+    balance can have local bank details (for domestic payments) and international bank details (for SWIFT
+    payments) where available.
+
+
+    Bank account details can be retrieved for existing balances, or new details can be ordered for currencies
+    where they're available but not yet issued.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - bank-account-details
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-bank-account-details-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-batch-group-api
+  name: Wise batch-group API
+  description: >-
+    A batch group is a named collection of up to 1000 transfers that can be managed as a single unit.
+    Batch groups are primarily used for funding multiple transfers with a single payment.
+
+
+    **Workflow:**
+
+    1. Create a batch group with a source currency
+
+    2. Add transfers to the group (up to 1000)
+
+    3. Complete the batch group to close it for modifications
+
+    4. Fund the batch group from a balance or via direct debit
+
+
+    Individual transfers in the group follow standard transfer lifecycle and can be tracked separately.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - batch-group
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-batch-group-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-bulk-settlement-api
+  name: Wise bulk-settlement API
+  description: >-
+    Bulk settlement allows partners to settle multiple transfers in a single bank transfer at the end
+    of a settlement period. This model splits transfer creation/funding from final settlement, allowing
+    Wise to process transfers before receiving funds based on a partner's guarantee.
+
+
+    Use the settlement journal endpoint to submit a list of transfers to be settled, along with the settlement
+    reference that matches your bank transfer payment.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - bulk-settlement
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-bulk-settlement-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-card-api
+  name: Wise card API
+  description: >-
+    Manage your customers' cards programmatically. These APIs allow you to list cards, retrieve card details,
+    control card status, and manage spending permissions.
+
+
+    **Key capabilities:**
+
+    - List and retrieve card details for a profile
+
+    - Update card status (active, frozen, blocked)
+
+    - Control spending permissions (e-commerce, ATM, contactless, magnetic stripe, etc.)
+
+    - Reset PIN attempt counter after incorrect PIN entries
+
+    - Update card phone number for verification purposes
+
+
+    {% admonition type="info" %}
+
+    For accessing sensitive card data (PAN, CVV, PIN), see the [Sensitive Card Details API](/api-reference/card-sensitive-details).
+    For ordering new cards, see the [Card Orders API](/api-reference/card-order). For transaction history,
+    see the [Card Transactions API](/api-reference/card-transaction).
+
+    {% /admonition %}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - card
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-card-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-card-kiosk-collection-api
+  name: Wise card-kiosk-collection API
+  description: >-
+    These APIs are designed to allow you to print and encrypt your card directly from a kiosk machine.
+    The card information will be sent to our card manufacturer to configure and print the card on-site
+    on a kiosk machine.
+
+
+    The card printing process will automatically begin once the request is received by our card manufacturer.
+
+
+    During the printing process, you will be notified via webhook about any [card production status change](/guides/developer/webhooks/event-types#cards-card-production-status-change).
+
+
+    Before using these APIs, make sure to read the guide on [kiosk collection](/guides/product/issue-cards/card-kiosk-collection#card-kiosk-collection).
+
+
+    {% admonition type="warning" %}
+
+    Please reach out to your Implementation Manager for more information on these APIs.
+
+    {% /admonition %}
+
+
+    **Testing**: In the sandbox environment, use the [card production simulation API](/api-reference/simulation/simulationcardproduction)
+    to test your integration with various production statuses and error scenarios.
+
+
+    Production status flow {% .title-2 .m-t-5 %}
+
+
+    These statuses represent the lifecycle of a card production:
+
+
+    - `READY` - Card is ready for production. The [produce card endpoint](/api-reference/card-kiosk-collection/cardkioskcollectionproduce)
+    can be called.
+
+    - `IN_PROGRESS` - Card is being produced at the kiosk machine (chip encryption and printing in progress).
+
+    - `PRODUCED` - Card has been successfully produced and collected from the kiosk. This is a final state.
+
+    - `PRODUCTION_ERROR` - Card production failed. Check the errorCode to identify the issue, resolve
+    it, then retry using the [produce card endpoint](/api-reference/card-kiosk-collection/cardkioskcollectionproduce).
+
+
+    A card with production status `PRODUCED` will trigger an asynchronous call to update the associated
+    card order to `PRODUCED` status.
+
+
+    ![Card production status flow](/images/diagrams/card-production-status-flow.png)
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - card-kiosk-collection
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-card-kiosk-collection-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-card-order-api
+  name: Wise card-order API
+  description: >-
+    With this set of APIs, you will be able to create cards for your customers. You can also retrieve
+    and view the status of your current card orders, as well as the list of available card programs for
+    the user.
+
+
+    {% admonition type="info" %}
+
+    On production, each personal profile can order at most 1 physical card and 3 virtual cards. On sandbox,
+    we allow up to 10 physical cards and 30 virtual cards for testing purpose. However, no more than 3
+    virtual cards can be ordered per day. This limit includes cards and card orders.
+
+    {% /admonition %}
+
+
+    Card order status flow {% #card-order-status-flow .title-3 .m-t-5 %}
+
+
+    The card order response will contain the `status` field. The initial status is `PLACED` or `REQUIREMENTS_FULFILLED`
+    depending on the requirement fulfillment state:
+
+
+    - `PLACED` - The card order is created. The card will be generated once it has fulfilled all the requirements
+
+    - `REQUIREMENTS_FULFILLED` - The card order has fulfilled all the requirements and the card should
+    be generated in a short while
+
+    - `CARD_DETAILS_CREATED` - The card has been generated
+
+    - `PRODUCED` - The physical card has been produced and waiting to be picked up by delivery vendor
+    (physical card only)
+
+    - `COMPLETED` - The card has been activated and is ready to use. The card order is completed
+
+    - `CANCELLED` - The card order has been cancelled. This can happen if you reach out to Wise Support
+    to cancel a card order
+
+    - `RETURNED` - Delivery failed, the physical card has been returned and will be blocked (physical
+    card only)
+
+
+    ![Card order status state machine](/images/diagrams/card-order-status-flow.png)
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - card-order
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-card-order-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-card-sensitive-details-api
+  name: Wise card-sensitive-details API
+  description: >-
+    Wise is a PCI DSS compliant provider and stores all card data securely. The scope for PCI compliance
+    depends on your use case and will impact how you integrate. For all sensitive card details endpoints,
+    follow the [detailed guide](/guides/product/issue-cards/sensitive-card-details).
+
+
+    **Key capabilities:**
+
+    - Access sensitive card data (PAN, CVV, PIN) via encrypted JWE payloads
+
+
+    **Related operations:**
+
+    - For card management (list, status, permissions), see the [Cards API](/api-reference/card)
+
+    - For ordering new cards, see the [Card Orders API](/api-reference/card-order)
+
+    - For transaction history, see the [Card Transaction API](/api-reference/card-transaction)
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - card-sensitive-details
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-card-sensitive-details-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-card-transaction-api
+  name: Wise card-transaction API
+  description: >-
+    Retrieve information on transactions made on your users' cards.
+
+
+    Transaction types {% #card-transaction-type .title-3 .m-t-5 %}
+
+
+    The possible `type` values are:
+
+
+    - `ACCOUNT_CREDIT` - Receiving money on the card, excluding Visa OCT or Mastercard MoneySend
+
+    - `ACCOUNT_FUNDING` - Sending money to another card or e-wallet
+
+    - `CASH_ADVANCE` - Cash disbursement
+
+    - `CASH_WITHDRAWAL` - ATM withdrawal
+
+    - `CHARGEBACK` - Currently unused. Reserved for future use
+
+    - `CREDIT_TRANSACTION` - Visa OCT and Mastercard MoneySend
+
+    - `ECOM_PURCHASE` - Online purchase
+
+    - `POS_PURCHASE` - Purchase via a POS terminal
+
+    - `REFUND` - Partial or full refund of an existing card transaction
+
+
+    Transaction states {% #card-transaction-state .title-3 .m-t-5 %}
+
+
+    The possible `state` values are:
+
+
+    - `IN_PROGRESS` - The transaction has been authorized but not captured
+
+    - `COMPLETED` - The transaction has been captured and/or settled
+
+    - `DECLINED` - The transaction has been declined
+
+    - `CANCELLED` - The transaction has been cancelled
+
+    - `UNKNOWN` - Default fallback status if the state cannot be confirmed
+
+
+    The transition from `CANCELLED` to `COMPLETED` is an edge case. Wise releases the customer funds after
+    7 days (30 days for pre-authorization) if the merchant has not captured the transaction, and the state
+    becomes `CANCELLED`. However, the merchant can decide to capture the transaction at a later date,
+    at which point the state will become `COMPLETED`.
+
+
+    ![Transaction state flow](/images/diagrams/transaction-state-flow.png)
+
+
+    Decline reasons {% #card-transaction-decline-reasons .title-3 .m-t-5 %}
+
+
+    The decline reason field provides information about the specific issue that led to the transaction
+    being declined, helping the merchant and the customer troubleshoot the problem.
+
+
+    While the decline reason field provides valuable information, it may not cover all possible reasons
+    for a decline, such as technical issues or unforeseen circumstances.
+
+
+    {% admonition type="warning" %}
+
+    New decline reasons may be added in the future, and not all decline reasons are currently documented.
+    Review this documentation regularly to ensure accuracy.
+
+    {% /admonition %}
+
+
+    {% admonition type="warning" %}
+
+    Exercise caution when communicating decline reasons to your customers, as some may not be relevant
+    or may cause confusion.
+
+    {% /admonition %}
+
+
+    - `ACCOUNT_INACTIVE` - Balance related to the transaction is not active. Ensure that all outstanding
+    actions have been completed before using the card, as this may help avoid potential issues or declines
+
+    - `ACCOUNT_SUSPENDED` - The transaction has been declined pending further compliance checks. It may
+    have been flagged for potential sanctions issues
+
+    - `ATM_PIN_CHANGE_NOT_ALLOWED` - PIN change via ATM terminal is not allowed
+
+    - `BLOCKED_COUNTRY` - Transactions were made in unsupported countries. Check this [link](https://wise.com/help/articles/2935771/where-can-i-use-my-wise-card)
+    to see if the country is included in the list of supported nations. It is possible for a merchant
+    to be based in a supported country and have an address registered in a blocked country, albeit infrequently
+
+    - `BLOCKED_SUBSCRIPTION` - The system cannot facilitate this transaction as the customer has opted
+    out of recurring payments with this merchant
+
+    - `CARD_EXPIRED` - The card provided has reached its expiration date, making it invalid for this transaction
+
+    - `CARD_FROZEN` - The customer or the customer service team has put this card on a temporary hold.
+    If the card has not been frozen by the customer, it may be worth investigating further. To resume
+    spending, advise the customer to unfreeze the card
+
+    - `CARD_INACTIVE` - The card is either not active or has not been received by the customer, so the
+    transaction cannot proceed
+
+    - `CARD_BLOCKED` - The card has been blocked and cannot be used anymore
+
+    - `CARD_PARTNER_SUSPENDED` - The internal team has deactivated the account for compliance reasons
+    related to AML, fraud, or EDD. Contact the team if this is believed to be an error
+
+    - `CHIP_PIN_ENTRY_TRIES_EXCEEDED` - The PIN is restricted on the chip of the card due to excessive
+    incorrect entries. The blocked PIN can be unlocked at an ATM using specific steps that vary depending
+    on the machine and country, such as PIN management or PIN operations followed by unblocking the PIN
+
+    - `CONNECTION_ISSUE` - A connection problem occurred during the transaction
+
+    - `CONTACTLESS_PIN_ENTRY_REQUIRED` - Contactless payment systems sometimes require a PIN for authentication
+    purposes to protect users' accounts from potential fraud or tampering. In Europe, contactless payment
+    transactions that follow one after the other require PIN verification as an additional security measure
+
+    - `CREDIT_TRANSACTIONS_NOT_SUPPORTED` - Credit is not supported for this specific transaction. Review
+    the [Acceptable Use Policy](https://wise.com/gb/legal/acceptable-use-policy-eea) for further information
+
+    - `CUMULATIVE_LIMIT_EXCEEDED` - In certain jurisdictions, there are restrictions on the amount that
+    can be spent. Refer to [spending limits](https://wise.com/help/articles/2899986/what-are-my-spending-limits)
+    for further details
+
+    - `DECLINED_ADVICE` - There is a problem with the message from the processor, so it might not be accepted
+    because it could be incomplete or unsafe. This does not indicate a problem with the card. Advise the
+    customer that there was a technical issue with the payment and to try again later
+
+    - `INCORRECT_CVV` - The customer entered the wrong security code. Advise the customer to check their
+    card details and try again. If the saved card details are correct, they should remove their card details
+    from the merchant's website and add them back again
+
+    - `INCORRECT_EXPIRY_DATE` - The customer entered the wrong expiration date for their card. If the
+    saved card details are correct, they should remove their card details from the merchant's website
+    and add them back again
+
+    - `INCORRECT_PIN` - The customer entered their PIN incorrectly. Advise the customer to check their
+    PIN and try again. If the PIN is correct and still fails, suggest resetting the PIN
+
+    - `INSUFFICIENT_FUNDS` - The customer does not have enough money in their account to make the payment.
+    Advise the customer to add money to their account and try again. In most cases, this will resolve
+    the issue
+
+    - `INVALID_3DS_UCAF` - The 3D Secure checks failed during the transaction. The customer should try
+    again and request authentication
+
+    - `INCORRECT_ARQC` - ARQC (Authorization Request Cryptogram) is a cryptogram generated by the card
+    during a transaction, which is validated on the server side. If incorrect, it could indicate a faulty
+    card, a fraudulent attack, or an issue with the POS terminal
+
+    - `INCORRECT_ICVV` - ICVV (Integrated Circuit Card Verification Value) is a security feature used
+    to validate the authenticity of a card during chip-based transactions. There were problems reading
+    the chip on the card, which may indicate an issue with the card's chip, the terminal, or the transaction
+    process. Wait and try again
+
+    - `INVALID_MERCHANT` - Transaction from a specific merchant is declined by scheme. The merchant should
+    clarify the exact cause with the scheme
+
+    - `INVALID_TRANSACTION` - Certain types of transactions are not supported. The customer should ask
+    the merchant to use a different payment method or try a different merchant
+
+    - `MANDATE_DCC_NON_SUPPORTED_FOR_CARD_COUNTRY` - The transaction was declined because the system does
+    not support conversions for Brazilian cards when BRL is involved. BRL will not be automatically exchanged
+    to other currencies. If the customer wants to continue with the payment, they need to change the currency
+
+    - `MANDATE_LOCAL_CASH_WITHDRAWAL_NOT_ALLOWED` - ATM withdrawal services are not provided in the country
+    where the transaction is taking place
+
+    - `NON_SUPPORTED_CURRENCY` - The currency in this transaction is not supported
+
+    - `NON_SUPPORTED_MCC_FOR_COUNTRY` - Transactions in this category are not supported for customers
+    in the country of purchase. Consider using an alternative payment method or changing merchant
+
+    - `PAYMENT_METHOD_DAILY_LIMIT_EXCEEDED` - The customer has reached the daily spending limit for the
+    card or their profile. Advise if they would like to update [card](/api-reference/spend-limits/spendlimitscardupdate)
+    or [profile](/api-reference/spend-limits/spendlimitsprofileupdate) limit
+
+    - `PAYMENT_METHOD_LIFETIME_LIMIT_EXCEEDED` - The customer has reached the lifetime spending limit.
+    Advise if they would like to [increase](/api-reference/spend-limits/spendlimitscardupdate) their lifetime
+    limit
+
+    - `PAYMENT_METHOD_MONTHLY_LIMIT_EXCEEDED` - The customer has reached the monthly spending limit for
+    the card or their profile. Advise if they would like to update [card](/api-reference/spend-limits/spendlimitscardupdate)
+    or [profile](/api-reference/spend-limits/spendlimitsprofileupdate) limit
+
+    - `PAYMENT_METHOD_NOT_ALLOWED` - This payment type has been disabled. Advise if they would like to
+    [enable](/api-reference/card/cardpermissionsbulkupdate) the payment type
+
+    - `PAYMENT_METHOD_TRANSACTION_LIMIT_EXCEEDED` - The customer has exceeded the transaction limit for
+    the card. Advise if they would like to update their [card](/api-reference/spend-limits/spendlimitscardupdate)
+    limit
+
+    - `PIN_ENTRY_TRIES_EXCEEDED` - The customer has reached the maximum number of allowed online PIN entry
+    attempts. Consider implementing a [reset PIN](/api-reference/card/cardpincountreset) feature within
+    the app to help the customer regain access to their card
+
+    - `PRE_ACTIVATED_CARD_PIN_ENTRY_REQUIRED` - The customer has attempted to make a contactless payment
+    at a POS or ATM, but their card has not been activated for chip and PIN transactions. To modify the
+    card activation strategy for all cards, contact the implementation manager
+
+    - `PROCESSING_ERROR` - The system is currently experiencing technical difficulties. Advise the customer
+    to try again after a brief period
+
+    - `RESTRICTED_MODE` - Although rare, restricted mode can occur. Advise the customer to replace their
+    card promptly as the system should have already informed them. In this mode, more secure payment methods
+    like chip and PIN, contactless, mobile wallets, and online payments with 3DS are allowed, while less
+    secure methods like magnetic stripe and online payments without 3DS are not permitted
+
+    - `REVERSAL_NOT_MATCHING_AUTH_CURRENCY` - The merchant has issued a reversal instruction for a different
+    currency than what was originally requested during the authorization process
+
+    - `SCA_SOFT_DECLINE` - The transaction cannot proceed due to SCA regulations. Suggest the customer
+    contact the merchant and use a more secure authentication method such as 3DS. For example, the customer
+    can try chip and PIN, or a mobile wallet like Apple Pay or Google Pay
+
+    - `SCHEME_BLOCKED_TRANSACTION` - This transaction has been flagged by the scheme and cannot be processed
+
+    - `SECURITY_CVM_FAILURE` - The system has detected that the POS terminal was misconfigured and failed
+    security checks. Suggest the customer use an alternative payment method like contactless or mobile
+    wallets, or recommend asking the merchant to accept a signature instead
+
+    - `SECURITY_MAGSTRIPE_SECURE_ELEMENTS_INCORRECT_OR_MISSING` - The merchant has entered the wrong type
+    of purchase. Advise the customer to contact the merchant and ask them to correct this issue
+
+    - `SECURITY_PIN_ENTRY_REQUIRED` - To proceed with this transaction, the customer is required to enter
+    their PIN
+
+    - `SUSPECTED_FRAUD` - This transaction has been labeled as high-risk by Wise
+
+    - `SUSPECTED_FRAUD_AML` - This transaction has been flagged as high-risk based on AML compliance protocols.
+    This reason cannot be disclosed to end customers
+
+    - `SUSPECTED_FRAUD_COMPLIANCE` - The compliance system has flagged this transaction as high-risk.
+    This reason cannot be disclosed to end customers
+
+    - `SUSPECTED_FRAUD_CORE_FRAUD` - This transaction has been blocked based on fraud policies and procedures
+
+    - `SUSPECTED_FRAUD_SANCTIONS` - This transaction has been flagged as high-risk based on sanctions
+    list analysis. This reason cannot be disclosed to end customers. This classification is final and
+    cannot be appealed
+
+    - `SUSPECTED_FRAUD_SOFT_DECLINE` - This e-commerce transaction cannot be processed due to high risk
+    factors. The merchant must complete 3DS before the transaction can be approved
+
+    - `TRANSACTION_TYPE_NOT_SUPPORTED` - There are restrictions on this type of transaction, and sometimes
+    the scheme will not allow it. Check if [spend control](/api-reference/spend-controls) is set up to
+    block this transaction
+
+    - `UNEXPECTED_ERROR` - There may have been a communication error between the merchant's system and
+    the server, but the POS system may have already notified the user of this issue
+
+
+    Detailed decline reasons {% #card-transaction-detailed-decline-reasons .title-3 .m-t-5 %}
+
+
+    Detailed decline reasons provide secondary level information for certain decline reasons, adding more
+    context to transaction failures.
+
+
+    Please be aware that new detailed decline reasons may be added in the future, and not all reasons
+    are currently documented. Therefore, it is important to exercise caution and regularly review the
+    documentation to ensure accuracy.
+
+
+    {% admonition type="warning" %}
+
+    Please exercise caution when communicating reasons to your customers, as some may not be relevant
+    or may cause confusion. If you have any questions or concerns, we are here to assist you.
+
+    {% /admonition %}
+
+
+    - `INSUFFICIENT_FUNDS_FOR_BLOCKED_SMART_CONVERSION` - Transaction was declined due to insufficient
+    balance in transaction currency when smart conversion feature is disabled (e.g. BRL cards). The customer
+    needs to convert their funds to the transaction currency and try again.
+
+    - `INSUFFICIENT_FUNDS_FOR_SPECIFIC_CURRENCY_RESERVATION` - The transaction will be declined with this
+    reason if the customer's card is issued in a region subject to smart conversion limitations, and the
+    transaction currency is the limited currency but the customer doesn't hold enough of that currency.
+    Other currencies won't be automatically converted to the limited currency. The customer needs to convert
+    their funds to the transaction currency before retrying the payment.
+
+    - `SUSPECTED_FRAUD_NO_BALANCE` - The customer might be abusing merchants by saving a card without
+    having any balance to cover upcoming charges from them. The customer will need to top up their account
+    to cover any charges from the merchant at a later date before re-attempting the transaction.
+
+    - `RESET_YOUR_PIN_AT_ATM` - There's a problem with how Chip was read and we had to decline the transaction.
+    The customer will need to reset their PIN at an ATM.
+
+    - `INCORRECT_CVV2` - Invalid CVV2 was provided. The customer needs to check their saved card details
+    and if they're correct, they should remove and add their card details to the merchant's website again.
+    If this doesn't help, they could try to use their card at another merchant's website. If the same
+    issue happens, they'll need to order a new card.
+
+    - `SCA_SOFT_DECLINE_CONTACTLESS` - Contactless transaction could not be approved due to SCA regulations.
+    The customer should perform at least one PIN transaction or use an ATM to reset PIN.
+
+    - `SUSPECTED_FRAUD_REVIEW_ACTIVITY` - We couldn't confirm all transactions in the customer's activity
+    were done by them, so we froze their card. The customer should review recent transactions and unfreeze
+    the card.
+
+    - `INVALID_TRANSACTION_TYPE_FINAL` - This decline reason is used for unmapped processor or network
+    error codes, indicating an external system issue or unclassified response. The decision authority
+    on the transaction information identifies a SCHEME decline, which may relate to card usage in unsupported
+    countries. The customer will need to use an alternative payment method to complete this transaction.
+
+    - `INVALID_TRANSACTION_TYPE_CONTACTLESS_MAGSTRIPE` - The POS terminal used a deprecated and not secure
+    way to transmit card data. The customer will need to use another POS machine or try another payment
+    method (Chip and PIN or Mobile Wallet).
+
+    - `INVALID_TRANSACTION_TYPE_FALLBACK` - The chip couldn't be read due to a technical issue which resulted
+    in the transaction "falling back" to magnetic stripe. As damaging the chip (so it would fall back
+    to stripe) is a common way of fraud, these types of transactions are often deemed risky and being
+    blocked.
+        The customer will need to:
+        - Try again or try a different terminal / ATM if it still doesn't work
+        - Use another payment method, e.g. Contactless
+        - Use another card
+        - If the issue persists with multiple terminals, they'll need to replace their card as it may
+    be damaged
+    - `CONTACTLESS_DISABLED` - `POS_CONTACTLESS` permission (contactless payments) is disabled. The customer
+    will need to enable the permission to allow contactless transactions.
+
+    - `ECOM_DISABLED` - `ECOM` permission (online payments) is disabled. The customer will need to enable
+    the permission to allow e-commerce transactions.
+
+    - `CHIP_DISABLED` - `POS_CHIP` permission (Chip transactions) is disabled. The customer will need
+    to enable the permission to allow Chip transactions.
+
+    - `MAGSTRIPE_DISABLED` - `POS_MAGSTRIPE` permission (magnetic stripe transactions) is disabled. The
+    customer will need to enable the permission to allow magnetic stripe transactions.
+
+    - `WALLET_DISABLED` - `MOBILE_WALLETS` permission is disabled. The customer will need to enable the
+    permission to allow mobile wallet transactions.
+
+    - `PROFILE_GENERAL_DAILY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has reached their daily total account
+    limit (profile-level). The customer will need to edit the limit.
+
+    - `PROFILE_GENERAL_MONTHLY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has gone over their monthly total
+    account limit (profile-level). The customer will need to edit the limit.
+
+    - `CARD_GENERAL_DAILY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has reached their daily limit for
+    this card (card-level). The customer will need to edit the limit.
+
+    - `CARD_GENERAL_MONTHLY_LIMIT_EXCEEDED_CHANGEABLE` - The customer has gone over the monthly limit
+    for this card (card-level). The customer will need to edit the limit.
+
+    - `PAYMENT_METHOD_MAX_MONTHLY_LIMIT_EXCEEDED` - The card's maximum non-changeable monthly spending
+    limit has been reached. The customer will need to wait until the start of the next calendar month
+    to perform transactions again.
+
+    - `UNKNOWN` - This decline reason is used when the processor or network returns an error code that
+    is not mapped to any of our specific detailed decline reasons. This can be caused by various external
+    system issues or unclassified processor responses.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - card-transaction
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-card-transaction-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-case-api
+  name: Wise case API
+  description: >-
+    Partner Cases are part of the Partner Support API, allowing partners to open, retrieve and respond
+    to support and operations queries.
+
+
+    The endpoints described here allow partners to directly integrate their back end tooling with Wise's,
+    allowing faster responses, better structure to data, and operational efficiencies.
+
+
+    {% admonition type="warning" %}
+
+    The Partner Support APIs are currently in a closed Beta and subject to change. Please speak with your
+    implementation manager if you would like to integrate with these APIs.
+
+    {% /admonition %}
+
+
+    Case Statuses {% #case-statuses .title-3 .m-t-5 %}
+
+
+    Partner cases can move through different statuses.
+
+
+    | Status | Transitions to | Description |
+
+    |--------|---------------|-------------|
+
+    | `CREATING` | OPEN | Cases being created by Wise from a Partner call. Once created, cases move into
+    the open status. |
+
+    | `OPEN` | PENDING, SOLVED, CLOSED | Cases being actioned by Wise. Partners do not need to action
+    these cases. Note that we may update a case in this status and not change it. |
+
+    | `PENDING` | OPEN, SOLVED, CLOSED | Cases that require additional information from the partner. You
+    should action these cases by reviewing the newest comment and updating the case. |
+
+    | `SOLVED` | OPEN, PENDING, CLOSED | Cases that have been solved and scheduled for closure. These
+    can be re-opened by the partner or Wise if needed before closing. |
+
+    | `CLOSED` | — | Cases that have been solved and closed. Once closed, they cannot be reopened and
+    a new case should be created if needed. |
+
+
+    {% img src="/images/diagrams/case-flow.png" /%}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - case
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-case-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-claim-account-api
+  name: Wise claim-account API
+  description: >-
+    Allow a customer to take ownership of an account [created on their behalf](/api-reference/user/usercreate).
+    Generate a short-lived `claim_account_code` and use it when [redirecting the customer to Wise](/guides/product/kyc/wise-kyc/redirect-to-wise/claim-account)
+    to finalize their account setup.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - claim-account
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-claim-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-comparison-api
+  name: Wise comparison API
+  description: >-
+    The comparison API can be used to request price and speed information about various money transfer
+    providers. This includes not only Wise but other providers in the market.
+
+
+    Price Estimation {% #comparison-price-estimation .title-3 .m-t-5 %}
+
+
+    The quotes (price and speed) provided by this API are based off of real quotes collected from 3rd
+    party websites. We collect both the advertised exchange rate and fee for each provider for various
+    amounts. When a comparison is requested, we calculate the markup percentage of the collected exchange
+    rate on the mid-market rate at the time of collection. We then apply this markup to the current mid-market
+    rate to provide a realistic estimate of what each provider offers. We collect data for all providers
+    around once per hour to ensure we provide as accurate and up-to-date information as possible.
+
+
+    Note: Today, we only provide estimations for FX transactions with a Bank Transfer pay-in and pay-out
+    option. This is important to stress as many providers offer significantly different fees and exchange
+    rates when used debit/credit card, cash etc.
+
+
+    For more details on the data collection process please see the following page:
+
+    [https://wise.com/gb/compare/disclaimer](https://wise.com/gb/compare/disclaimer)
+
+
+    If you have questions or suspect any data to be inaccurate or incomplete please contact us at: [comparison@wise.com](mailto:comparison@wise.com)
+
+
+    Delivery Estimation {% #comparison-delivery-estimation .title-3 .m-t-5 %}
+
+
+    Similar to price, we collect speed data for most (if not all) providers which we have price information
+    for. Many providers display speed estimates to their customers in a number of different ways.
+
+
+    Some examples:
+
+
+    - "The transfer should be complete within 2-5 days"
+
+    - "The money should arrive in your account within 48 hours"
+
+    - "Should arrive by 26th Aug"
+
+    - "Could take up to 4 working days"
+
+
+    The below API intends to model these in a consistent format by providing a minimum and maximum range
+    for all delivery estimations. An estimate that states "up to X" will have "max" set to a duration
+    but "min" as null; "from X" will have "min" set to a duration and "max" as null. Finally, for those
+    providers who offer a specific, point in time estimation (like Wise), the API will surface a duration
+    where "min" and "max" are equal.
+
+
+    Quotes structure {% #comparison-quotes-structure .title-3 .m-t-5 %}
+
+
+    In order to provide the most flexible and accurate data for clients, we surface a denormalized list
+    of quotes per provider where each quote represents a unique collection of comparison "dimensions".
+
+
+    A single given provider may expose multiple quotes for the same currency route. The most common example
+    is where a provider offers different pricing for two different countries which use the same currency,
+    e.g.:
+
+
+    Provider X:
+
+
+    - GBP EUR 1000 [GB -> ES] fee: 10, rate: 1.5
+
+    - GBP EUR 1000 [GB -> DE] fee: 8, rate: 1.5
+
+    - GBP EUR 1000 [GB -> FR] fee: 10, rate: 1.35
+
+
+    The same principle applies for speed, i.e. a provider may have different speed estimates for different
+    target countries. Hence, we expose these as discrete quotes, where a quote is a unique combination
+    of route, country, speed and price factors.
+
+
+    A client may choose to reduce this set of quotes down to a single or several quotes in order to display
+    a relevant quote to a given user. An example where we take the cheapest quote for a given currency
+    route (and also surface the target country) can be seen at the below link:
+
+
+    [https://wise.com/gb/compare/?sourceCurrency=GBP&targetCurrency=EUR&sendAmount=1000](https://wise.com/gb/compare/?sourceCurrency=GBP&targetCurrency=EUR&sendAmount=1000)
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - comparison
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-comparison-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-contact-api
+  name: Wise contact API
+  description: >-
+    Find discoverable Wise profiles and add them to your recipient list using an identifier — such as
+    a Wisetag, email, or phone number — without needing bank details.
+
+
+    Creating a transfer with a contact {% .title-3 .m-t-5 %}
+
+
+    1. [Create a Quote](/api-reference/quote/quotecreate), passing `contactId` instead of `targetAccount`
+    in the request body.
+
+    2. Extract the `targetAccount` value from the Quote response — Wise resolves the contact into a recipient
+    account.
+
+    3. [Create a Transfer](/api-reference/transfer/transfercreate) using the `targetAccount` from the
+    Quote response.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - contact
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-contact-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-currencies-api
+  name: Wise currencies API
+  description: >-
+    Retrieve the list of currencies supported for transfers, including currency codes and display names.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - currencies
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-currencies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-delivery-estimate-api
+  name: Wise delivery-estimate API
+  description: >-
+    Get the estimated delivery time for a transfer, showing when funds are expected to arrive in the recipient's
+    bank account.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - delivery-estimate
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-delivery-estimate-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-digital-wallet-api
+  name: Wise digital-wallet API
+  description: >-
+    These APIs provide encrypted cardholder information needed to implement push provisioning (Apple Pay,
+    Google Pay) in your own mobile app.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - digital-wallet
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-digital-wallet-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-direct-debit-account-api
+  name: Wise direct-debit-account API
+  description: >-
+    Register and retrieve external bank accounts used to fund batch transfers via ACH (USD) or EFT (CAD)
+    direct debit.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - direct-debit-account
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-direct-debit-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-disputes-api
+  name: Wise disputes API
+  description: >-
+    Raise and manage card transaction disputes, including submission via Dynamic Flow or direct API, file
+    uploads, and dispute lifecycle tracking.
+
+
+    For implementation details, see:
+
+    - [Disputes via Dynamic Flow](/guides/product/issue-cards/card-disputes-dynamic-flow) — build a dispute
+    UI using the Dynamic Flow framework
+
+    - [Disputes via API](/guides/product/issue-cards/card-disputes-api) — submit disputes directly, with
+    per-reason request body details
+
+    - [Dispute management](/guides/product/issue-cards/card-disputes-management) — track and withdraw
+    disputes
+
+
+    Dispute sub-statuses {% #dispute-sub-status .title-3 .m-t-5 %}
+
+
+    The possible `subStatus` values are:
+
+    - `SUBMITTED` — Initial status
+
+    - `IN_REVIEW` — The dispute is under review or requires additional information
+
+    - `REFUNDED` — The refund has been processed
+
+    - `REJECTED` — The dispute is invalid
+
+    - `WITHDRAWN` — The customer has withdrawn the dispute
+
+    - `CONFIRMED` — The dispute has been reviewed but a refund is not applicable
+
+    - `REFUND_IN_PROGRESS` — A refund is being processed
+
+    - `ATTEMPTING_RECOVERY` — A chargeback request has been submitted
+
+    - `RECOVERY_UNSUCCESSFUL` — The chargeback attempt was unsuccessful
+
+
+    {% admonition type="warning" %}
+
+    The status transition diagram may undergo modifications in the future and only covers regular pathways.
+
+    {% /admonition %}
+
+
+    {% img
+      src="/images/diagrams/dispute-status-flow.png"
+      alt="Dispute statuses transition diagram"
+    /%}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - disputes
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-disputes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-facetec-api
+  name: Wise facetec API
+  description: >-
+    Wise leverages [FaceTec's](https://www.facetec.com/) facial biometric technology for authentication.
+    Use this endpoint to retrieve the public key needed for exporting 3D FaceMaps.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - facetec
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-facetec-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-jose-api
+  name: Wise jose API
+  description: >-
+    Wise uses the [JOSE framework](https://jose.readthedocs.io/en/latest/) to accept and respond with
+    signed and encrypted payloads. These endpoints allow you to manage keys and test your signing and
+    encryption implementation.
+
+
+    For more information, please speak with your Implementation team.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - jose
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-jose-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-kyc-review-api
+  name: Wise kyc-review API
+  description: >-
+    KYC Review API provides endpoints to view, update and submit information related to the KYC flow.
+
+
+    There are two ways to collect KYC requirements from your customers:
+
+    - **Hosted KYC** — redirect your customer to a Wise-hosted UI that guides them through the process.
+
+    - **API submission** — use the [KYC Requirement Submit](/api-reference/kyc-review/kycreviewrequirementsubmit)
+    endpoint to submit requirements directly. This is only available for requirement types where `apiCollectionSupported`
+    is `true`.
+
+
+    Please refer to our [Hosted KYC guide](/guides/product/kyc/wise-kyc/hosted-kyc) for more information
+    on the general use of the endpoints included below.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - kyc-review
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-kyc-review-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-multi-currency-account-api
+  name: Wise multi-currency-account API
+  description: >-
+    The Wise multi-currency account (MCA) enables users to hold, convert, and fund transfers (single or
+    batches) with balances in up to 56 currencies. Of the 50+ currency balances supported, 10+ come with
+    local account details.
+
+
+    Please refer to our [multi-currency account guide](/guides/product/accounts/managing-accounts) for
+    more information on the general use of the endpoints included below.
+
+
+    Please see the [Balances APIs](/api-reference/balance) for more details.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - multi-currency-account
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-multi-currency-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-oauth-token-api
+  name: Wise oauth-token API
+  description: >-
+    Exchange client credentials or authorisation grants for OAuth 2.0 access tokens. All grant types use
+    `POST /oauth/token` with basic authentication (your `client_id` and `client_secret`).
+
+
+    Depending on the grant type, this endpoint issues either a **client credentials token** or a **user
+    token**.
+
+
+    Client credentials token {% .title-3 .m-t-5 %}
+
+
+    An application-level token for requests that aren't tied to a specific Wise user, such as generating
+    un-authenticated quotes and subscribing to application webhooks. Valid for 12 hours.
+
+
+    - `client_credentials` — the only grant type for this token.
+
+
+    User token {% .title-3 .m-t-5 %}
+
+
+    A token for making API calls on behalf of a specific Wise user, such as creating transfers and managing
+    balances. Access tokens are valid for 12 hours and can be refreshed using a refresh token. Grant types:
+
+
+    - `registration_code` — for partners that create Wise users via API. Exchanges a registration code
+    for a user access token and refresh token.
+
+    - `authorization_code` — for partners using the OAuth redirect flow. Exchanges an authorisation code
+    for a user access token and refresh token.
+
+    - `refresh_token` — obtain a new user access token without requiring the user to re-authorise.
+
+
+    Managing token expiration {% #managing-token-expiration .title-3 .m-t-5 %}
+
+
+    Access tokens are valid for 12 hours. You can request a new access token whenever it's close to expiring
+    — there is no need to wait for the actual expiration to happen first. Depending on how your application
+    uses the Wise Platform API, requesting a new access token before attempting a series of API calls
+    on behalf of an individual user will avoid issues with expired access tokens.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - oauth-token
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-oauth-token-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-payin-deposit-detail-api
+  name: Wise payin-deposit-detail API
+  description: >-
+    The payin deposit details API allows you to get the bank details for the account that the customer
+    should send funds to when paying for a Wise transfer via a bank transfer.
+
+
+    These details will be provided in the local format for that currency and usually contain bank account
+    information — like IBAN, SWIFT code etc. It also includes the name and address of the receiving bank
+    and the name and address of the Wise entity that owns the bank account, as sometimes these are required
+    to make a payment.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - payin-deposit-detail
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-payin-deposit-detail-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-payins-api
+  name: Wise payins API
+  description: "The payin APIs allow you to fund the MCA or transfers with local payment rails, by retrieving\
+    \ or creating the relevant details to send to for funding a payment. \n\nThese details will be provided\
+    \ in the local format for that currency, and also includes the name and address of the receiving bank."
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - payins
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-payins-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-profile-api
+  name: Wise profile API
+  description: >-
+    A profile represents an identity that can send and receive money through Wise — either a personal
+    profile (an individual) or a business profile (a company). Most API endpoints require a `profileId`
+    parameter, which is the ID of either profile type.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - profile
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-profile-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-quote-api
+  name: Wise quote API
+  description: >-
+    The quote resource defines the basic information required for a Wise transfer - the currencies to
+    send between, the amount to send and the profile who is sending the money. The profile _must_ be included
+    when creating a quote.
+
+
+    Quote is one of the required resources to create a transfer, along with the recipient who is to receive
+    the funds.
+
+
+    The quote response contains other information such as the exchange rate, the estimated delivery time
+    and the methods the user can pay for the transfer. Not all of this information may apply to your use
+    case.
+
+
+    Upon creating a quote the current mid-market exchange rate is locked and will be used for the transfer
+    that is created from the quote. The rate will be locked for 30 minutes to give a user time to complete
+    the transfer creation flow.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - quote
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-quote-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-rate-api
+  name: Wise rate API
+  description: Current and historical exchange rates by currency routes.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - rate
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-rate-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-recipient-api
+  name: Wise recipient API
+  description: >-
+    Recipient or beneficiary is the one who will receive the funds.
+
+
+    Recipient account endpoints use a mixture of our v1 and v2 APIs. Please ensure you address the right
+    version to get the expected results.
+
+
+    {% admonition type="info" %}
+
+    All recipient IDs are cross compatible with v1 and v2.
+
+    {% /admonition %}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - recipient
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-recipient-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-device-fingerprints-api
+  name: Wise sca-device-fingerprints API
+  description: >-
+    Device fingerprints are possession-based SCA challenge factors. They allow you to verify that a user
+    is accessing the API from a recognized device.
+
+
+    A profile can have up to 3 device fingerprints registered simultaneously. All device fingerprint operations
+    use JOSE (JWE) encryption. See the [SCA over API guide](/guides/developer/auth-and-security/sca-and-2fa)
+    for encryption details.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-device-fingerprints
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-device-fingerprints-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-facemaps-api
+  name: Wise sca-facemaps API
+  description: >-
+    Facemaps are inherence-based (biometric) SCA challenge factors that use FaceTec's 3D face recognition
+    technology.
+
+
+    Facemaps should be exported from your FaceTec server using their SDK's export API. Use Wise's [FaceTec
+    public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during export.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-facemaps
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-facemaps-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-otp-api
+  name: Wise sca-otp API
+  description: >-
+    For phone-based OTP (one-time password) authentication — where an OTP is a single-use 6-digit code
+    sent to verify the identity of a user — Wise supports multiple delivery methods, including SMS, WhatsApp,
+    and voice. Use Wise's secure endpoint to [create](/api-reference/sca-otp/usersecurityphonenumbercreate)
+    and register the end user's phone number. Then, call the trigger endpoints ([SMS](/api-reference/sca-otp/ottsmstrigger),
+    [WhatsApp](/api-reference/sca-otp/ottwhatsapptrigger), [Voice](/api-reference/sca-otp/ottvoicetrigger))
+    to send an OTP to the registered number. Finally, submit the OTP via the verify endpoints ([SMS](/api-reference/sca-otp/ottsmsverify),
+    [WhatsApp](/api-reference/sca-otp/ottwhatsappverify), [Voice](/api-reference/sca-otp/ottvoiceverify))
+    to complete the authentication challenge.
+
+
+    Please read the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand
+    how SCA integration works.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-otp
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-otp-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-ott-api
+  name: Wise sca-ott API
+  description: >-
+    One-time tokens are temporary authentication sessions used to track SCA challenges. When an SCA-protected
+    endpoint is called, a one-time token is returned containing the challenges that must be completed.
+
+
+    Please read the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand
+    how SCA integration works.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-ott
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-ott-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-pin-api
+  name: Wise sca-pin API
+  description: >-
+    PIN (Personal Identification Number) is a knowledge-based SCA challenge factor. Users create a 4-digit
+    PIN that can be used to verify their identity when accessing SCA-protected endpoints.
+
+
+    All PIN creation and verification requests use JOSE (JWE) encryption to ensure the PIN is never transmitted
+    in plain text. See the [SCA over API guide](/guides/developer/auth-and-security/sca-and-2fa) for encryption
+    details.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-pin
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-pin-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-sca-sessions-api
+  name: Wise sca-sessions API
+  description: >-
+    SCA sessions allow you to manually trigger Strong Customer Authentication, returning a one-time token
+    along with a list of associated challenges. These challenges can be cleared using the verify endpoints
+    for PIN, device fingerprints, and facemaps.
+
+
+    Please read the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand
+    how SCA integration works.
+
+
+    {% admonition type="info" %}
+
+    Please reach out to your Implementation Manager to determine which challenges can be enabled.
+
+    {% /admonition %}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - sca-sessions
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-sca-sessions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-simulation-api
+  name: Wise simulation API
+  description: >-
+    Use these endpoints to simulate key actions in the sandbox environment, including transfer state changes,
+    balance top-ups, card transactions, KYC reviews, and incoming payments.
+
+
+    {% admonition type="info" %}
+
+    These features are limited to sandbox only.
+
+    {% /admonition %}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - simulation
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-simulation-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-spend-controls-api
+  name: Wise spend-controls API
+  description: >-
+    Control which card transactions are permitted by creating rules based on merchant category code (MCC)
+    or transaction currency.
+
+
+    An authorisation rule dictates whether transactions should be declined or approved based on a pre-determined
+    set of rules. A transaction can only pass if it satisfies all the applied rules.
+
+
+    Creating a rule has no practical implication until it is [applied](/api-reference/spend-controls/spendcontrolsruleapply).
+    Applying a rule results in the authorisation rule being evaluated against every incoming card authorisation
+    request.
+
+
+    Rules are scoped at the application level. Use a [client credentials token](/api-reference/oauth-token/oauthtokencreate)
+    to call these endpoints.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - spend-controls
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-spend-controls-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-spend-limits-api
+  name: Wise spend-limits API
+  description: >-
+    Manage spending limits applied to profiles and cards. Profile limits are shared across all cards under
+    the same profile, while card limits apply to individual cards.
+
+
+    For more details on how profile and card limits interact, see the [card management guide](/guides/product/issue-cards/card-management#spend-limits).
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - spend-limits
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-spend-limits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-transfer-api
+  name: Wise transfer API
+  description: >-
+    A transfer is a payment order to a [recipient account](/api-reference/recipient) based on a [quote](/api-reference/quote).
+
+
+    Once created, a transfer usually needs to be funded within fourteen days. Otherwise, it will be automatically
+    cancelled.
+
+
+    There are 2 types of transfer resources: standard transfer resource and originator transfer resource.
+    Please see below for differences between the two.
+
+
+    Standard Transfer {% #standard-transfer .title-3 .m-t-5 %}
+
+
+    The standard transfer object is returned by the [create transfer](/api-reference/transfer/transfercreate),
+    [get transfer](/api-reference/transfer/transferget), [list transfers](/api-reference/transfer/transferlist),
+    and [cancel transfer](/api-reference/transfer/transfercancel) endpoints.
+
+
+    Originator Transfer {% #originator-transfer .title-3 .m-t-5 %}
+
+
+    The originator transfer object is returned by the [create third party transfer](/api-reference/transfer/transferthirdpartycreate)
+    and [get third party transfer](/api-reference/transfer/transferthirdpartyget) endpoints. It includes
+    an additional `originator` data block with details about the payment originator.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - transfer
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-transfer-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-user-api
+  name: Wise user API
+  description: >-
+    A User serves as the primary entity and can possess multiple Profiles to represent different contexts
+    or settings.
+
+    A User can have one personal Profile and multiple business Profiles.
+
+    Each [Profile](/api-reference/profile) — whether personal or business — can have its own [multi-currency
+    account](/api-reference/multi-currency-account),
+
+    enabling transactions across various currencies. This hierarchical structure allows for flexible management
+    of user settings and financial operations,
+
+    accommodating both personal and business needs.
+
+
+    ![User profile structure](/images/diagrams/user-profile-structure.svg)
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - user
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-user-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-user-security-api
+  name: Wise user-security API
+  description: >-
+    {% admonition type="warning" %}
+
+    These endpoints are deprecated. Please refer to [PIN](/api-reference/sca-pin), [Facemaps](/api-reference/sca-facemaps),
+    and [Device Fingerprints](/api-reference/sca-device-fingerprints) to integrate with SCA.
+
+    {% /admonition %}
+
+
+    User security allows users to set up security-related protections over the API.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - user-security
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-user-security-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-verification-api
+  name: Wise verification API
+  description: "In certain situations, additional evidence is required to verify customers and ensure\
+    \ we’re compliant with the KYC regulations.\n\nAdditional Verification APIs support a list of evidences\
+    \ that can be found in the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences).\n\
+    \nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and your\
+    \ customers are primarily based in the EU,\nrefer to this [Onboarding EU customers](/guides/product/kyc/partner-kyc/additional-verification#onboarding-eu-customers)\
+    \ guide\nfor instructions on how to use these APIs.\n\nIf you use the [Customer Account with Partner\
+    \ KYC](/guides/product/kyc/partner-kyc) model and you are onboarding high risk business customers\n\
+    based primarily based in the US, refer to\nthis [Onboarding High Risk US Businesses](/guides/product/kyc/partner-kyc/additional-verification#onboarding-high-risk-us-businesses)\
+    \ guide for \ninstructions on how to use these APIs."
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - verification
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-verification-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-webhook-api
+  name: Wise webhook API
+  description: >-
+    Manage webhook subscriptions at both the application and profile level. Create, list, retrieve, and
+    delete subscriptions, as well as test your webhook endpoints.
+
+
+    For more information on creating and managing webhooks, and specific event types, see [Webhooks &
+    Notifications](/guides/developer/webhooks).
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - webhook
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-webhook-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
 common:
 - type: AgenticAccess
   url: agentic-access/wise-agentic-access.yml
