@@ -1460,3 +1460,13 @@ tags:
 externalDocs:
   description: Wise Platform webhook documentation
   url: https://docs.wise.com/guides/developer/webhooks
+
+# --- API Evangelist provenance -------------------------------------------
+x-superseded-by:
+  reason: >-
+    Provider publishes this event surface themselves in as-published OpenAPI; this document was authored by API Evangelist before that source was harvested.
+  published_spec: all/wise/openapi/_original/wise-platform-openapi.yml
+  published_event_object: webhooks
+  published_events: 5
+  status: superseded
+  reviewed: '2026-07-31'
