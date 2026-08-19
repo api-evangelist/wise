@@ -1,0 +1,392 @@
+{
+  "item": [
+    {
+      "id": "5c297a7c-2c38-4f6f-833d-1a1274c98a32",
+      "name": "rate",
+      "description": {
+        "content": "Current and historical exchange rates by currency routes.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "253b137f-cd45-4aa1-af9b-dfe29477dac7",
+          "name": "Retrieve current rates",
+          "request": {
+            "name": "Retrieve current rates",
+            "description": {
+              "content": "{% admonition type=\"warning\" %}\nThe `from`, `to`, and `group` parameters are not testable in our Sandbox environment at this time.\n{% /admonition %}\n\n`GET /v1/rates`<br>\nFetch latest exchange rates of all currencies.\n\n`GET /v1/rates?source=EUR&target=USD`<br>\nFetch latest exchange rate of one currency pair.\n\n`GET /v1/rates?source=EUR&target=USD&time=2019-02-13T14:53:01`<br>\nFetch exchange rate of specific historical timestamp.\n\n`GET /v1/rates?source=EUR&target=USD&from=2019-02-13T14:53:01&to=2019-03-13T14:53:01&group=day`<br>\nFetch exchange rate history over period of time with daily interval.\n\n`GET /v1/rates?source=EUR&target=USD&from=2019-02-13T14:53:01&to=2019-03-13T14:53:01&group=hour`<br>\nFetch exchange rate history over period of time with hourly interval.\n\n`GET /v1/rates?source=EUR&target=USD&from=2019-02-13T14:53:01&to=2019-03-13T14:53:01&group=minute`<br>\nFetch exchange rate history over period of time with 1 minute interval.\n\n{% admonition type=\"warning\" %}\nThis endpoint only supports Bearer authentication for non-Affiliate partners.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "rates"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "source",
+                  "value": "<string>",
+                  "description": "Source (send) currency code."
+                },
+                {
+                  "disabled": false,
+                  "key": "target",
+                  "value": "<string>",
+                  "description": "Target (receive) currency code."
+                },
+                {
+                  "disabled": false,
+                  "key": "time",
+                  "value": "<string>",
+                  "description": "Timestamp to get historic exchange rate. <br>Supports only Timestamp (combined date and time). Timezone offset is supported but optional. <br>Supported examples: `2019-03-13T14:53:01` or `2019-03-13T14:53:01+0100`.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "from",
+                  "value": "<string>",
+                  "description": "Period start date/time to get exchange rate history. <br>Supports Timestamp (combined date and time) or Date (date only). <br>Supported examples: `2019-03-13T14:53:01` or `2019-03-13`.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "to",
+                  "value": "<string>",
+                  "description": "Period end date/time to get exchange rate history. <br>Supports Timestamp (combined date and time) or Date (date only). <br>Timezone offset is supported but optional. <br>Supported examples: `2019-03-13T14:53:01+0100` or `2019-03-13+0100`.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "group",
+                  "value": "<string>",
+                  "description": "Interval for history grouping."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "7bc725e2-0605-463b-ac6b-cfedeb4f6ac0",
+              "name": "List of exchange rate values which meet your query criteria.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "rates"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "source",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "target",
+                      "value": "USD"
+                    },
+                    {
+                      "key": "time",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2019-03-13T14:53:01"
+                    },
+                    {
+                      "key": "group",
+                      "value": "day"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"rate\": 1.166,\n    \"source\": \"EUR\",\n    \"target\": \"USD\",\n    \"time\": \"2018-08-31T10:43:31+0000\"\n  },\n  {\n    \"rate\": 1.166,\n    \"source\": \"EUR\",\n    \"target\": \"USD\",\n    \"time\": \"2018-08-31T10:43:31+0000\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4a81c5da-7652-44db-a530-0652ef9e9689",
+              "name": "Invalid request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "rates"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "source",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "target",
+                      "value": "USD"
+                    },
+                    {
+                      "key": "time",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2019-03-13T14:53:01"
+                    },
+                    {
+                      "key": "group",
+                      "value": "day"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Bad Request\",\n  \"message\": \"Invalid parameters\",\n  \"path\": null,\n  \"status\": 400,\n  \"timestamp\": \"2026-01-01T06:56:29.923935466Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ce8daf21-e368-471a-9c46-1ed89728036c",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "rates"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "source",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "target",
+                      "value": "USD"
+                    },
+                    {
+                      "key": "time",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2019-02-13T14:53:01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2019-03-13T14:53:01"
+                    },
+                    {
+                      "key": "group",
+                      "value": "day"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "795560d6-4cee-41bc-9450-7dbe0a28e894",
+    "name": "Wise Platform 3ds rate API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

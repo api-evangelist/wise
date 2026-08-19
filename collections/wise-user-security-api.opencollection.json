@@ -1,0 +1,315 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds user-security API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "user-security",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Phone Numbers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/application/users/:userId/phone-numbers",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List verified phone numbers for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Update Phone Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/application/users/:userId/phone-numbers/:phoneNumberId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              },
+              {
+                "name": "phoneNumberId",
+                "value": "",
+                "type": "path",
+                "description": "ID of a phone number."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update a verified phone number for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Create PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/user/pin",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create PIN for a user as a form of authentication.\n\nCan be used to [verify pin](/api-reference/sca-pin/ottpinverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/auth-and-security/jose-jwe) to understand how encryption and decryption work.\n"
+        },
+        {
+          "info": {
+            "name": "Delete PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v1/users/:userId/pin",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Remove the PIN from the user's account.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Enrol FaceMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/user/facemap/enrol",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Facial biometric enrolment for Strong Customer Authentication (SCA).\n\nCan be used to [verify facemap](/api-reference/sca-facemaps/ottfacemapverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).\n"
+        },
+        {
+          "info": {
+            "name": "Delete FaceMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v1/users/:userId/facemap/enrol",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Remove the FaceMap from the user's account.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Create Device Fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/user/partner-device-fingerprints",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "A device fingerprint represents a string that identifies a unique device.\n\nThis endpoint is used to register the fingerprint of the device as one of the allowed devices used during an One Time Token (OTT) challenge.\n\nThis can be used to [verify device fingerprint](/api-reference/sca-device-fingerprints/ottdevicefingerprintverify) when clearing a [OTT](/api-reference/sca-ott).\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/"
+        },
+        {
+          "info": {
+            "name": "List Device Fingerprints",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/users/:userId/partner-device-fingerprints",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a list of device fingerprints created for this user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Delete Device Fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v1/users/:userId/partner-device-fingerprints/:deviceFingerprintId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              },
+              {
+                "name": "deviceFingerprintId",
+                "value": "",
+                "type": "path",
+                "description": "Device fingerprint ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Remove a specific device fingerprint from the allowed devices of a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

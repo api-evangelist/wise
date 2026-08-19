@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds balance-statement API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "balance-statement",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Balance Statement",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/balance-statements/:balanceId/statement.json",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "balanceId",
+                "value": "64",
+                "type": "path",
+                "description": "The balance ID to get the statement for."
+              },
+              {
+                "name": "currency",
+                "value": "EUR",
+                "type": "query",
+                "description": "Currency of the balance statement requested (ISO 4217 Alphabetic Code)."
+              },
+              {
+                "name": "intervalStart",
+                "value": "2025-03-01T00:00:00.000Z",
+                "type": "query",
+                "description": "Statement start time in UTC."
+              },
+              {
+                "name": "intervalEnd",
+                "value": "2025-04-30T23:59:59.999Z",
+                "type": "query",
+                "description": "Statement end time in UTC."
+              },
+              {
+                "name": "type",
+                "value": "COMPACT",
+                "type": "query",
+                "description": "Statement type:\n- `COMPACT` - Single statement line per transaction\n- `FLAT` - Accounting statements where transaction fees are on a separate line\n"
+              },
+              {
+                "name": "statementLocale",
+                "value": "en",
+                "type": "query",
+                "description": "Language for the statement. Supports 2 character language codes."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a statement for the specified balance account.\n\nThe response format depends on the URL path:\n- `statement.json` - JSON format\n- `statement.csv` - CSV format\n- `statement.pdf` - PDF format (includes Wise branding)\n- `statement.xlsx` - Excel format\n- `statement.xml` - CAMT.053 XML format\n- `statement.mt940` - MT940 format\n- `statement.qif` - QIF format\n\nThe period between `intervalStart` and `intervalEnd` cannot exceed 469 days (around 1 year 3 months).\n\n{% admonition type=\"warning\" %}\nTh"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

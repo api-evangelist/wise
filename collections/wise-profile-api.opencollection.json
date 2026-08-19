@@ -1,0 +1,806 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds profile API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "profile",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a profile (V1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please see the [Create Personal Profile](/api-reference/profile/profilepersonalcreate) and [Create Business Profile](/api-reference/profile/profilebusinesscreate) v2 endpoints.\n{% /admonition %}\n\nCreate personal or business user profile. Set `type` to `\"personal\"` or `\"business\"`.\n\nOne person cannot have multiple active duplicate user profiles, creating multiple profiles with the same details will fail. When this happens, you should sh"
+        },
+        {
+          "info": {
+            "name": "Update a profile (V1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/profiles",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please see the [Update Personal Profile](/api-reference/profile/profilepersonalupdate) and [Update Business Profile](/api-reference/profile/profilebusinessupdate) v2 endpoints.\n{% /admonition %}\n\nUpdate user profile information. Request and response is same as described in the create profile endpoint, with the addition of the `id` field.\n\n{% admonition type=\"info\" %}\nIf user profile has been verified then there are restrictions on what"
+        },
+        {
+          "info": {
+            "name": "List profiles for a user account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/profiles",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of all profiles belonging to user.\n"
+        },
+        {
+          "info": {
+            "name": "Create a personal profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/personal-profile",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a personal profile for the authenticated user. A personal profile represents an individual and is required before creating transfers or business profiles.\n\n{% admonition type=\"info\" %}\nUse the `X-idempotence-uuid` header to safely retry requests. If omitted and a profile already exists, the API returns `409 Conflict`. You can then retrieve existing profiles via [List profiles](/api-reference/profile/profilelist).\n{% /admonition %}\n\nField notes {% .title-4 .m-t-3 %}\n\n- **First and last nam"
+        },
+        {
+          "info": {
+            "name": "Create a business profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/business-profile",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "It is required that you first create a personal profile with details of the authorized representative of the business. It is currently not possible to create a business profile without first creating a personal profile.\n\n{% admonition type=\"info\" %}\nThis request accepts an optional field in the header, `X-idempotence-uuid`. This should be unique for each Profile you create. In the event that the request fails, you should use the same value again when retrying. If the `X-idempotence-uuid` header "
+        },
+        {
+          "info": {
+            "name": "Create a business profile (V3)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/business-profile",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a business profile and its authorized representative in a single request.\n\n{% admonition type=\"info\" %}\nThis request accepts an optional field in the header, `X-idempotence-uuid`. This should be unique for each Profile you create. In the event that the request fails, you should use the same value again when retrying. If the `X-idempotence-uuid` header is not provided and a Profile already exists, then you will receive a response with an HTTP status code `409`.\n{% /admonition %}\n\nSee [Busi"
+        },
+        {
+          "info": {
+            "name": "Retrieve a profile by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/profiles/:profileId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get profile info by ID.\n"
+        },
+        {
+          "info": {
+            "name": "Update a personal profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v2/profiles/:profileId/personal-profile",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Personal profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update user profile information for a personal profile.\n\n{% admonition type=\"warning\" %}\nIf user profile has been verified then there are restrictions on what information is allowed to change. Where permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Update a business profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v2/profiles/:profileId/business-profile",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update user profile information for a business profile.\n\n{% admonition type=\"warning\" %}\nIf user profile has been verified then there are restrictions on what information is allowed to change.\n{% /admonition %}\n\nWhere permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).\n\nSee [Bus"
+        },
+        {
+          "info": {
+            "name": "Retrieve business representative",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/business-profile/business-representative",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get Business Representative info by Business Profile ID.\n"
+        },
+        {
+          "info": {
+            "name": "Update business representative",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/profiles/:profileId/business-profile/business-representative",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update or transfer the Business Representative for the specified Business Profile.\n\nSet `updateContext` to `UPDATE_DETAILS` to update the existing Business Representative's details, or `TRANSFER_OF_AUTHORISATION` to transfer authority of the Business Profile to a new Business Representative.\n\n{% admonition type=\"info\" %}\nIf the Business Representative has been verified then there are restrictions on what information is allowed to change.\n{% /admonition %}\n\n{% admonition type=\"info\" %}\nIf this Bu"
+        },
+        {
+          "info": {
+            "name": "Create an identification document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/verification-documents",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Add an identification document to a personal profile. Not applicable to business profiles.\n\nFor SSN submissions, only `type` and `uniqueIdentifier` (9 digits, no letters or symbols) are required.\n"
+        },
+        {
+          "info": {
+            "name": "Update an identification document",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/profiles/:profileId/verification-documents",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing identification document on a personal profile. Not\napplicable to business profiles.\n\nThis endpoint performs a full replacement of the document details. Any\nfields not provided in the request body will be set to null on the stored\ndocument. Partners must provide all fields they wish to retain. \n\nOnly partners with a KYC partner onboarding model\nare permitted to use this endpoint. Non-KYC partners will receive a 400 error.\n"
+        },
+        {
+          "info": {
+            "name": "List business directors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/directors",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of director objects associated with the business profile.\n"
+        },
+        {
+          "info": {
+            "name": "Create business directors",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/directors",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds new directors to the business profile.\n\nReturns the list of all directors associated with the business profile.\n"
+        },
+        {
+          "info": {
+            "name": "Update business directors",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/profiles/:profileId/directors",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Overrides directors in the business profile.\n\nReturns the list of all directors associated with the business profile.\n"
+        },
+        {
+          "info": {
+            "name": "List business ultimate owners",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/ubos",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of all ultimate beneficial owners associated with the business profile.\n"
+        },
+        {
+          "info": {
+            "name": "Create business ultimate owners",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/ubos",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds new ultimate beneficial owners to the business profile.\n\nReturns the list of all ultimate beneficial owners associated with the business profile.\n\nAll the shareholders that have at least 25% ownership should be submitted via this API.\n\nNote that in some cases, we do not require the `ownershipPercentage`. In these cases, `null` should be passed as the value.\n"
+        },
+        {
+          "info": {
+            "name": "Update business ultimate owners",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/profiles/:profileId/ubos",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Business profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Overrides ultimate beneficial owners in the business profile.\n\nReturns the list of all ultimate beneficial owners associated with the business profile.\n"
+        },
+        {
+          "info": {
+            "name": "Open an update window",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/update-window",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Opens the update window for updating the profile information: details, addresses, directors, owners, others.\n"
+        },
+        {
+          "info": {
+            "name": "Close an update window",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v1/profiles/:profileId/update-window",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes the update window for updating the profile.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve profile extension requirements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/extension-requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.\n{% /admonition %}\n\nAfter having a profile created, in some situations we can need more specific information about it. In order to know which fields are required for a given profile, and to send the information over, we expose a few endpoints:\n\n- `GET /v1/profiles/{profileId}/extension-requiremen"
+        },
+        {
+          "info": {
+            "name": "Update profile extensions dynamically",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/extension-requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.\n{% /admonition %}\n\nPost extension requirements to discover additional required fields based on selected values. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve profile extensions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/extensions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.\n{% /admonition %}\n\nRetrieve the extra profile information previously submitted via extensions. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.\n"
+        },
+        {
+          "info": {
+            "name": "Submit profile extensions",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/extensions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.\n{% /admonition %}\n\nSubmit the extra profile information gathered from the extension requirements. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.\n"
+        },
+        {
+          "info": {
+            "name": "Check profile verification status",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/verification-status/bank-transfer",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              },
+              {
+                "name": "source_currencies",
+                "value": "GBP,USD,EUR",
+                "type": "query",
+                "description": "Comma-separated list of ISO 4217 currency codes."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "You can check the verification status of a profile using this API. This is a profile-specific API resource which should be accessed using an access token acquired for the profile.\n\nWe do not expose any finer details of customer verification.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

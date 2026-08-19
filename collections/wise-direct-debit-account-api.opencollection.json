@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds direct-debit-account API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "direct-debit-account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve all direct debit accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/direct-debit-accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345678",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "type",
+                "value": "ACH",
+                "type": "query",
+                "description": "Payment type for which the account is used.\n\n- `ACH` — US direct debit (USD)\n- `EFT` — CA direct debit (CAD)\n"
+              },
+              {
+                "name": "currency",
+                "value": "USD",
+                "type": "query",
+                "description": "Currency of the bank account. 3-character currency code — `USD` for ACH direct debits, `CAD` for EFT direct debits."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of your direct debit accounts. Use the `type` and `currency` query parameters to filter accounts.\n"
+        },
+        {
+          "info": {
+            "name": "Create a direct debit account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/direct-debit-accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345678",
+                "type": "path",
+                "description": "Your profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Register a new external bank account for funding batch transfers via direct debit.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

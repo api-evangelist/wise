@@ -1,0 +1,210 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds spend-controls API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "spend-controls",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all authorisation rules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all the existing authorisation rules, regardless of whether or not they are applied.\n"
+        },
+        {
+          "info": {
+            "name": "Add a new authorisation rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates an authorisation rule. It won't be enabled unless it is [applied](/api-reference/spend-controls/spendcontrolsruleapply).\n\n{% admonition type=\"warning\" %}\nAn `ALLOW` rule permits only the transactions that match the specified criteria and blocks all others. For instance, a rule allowing `SGD` transactions will block all transactions that are not in `SGD`.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Apply an authorisation rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules/apply",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Apply an authorisation rule. This will result in the rule being evaluated against every incoming card authorisation request.\n"
+        },
+        {
+          "info": {
+            "name": "Unapply an authorisation rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules/unapply",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deactivates an authorisation rule. This will result in all card transactions **not** being evaluated against this rule.\n\nThe rule still [exists](/api-reference/spend-controls/spendcontrolsruleslist) and can be [applied](/api-reference/spend-controls/spendcontrolsruleapply) again.\n"
+        },
+        {
+          "info": {
+            "name": "List applied authorisation rules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules/applied",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of all the active authorisation rules that have been applied.\n"
+        },
+        {
+          "info": {
+            "name": "Delete an authorisation rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v3/spend/applications/:clientId/spend-controls/rules/:ruleId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "path",
+                "description": "The application client ID."
+              },
+              {
+                "name": "ruleId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the authorisation rule to delete."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes an authorisation rule that is **currently not applied**.\nIf a rule is applied, you should [unapply](/api-reference/spend-controls/spendcontrolsruleunapply) the rule before deleting it.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

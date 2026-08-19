@@ -1,0 +1,543 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds simulation API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "simulation",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Simulate transfer state change",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/simulation/transfers/:transferId/:status",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "transferId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the transfer to simulate."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "path",
+                "description": "The target transfer status."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Changes the transfer status to the specified state. The available state transitions are:\n\n- `processing` — from `incoming_payment_waiting`\n- `funds_converted` — from `processing`. Refer to regional guides for special regional requirements.\n- `outgoing_payment_sent` — from `funds_converted`\n- `bounced_back` — from `outgoing_payment_sent`\n- `funds_refunded` — from `bounced_back`. Will not trigger a refund webhook.\n\n{% admonition type=\"warning\" %}\nSimulation does not work with email transfers.\n{% /"
+        },
+        {
+          "info": {
+            "name": "Simulate verification for a profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/profiles/:profileId/verifications",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to verify."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Changes a specific profile's verification state to `PASSED`.\n\nThis is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).\n\nAccepts both user and application API tokens.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate verification for all profiles",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/verify-profile",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verifies all profiles associated with the authenticated user, changing their verification state to `PASSED`.\n\nThis is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).\n\nAccepts user API tokens only. The profiles are identified via the token.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate a balance top-up",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/balance/topup",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a top-up so that a balance can be used to fund transfers and/or card spend.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate a card transaction authorisation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/simulation/spend/profiles/:profileId/cards/:cardToken/transactions/authorisation",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a card transaction authorisation request in the sandbox environment. It can simulate ATM withdrawals, POS purchases, e-commerce transactions, and refunds. This is an authorisation hold, where funds are held, but not yet captured by the acquirer.\n\nThe `cardNumber` represents the 16-digit Primary Account Number (PAN) of the card, and must be a valid PAN retrieved from sensitive card details. Please follow the [detailed guide](/guides/product/issue-cards/sensitive-card-details) on retriev"
+        },
+        {
+          "info": {
+            "name": "Simulate a card transaction clearing",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/spend/profiles/:profileId/cards/:cardToken/transactions/clearing",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a transaction clearing request in the sandbox environment. This is done after the authorisation. The `ref` field can be copied from the `reference` object in the authorisation response.\n\nTo clear a previous authorisation, the `ref` details must match the previous authorisation request. The `amount` does not have to match the previous authorisation request, it can be more or less than the authorisation request amount.\n\n{% admonition type=\"warning\" %}\nClearing simulation doesn't work wit"
+        },
+        {
+          "info": {
+            "name": "Simulate a card transaction reversal",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/spend/profiles/:profileId/cards/:cardToken/transactions/reversal",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a transaction reversal request in the sandbox environment. The `amount.value` field can be set to 0 for a full reversal, or a positive value that represents the intended final value of the transaction after a partial reversal.\n\nFor example, if a transaction value was originally 10 SGD, and the intended final value is 3 SGD, `amount.value` should be set to 3. This means there is a partial refund of 7 SGD.\n"
+        },
+        {
+          "info": {
+            "name": "List simulated card transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/simulation/spend/profiles/:profileId/cards/:cardToken/transactions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "The maximum number of transactions to return. The default value is 10."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a list of simulated card transactions, in descending order of creation time.\n\nTo retrieve more details of a transaction, use the [get card transaction by ID](/api-reference/card-transaction/cardtransactionget) endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate card production state change",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/spend/profiles/:profileId/cards/:cardToken/production",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a card production status change in the sandbox environment.\n\n{% admonition type=\"warning\" %}\nPlease ensure that you have created a physical card order with KIOSK_COLLECTION delivery method and that you produce the card before calling this endpoint to simulate various card production statuses.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "List KYC review requirements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/simulation/profiles/:profileId/kyc-reviews/:kycReviewId/requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "kycReviewId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the existing KYC review."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all blocking requirements for a KYC (Know Your Customer) review. These outstanding KYC requirements typically act as \"blocking requirements\", preventing actions like creating transfers.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate adding new requirement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/simulation/profiles/:profileId/kyc-reviews/:kycReviewId/requirements/add",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID requiring the new requirement to be added."
+              },
+              {
+                "name": "kycReviewId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the existing KYC review."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new requirement for a KYC (Know Your Customer) review for a business profile.\n\n{% admonition type=\"warning\" %}\nThis can only be used for business profiles. It creates a static `BUSINESS_USE_CASE` requirement only.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Simulate requirement submission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/simulation/profiles/:profileId/kyc-reviews/:kycReviewId/requirements/submit",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "kycReviewId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the existing KYC review."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates providing everything needed for a particular KYC requirement. This can be used in place of going through a hosted journey on the browser.\n\n{% admonition type=\"info\" %}\nThis functionality only works for the following requirements: `TRANSFER_PURPOSE`, `ID_DOCUMENT_WITH_LIVENESS`, `SOURCE_OF_FUNDS`, and any other that has the `___` delimiter in them.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Simulate verifying a KYC review",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/simulation/profiles/:profileId/kyc-reviews/:kycReviewId/verify",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "kycReviewId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the existing KYC review."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verifies requirement(s) on an existing KYC (Know Your Customer) review. Can be used after a user has provided input for a requirement through the hosted journey or simulated the requirement submission.\n"
+        },
+        {
+          "info": {
+            "name": "Simulate incoming bank transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/profiles/:profileId/bank-transactions/import",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates a bank transfer into a profile's account details. This will create a payment into the user's account details and balance for the specified amount and currency.\n\nPlease refer to the [Bank Account Details API reference](/api-reference/bank-account-details) for more information on setting up bank details to receive money.\n\n{% admonition type=\"info\" %}\nThis functionality only works for the following currencies: `USD`, `EUR`, `GBP`. Returns a 400 error when account details for the specified"
+        },
+        {
+          "info": {
+            "name": "Simulate incoming Swift payment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/simulation/profiles/:profileId/swift-in",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Simulates an incoming Swift transfer into a profile's account details. This will create a payment into the user's account details and balance for the specified amount and currency. Using sandbox, you can test the initial tech build for webhook subscriptions, balance statements, and sweeping funds.\n\nIf the request is successful the transfer is logged in our back office, which triggers a [swift-in#credit](/guides/developer/webhooks/event-types#swift-in-credit) event and results in a balance update"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

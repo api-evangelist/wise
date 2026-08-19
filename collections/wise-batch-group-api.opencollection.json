@@ -1,0 +1,283 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds batch-group API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "batch-group",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a batch group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/batch-groups",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to create the batch group for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new batch group.\n\nA batch group can hold up to 1000 transfers that will be funded together. After creating the group, add transfers to it, then complete the group to receive pay-in details.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve a batch group",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/batch-groups/:batchGroupId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get an existing batch group by ID.\n"
+        },
+        {
+          "info": {
+            "name": "Update batch group status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v3/profiles/:profileId/batch-groups/:batchGroupId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update a batch group's status to complete or cancel it.\n\n**Complete a batch group:** Set `status` to `COMPLETED` to close the group for modifications and allow funding to proceed. Once completed, `payInDetails` will be populated with funding instructions.\n\n**Cancel a batch group:** Set `status` to `CANCELLED` to cancel all transfers in the batch. Only batches that are not funded can be cancelled. Cancellation is final and cannot be undone.\n\nThe `version` parameter is required for concurrency con"
+        },
+        {
+          "info": {
+            "name": "Create a batch group transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/batch-groups/:batchGroupId/transfers",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a transfer in the batch group using a previously created recipient account and quote.\n\nFor the request body format, see [transfer creation](/api-reference/transfer#create). For quote and recipient creation, see [quote creation](/api-reference/quote/quotecreate) and [recipient creation](/api-reference/recipient/recipientcreate).\n"
+        },
+        {
+          "info": {
+            "name": "Fund a batch group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/batch-payments/:batchGroupId/payments",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Funds all transfers in a batch group from a multi-currency account balance. Transfers are paid out immediately.\n\nThe batch group must first be completed, and there must be enough funds in the account for the whole batch. Otherwise, an insufficient funds error will be returned.\n\n{% admonition type=\"warning\" %}\nThis endpoint is SCA protected when it applies. If your profile is registered within the UK and/or EEA, SCA most likely applies to you. For more information, please read [implementing SCA]("
+        },
+        {
+          "info": {
+            "name": "Fund a batch group via direct debit",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/batch-groups/:batchGroupId/payment-initiations",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Funds all transfers in a batch group via direct debit. The batch group must be in the `COMPLETED` state.\n\nTo use this funding method, you need to link an external bank account first. See [direct debit account creation](/api-reference/direct-debit-account/directdebitaccountcreate) for more information.\n\n{% admonition type=\"warning\" %}\nThis endpoint is SCA protected when it applies. If your profile is registered within the UK and/or EEA, SCA most likely applies to you. For more information, please"
+        },
+        {
+          "info": {
+            "name": "Retrieve a payment initiation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/batch-groups/:batchGroupId/payment-initiations/:paymentInitiationId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that the batch group is associated with."
+              },
+              {
+                "name": "batchGroupId",
+                "value": "",
+                "type": "path",
+                "description": "The batch group ID."
+              },
+              {
+                "name": "paymentInitiationId",
+                "value": "",
+                "type": "path",
+                "description": "The payment initiation ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get payment initiation info by ID. In addition to [webhooks](/guides/developer/webhooks/event-types#batch-payment-initiations-state-change-event), this endpoint can be used for polling the status of a payment initiation.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

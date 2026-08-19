@@ -1,0 +1,396 @@
+{
+  "item": [
+    {
+      "id": "546a1eb6-fd3f-4172-b331-6bffef1e3f58",
+      "name": "oauth-token",
+      "description": {
+        "content": "Exchange client credentials or authorisation grants for OAuth 2.0 access tokens. All grant types use `POST /oauth/token` with basic authentication (your `client_id` and `client_secret`).\n\nDepending on the grant type, this endpoint issues either a **client credentials token** or a **user token**.\n\nClient credentials token {% .title-3 .m-t-5 %}\n\nAn application-level token for requests that aren't tied to a specific Wise user, such as generating un-authenticated quotes and subscribing to application webhooks. Valid for 12 hours.\n\n- `client_credentials` — the only grant type for this token.\n\nUser token {% .title-3 .m-t-5 %}\n\nA token for making API calls on behalf of a specific Wise user, such as creating transfers and managing balances. Access tokens are valid for 12 hours and can be refreshed using a refresh token. Grant types:\n\n- `registration_code` — for partners that create Wise users via API. Exchanges a registration code for a user access token and refresh token.\n- `authorization_code` — for partners using the OAuth redirect flow. Exchanges an authorisation code for a user access token and refresh token.\n- `refresh_token` — obtain a new user access token without requiring the user to re-authorise.\n\nManaging token expiration {% #managing-token-expiration .title-3 .m-t-5 %}\n\nAccess tokens are valid for 12 hours. You can request a new access token whenever it's close to expiring — there is no need to wait for the actual expiration to happen first. Depending on how your application uses the Wise Platform API, requesting a new access token before attempting a series of API calls on behalf of an individual user will avoid issues with expired access tokens.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "fe740515-d363-4c9e-b8ed-a6a60416c614",
+          "name": "Create an OAuth token",
+          "request": {
+            "name": "Create an OAuth token",
+            "description": {
+              "content": "Exchange credentials or authorisation grants for an OAuth 2.0 access token.\n\nThe `grant_type` field determines which parameters are required and which response fields are returned.\n\nSee [managing token expiration](/api-reference/oauth-token#managing-token-expiration) for guidance on refreshing tokens before they expire.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "oauth",
+                "token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{basicAuthUsername}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{basicAuthPassword}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "disabled": false,
+                  "key": "grant_type",
+                  "value": "<string>"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2f417a50-3e2f-4ef4-b196-6e37a09dc7fb",
+              "name": "Token created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "disabled": false,
+                      "key": "grant_type",
+                      "value": "client_credentials"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access_token\": \"01234567-89ab-cdef-0123-456789abcdef\",\n  \"token_type\": \"bearer\",\n  \"refresh_token\": \"01234567-89ab-cdef-0123-456789abcdef\",\n  \"expires_in\": 43199,\n  \"expires_at\": \"2025-04-11T03:43:28.148Z\",\n  \"refresh_token_expires_in\": 628639555,\n  \"refresh_token_expires_at\": \"2045-03-12T13:49:23.552Z\",\n  \"scope\": \"transfers\",\n  \"created_at\": \"2020-01-01T12:33:33.12345Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dd555fe4-bb77-4620-9ff1-0aefc699cd31",
+              "name": "Bad request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "disabled": false,
+                      "key": "grant_type",
+                      "value": "client_credentials"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"invalid_request\",\n  \"error_description\": \"Missing grant type\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3a17c95a-feb2-4fa3-aa42-8e3104f22428",
+              "name": "Invalid credentials. For example, the user reclaimed the account or an invalid registration code was used.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "disabled": false,
+                      "key": "grant_type",
+                      "value": "client_credentials"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"invalid_grant\",\n  \"error_description\": \"Invalid user credentials.\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3bc6f9b5-b1ef-4dff-982c-4a63f7c91ff1",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oauth",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "disabled": false,
+                      "key": "grant_type",
+                      "value": "client_credentials"
+                    }
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "41ad10e9-b4ee-44e2-ac1f-0d308de732f3",
+    "name": "Wise Platform 3ds oauth-token API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds currencies API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "currencies",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all currencies allowed for transfers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/currencies",
+            "headers": [
+              {
+                "name": "Accept-Language",
+                "value": "en"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns all currencies available for creating transfers. Currency names are returned in English by default — pass an `Accept-Language` header to receive localized names.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

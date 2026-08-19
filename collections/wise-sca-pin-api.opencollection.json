@@ -1,0 +1,186 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-pin API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-pin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Verify PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/pin/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "X-TW-JOSE-Method",
+                "value": "jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "[{% img src=\"https://img.shields.io/badge/jose-direct_encryption-blue\" /%}](/guides/developer/auth-and-security/jose-jwe){% .d-inline-block %}\n\nTo clear a **PIN** challenge listed in a OTT.\n\nNotes:\n1. User is required to [create pin](/api-reference/user-security/usersecuritypincreate) before the verification can be successful.\n2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.\n"
+        },
+        {
+          "info": {
+            "name": "Create a PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/pin",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new PIN factor used to resolve a SCA knowledge challenge type.\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v2/profiles/:profileId/pin",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a PIN associated to a profile.\n\nTo update a PIN for a profile, use this endpoint followed by [Create a PIN](/api-reference/sca-pin/scapincreate).\n\n{% admonition type=\"warning\" %}\nThis operation is irreversible.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Verify a PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/pin/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verifies a PIN challenge when calling a SCA-secured endpoint. Make sure to [create a PIN](/api-reference/sca-pin/scapincreate) before using this endpoint.\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

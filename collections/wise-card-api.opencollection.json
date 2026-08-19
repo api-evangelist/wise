@@ -1,0 +1,320 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds card API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "card",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List cards for a profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile to retrieve cards for."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of cards to return per page. Must be between 10 and 100."
+              },
+              {
+                "name": "pageNumber",
+                "value": "1",
+                "type": "query",
+                "description": "The page number to retrieve. Must be greater than or equal to 1."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of cards that belong to a specific profile.\n"
+        },
+        {
+          "info": {
+            "name": "Get card details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves details for a specific card by its token.\n"
+        },
+        {
+          "info": {
+            "name": "Update card status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/status",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update the status of a card. For cards issued with an `INACTIVE` status, updating to `ACTIVE` will activate the card and move the card order status to `COMPLETED`.\n\n**Available status transitions:**\n- `ACTIVE` - The card is active and usable\n- `FROZEN` - The card is temporarily frozen; all authorization requests will be declined\n- `BLOCKED` - The card is **irreversibly** blocked and is no longer usable\n"
+        },
+        {
+          "info": {
+            "name": "Reset PIN count",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/reset-pin-count",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "If the wrong PIN has been entered more than 3 times, future transactions on the card will be blocked with a `PIN_ENTRY_TRIES_EXCEEDED` error message.\n\nUse this endpoint to reset the PIN count to 0 and unblock transactions.\n\n{% admonition type=\"info\" %}\nIn some cases, you may also need to reset the PIN count directly at the ATM.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Get card spending permissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/spending-permissions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the current spending permissions configured for a card.\n"
+        },
+        {
+          "info": {
+            "name": "Update a single card permission",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/spending-permissions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Enable or disable a single spending permission on a card.\n\n{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please use the [v4 endpoint](/api-reference/card/cardpermissionsbulkupdate) instead.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Bulk update card permissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/:cardToken/spending-permissions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Enable or disable multiple spending permissions on a card in a single request.\n\nThis is the recommended endpoint for updating card permissions as it allows updating multiple permissions atomically.\n"
+        },
+        {
+          "info": {
+            "name": "Update phone number",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/phone-number",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "30000000",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "12345-12345-12345-12345",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated for partners onboarded after 1/3/2025. For new and existing partners, your clientId will need to be approved by our support team to make the `phoneNumber` optional in the [create card order endpoint](/api-reference/card-order/cardordercreate). See [3DS for more information](/guides/product/issue-cards/3ds).\n{% /admonition %}\n\nUpdates the phone number of a card. The new phone number must be a valid phone number.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

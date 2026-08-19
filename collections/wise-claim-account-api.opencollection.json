@@ -1,0 +1,43 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds claim-account API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "claim-account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Generate a claim account code",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/user/claim-account",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Generate a short-lived `claim_account_code` that allows a customer to take ownership of an account. Use the code when [redirecting the customer to Wise](/guides/product/kyc/wise-kyc/redirect-to-wise/claim-account) to finalize their account setup.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

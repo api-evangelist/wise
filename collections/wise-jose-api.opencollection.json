@@ -1,0 +1,245 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds jose API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "jose",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Wise JOSE public key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/auth/jose/response/public-keys",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "version",
+                "value": "",
+                "type": "query",
+                "description": "Fetch a specific public key version. If omitted the most recent public key is provided."
+              },
+              {
+                "name": "algorithm",
+                "value": "ES512",
+                "type": "query",
+                "description": "Algorithm to be used for signature verification or payload encryption. This must match the algorithm used during request.\n\n- Signature verification (Scope: `PAYLOAD_SIGNING`): `ES256`, `ES384`, `ES512`, `PS256`, `PS384`, `PS512`\n- Payload encryption (Scope: `PAYLOAD_ENCRYPTION`): `RSA_OAEP_256`\n"
+              },
+              {
+                "name": "scope",
+                "value": "PAYLOAD_SIGNING",
+                "type": "query",
+                "description": "Scope of the key. Must be `PAYLOAD_SIGNING` or `PAYLOAD_ENCRYPTION`."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a public key issued by Wise.\n\nDepending on the scope requested, the key will be used for verifying HTTP responses signed by Wise or for for encrypting the payload prior to sending it to Wise.\n\nFor both signature verification and payload encryption, the process involves storing this public key after retrieval. In both cases, the stored public key should be used without calling this endpoint.\n\nIf verification of the signed request fails or Wise is unable to decrypt your request payload, ca"
+        },
+        {
+          "info": {
+            "name": "Add a new client public key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/auth/jose/request/public-keys",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Upload a client public key for request payload signing or response payload encryption.\n\n{% admonition type=\"warning\" %}\n  This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid [client credentials token](/api-reference/oauth-token/oauthtokencreate) before performing this call.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Playground JWS",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/auth/jose/playground/jws",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "x-tw-jose-method",
+                "value": "jws"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send test signed HTTP requests and receive signed responses. Signing is mandatory for this endpoint — any message that is not a JSON Web Signature (JWS) will be rejected.\n"
+        },
+        {
+          "info": {
+            "name": "Playground JWE for GET requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/auth/jose/playground/jwe",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "x-tw-jose-method",
+                "value": "jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send test HTTP GET requests and receive encrypted responses.\n"
+        },
+        {
+          "info": {
+            "name": "Playground JWE for POST requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/auth/jose/playground/jwe",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "x-tw-jose-method",
+                "value": "jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send test encrypted HTTP requests and receive encrypted responses. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.\n"
+        },
+        {
+          "info": {
+            "name": "Playground JWE for direct encryption",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/auth/jose/playground/jwe-direct-encryption",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "x-tw-jose-method",
+                "value": "jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send encrypted HTTP requests for testing purposes and receive responses encrypted with the original content encryption key. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.\n"
+        },
+        {
+          "info": {
+            "name": "Playground JWS+JWE",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/auth/jose/playground/jwsjwe",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "x-tw-jose-method",
+                "value": "jws+jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send test signed and encrypted HTTP requests and receive signed and encrypted responses. Both signing and encryption are mandatory for this endpoint. The request must be a JSON Web Signature (JWS) wrapped in JSON Web Encryption (JWE) — any message that does not follow this format will be rejected.\n\nThe flow combines both JWS and JWE:\n1. **Request**: Sign payload (JWS) → Encrypt signed JWT (JWE) → Send to Wise\n2. **Response**: Receive encrypted response → Decrypt (JWE) → Verify signature (JWS)\n\n{"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

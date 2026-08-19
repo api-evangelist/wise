@@ -1,0 +1,446 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds balance API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "balance",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Balances for a Profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/profiles/:profileId/balances",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "types",
+                "value": "STANDARD",
+                "type": "query",
+                "description": "Comma-separated list of balance types to return. Acceptable values are `STANDARD` and `SAVINGS`."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the user's multi-currency account balance accounts. Returns all balance accounts the profile has in the types specified.\n\nThe `types` parameter must include at least one type. To return more than one type, comma-separate the values.\n"
+        },
+        {
+          "info": {
+            "name": "Create a Balance Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v4/profiles/:profileId/balances",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Opens a balance within the specified profile, in the currency and type specified in the request.\n\nFor `STANDARD` balances, only one can be created per currency. For `SAVINGS` balances, multiple in the same currency can be opened.\n\nWhen creating a `SAVINGS` type balance, a `name` is required.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve a Balance by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/profiles/:profileId/balances/:balanceId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "The balance ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a balance based on the specified balance ID."
+        },
+        {
+          "info": {
+            "name": "Remove a Balance Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v4/profiles/:profileId/balances/:balanceId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "balanceId",
+                "value": "",
+                "type": "path",
+                "description": "The balance ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Closes a balance account for the user's profile.\n\nBalance accounts must have a zero balance to be closed. Bank account details for the balance will also be deactivated and may not be restored.\n"
+        },
+        {
+          "info": {
+            "name": "Convert or Move Money Between Balances",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/balance-movements",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows conversion and movement of funds between balance accounts.\n\n**Convert across balance accounts:**\nConvert funds between two `STANDARD` balance accounts in different currencies. Requires a quote created with `\"payOut\": \"BALANCE\"`.\n\n**Move money between balances:**\n- Add money to a same-currency jar (move from `STANDARD` to `SAVINGS` without conversion)\n- Add money to another-currency jar (convert money using a quote)\n- Withdraw money from a jar (move from `SAVINGS` to `STANDAR"
+        },
+        {
+          "info": {
+            "name": "Retrieve Deposit Limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/balance-capacity",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "currency",
+                "value": "SGD",
+                "type": "query",
+                "description": "Currency code (ISO 4217 Alphabetic Code). The deposit limit will be returned in this currency."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the deposit limit for a profile based on regulatory requirements.\n\nUseful for personal profiles located in countries that have hold limits. We advise calling this API before depositing money into an account if the profile is located in Singapore or Malaysia.\n"
+        },
+        {
+          "info": {
+            "name": "Add an Excess Money Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/excess-money-account",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "If a balance goes over the regulatory hold limit, excess funds are automatically moved to another account at the end of the day.\n\nUse this endpoint to specify a recipient where excess money will be transferred.\n\nPrimarily used for Singapore and Malaysia customers.\n"
+        },
+        {
+          "info": {
+            "name": "Get Total Funds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/total-funds/:currency",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "currency",
+                "value": "EUR",
+                "type": "path",
+                "description": "Currency code (ISO 4217 Alphabetic Code). All values will be converted to this currency."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Provides an overview of your account's total valuation and available liquidity across all balances.\n\nReturns total worth, total available (including overdraft), total cash, and overdraft details.\n\n#### Example (Assuming GBP and USD has 1:1 exchange rate)\n\n| Scenario                                 | GBP balance | USD balance | Total Worth | Total Available | Overdraft Usage | Overdraft Limit |\n| ---------------------------------------- | ----------- | ----------- | ----------- | --------------- "
+        },
+        {
+          "info": {
+            "name": "Get account balance (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/borderless-accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "33333333",
+                "type": "query",
+                "description": "Your profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Use the [v4 Balances endpoint](/api-reference/balance/balanceget) instead.\n{% /admonition %}\n\nGet available balances for all activated currencies in your multi-currency account.\n"
+        },
+        {
+          "info": {
+            "name": "Convert currencies between balances (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/borderless-accounts/:borderlessAccountId/conversions",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": "a1b2c3d4-e5f6-7890-abcd-ef0123456789"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "borderlessAccountId",
+                "value": "64",
+                "type": "path",
+                "description": "Your borderless account ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Use the [balance movements endpoint](/api-reference/balance/balancemovement) to move and convert between balances instead.\n{% /admonition %}\n\nConvert funds between your multi-currency account currencies.\nQuote which is used in this call must be created with `\"payOut\": \"BALANCE\"`.\n\nNote that this call needs an extra field in header called `X-idempotence-uuid`.\n"
+        },
+        {
+          "info": {
+            "name": "List hold limit breaches",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/balances/hold-limit-breach",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "state",
+                "value": "OPEN",
+                "type": "query",
+                "description": "Filter by breach state. One of `OPEN`, `CLOSED`"
+              },
+              {
+                "name": "closingReason",
+                "value": "AUTOMATICALLY_RESOLVED",
+                "type": "query",
+                "description": "Filter by closing reason. One of `AUTOMATICALLY_RESOLVED`, `MANUALLY_RESOLVED`"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a list of hold limit breaches for a profile. A hold limit breach occurs when a balance exceeds the regulatory hold limit for that profile's country (e.g. Singapore, Malaysia).\n\nYou can optionally filter by `state` and `closing_reason`.\n"
+        },
+        {
+          "info": {
+            "name": "Close a hold limit breach",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/balances/hold-limit-breach/:holdLimitBreachId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "holdLimitBreachId",
+                "value": "",
+                "type": "path",
+                "description": "The hold limit breach ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Closes an open hold limit breach by performing a one-time refund to a specified recipient. The recipient will receive the excess amount that caused the breach.\n\nOnly breaches with `state: OPEN` can be closed via this endpoint.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

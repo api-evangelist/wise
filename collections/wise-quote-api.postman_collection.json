@@ -1,0 +1,1001 @@
+{
+  "item": [
+    {
+      "id": "ddf086ca-8175-48e5-84f7-44d0a9a13d0d",
+      "name": "quote",
+      "description": {
+        "content": "The quote resource defines the basic information required for a Wise transfer - the currencies to send between, the amount to send and the profile who is sending the money. The profile _must_ be included when creating a quote.\n\nQuote is one of the required resources to create a transfer, along with the recipient who is to receive the funds.\n\nThe quote response contains other information such as the exchange rate, the estimated delivery time and the methods the user can pay for the transfer. Not all of this information may apply to your use case.\n\nUpon creating a quote the current mid-market exchange rate is locked and will be used for the transfer that is created from the quote. The rate will be locked for 30 minutes to give a user time to complete the transfer creation flow.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "15f336b2-7133-4af9-a9fd-20c537307b21",
+          "name": "Create a quote (unauthenticated)",
+          "request": {
+            "name": "Create a quote (unauthenticated)",
+            "description": {
+              "content": "Use this endpoint to get example quotes for people to see the exchange rate and fees Wise offers before a user has created or linked an account. This can drive a version of the quote screen that shows the user what Wise offers before they sign up.\nNote that this endpoint does not require a token to create the resource, however, since it is just an example, the returned quote has no ID so can't be used later to create a transfer.\n\nIn order to get an accurate partner fee, we require a client credentials token to be provided. If you are a partner and would like your fee to be included in the quote returned, you must provide your auth token. If not, you do not require the Authorization header.\n\n{% admonition type=\"info\" %}\nUnauthenticated quotes cannot be used to create transfers, they are meant for illustration purposes in partner interfaces only. Make sure to create an authenticated quote during the transfer creation flow.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "quotes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCurrency\": \"<string>\",\n  \"targetCurrency\": \"<string>\",\n  \"sourceAmount\": \"<number,null>\",\n  \"targetAmount\": \"<number,null>\",\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"<string>\",\n      \"variable\": \"<number>\",\n      \"fixed\": \"<number>\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c764ce27-342a-4460-a3c2-d4d3cb5ccb92",
+              "name": "Returns a quote object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": \"<number,null>\",\n  \"targetAmount\": 110,\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"11144c35-9fe8-4c32-b7fd-d05c2a7734bf\",\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": 129.24,\n  \"payOut\": \"BANK_TRANSFER\",\n  \"preferredPayIn\": \"BANK_TRANSFER\",\n  \"rate\": 1.30445,\n  \"createdTime\": \"2019-04-05T13:18:58Z\",\n  \"user\": 55,\n  \"profile\": 101,\n  \"rateType\": \"FIXED\",\n  \"rateExpirationTime\": \"2019-04-08T13:18:57Z\",\n  \"guaranteedTargetAmountAllowed\": true,\n  \"targetAmountAllowed\": true,\n  \"guaranteedTargetAmount\": false,\n  \"providedAmountType\": \"SOURCE\",\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  },\n  \"paymentOptions\": [\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    },\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    }\n  ],\n  \"status\": \"PENDING\",\n  \"expirationTime\": \"2019-04-05T13:48:58Z\",\n  \"notices\": [\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    },\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1c36a3ff-17e0-43a7-aa77-8f846e4f9b05",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": \"<number,null>\",\n  \"targetAmount\": 110,\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cf4cf86d-ec6f-4965-99be-283e05f0fadf",
+          "name": "Create a quote (authenticated)",
+          "request": {
+            "name": "Create a quote (authenticated)",
+            "description": {
+              "content": "{% admonition type=\"info\" %}\nYou must use a user access token to authenticate this call and supply the profile with which the quote should be associated. This ensures that quote can be used to create a transfer.\n{% /admonition %}\n\nIf you are funding the transfer from a Multi Currency Balance, you must set the `payIn` as `BALANCE` to get the correct pricing in the quote. Not doing so will default to `BANK_TRANSFER` and the fees will be inconsistent between quote and transfer.\n\n{% admonition type=\"info\" %}\nWhen SWIFT_OUR is set as payOut value, it enables payment protection for swift recipients for global currency transfers. By using this payOut method, you can guarantee your customers that the fee will be charged to the sender and can ensure that the recipient gets the complete target amount.\n{% /admonition %}\n\n#### Response\n\nThe following describes the fields of the quote response that may be useful when building your integration.\n\nThe `payOut` field is used to select the correct entry in the `paymentOptions` array in order to know which fees to display to your customer. Find the paymentOption that matches the `payOut` field shown at the top level of the quote resource and `payIn` based on the settlement model the bank is using. By default, this is `BANK_TRANSFER`, unless you are using a prefunded or bulk settlement model. The `payOut` field will change based on the type of recipient you add to the quote in the `PATCH /quote` call, for example to-USD `swift_code` or to-CAD `interac` have different fees.\n\nFor example sending USD to a country other than the United States is supported but with different fees to domestic USD transfers.\nPlease see the later section on [Global Currencies](/guides/product/send-money/swift-network-transfers) to learn more about how to offer this useful feature.\n\nFor each paymentOption there is a price field. It gives a full breakdown of all the taxes, fees and discounts. It is preferable to refer to this structure to show breakdowns and totals, rather than the fee structure, found as well in each paymentOption element, that only gives a summary and is not able to surface important specifics such as taxes.\n\nWhen showing the price of a transfer always show the 'price.total.value.amount' of a payment option.\n\n#### Disabled Payment Options\n\nEach payment option is either enabled or disabled based on the `disabled` value. Disabled payment options should be shown to the user in a disabled state in most cases. This ensures users are given the options that they are familiar with regardless of their availability, as well as with options that can be beneficial to their accounts.\n\nThe `option.disabledReason` contains both the `code` and `message`, with the message being the user-friendly text to surface to the user if necessary.\n\n#### Transfer Nature for BRL\nWhen creating or updating a quote, the transfer nature can be set. This is a requirement for transfers to or from BRL and impacts the fees we charge on the quote, specifically the IOF.\n\nNote that IOF is determined based on the transfer nature, sender information, and recipient information. The default IOF will be included in a quote until all relevant information has been included.\n\n{% admonition type=\"info\" %}\nOmitting transfer nature will not prevent the transfer from being created or even funded. However, when attempting to process the transfer, it will be blocked and the money will be refunded to the sender.\n{% /admonition %}\n\n#### Pricing Configuration\nWhen creating or updating a quote, partners that have flexible partner pricing enabled are able to override the pricing configuration dynamically.\n\nTo learn more on how to use this feature, please see the [Flexible Partner Pricing Guide](/guides/product/send-money/quotes/pricing)\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "quotes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) Personal or business profile ID of the sender."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceCurrency\": \"<string>\",\n  \"targetCurrency\": \"<string>\",\n  \"sourceAmount\": \"<number,null>\",\n  \"targetAmount\": \"<number,null>\",\n  \"targetAccount\": \"<long>\",\n  \"payOut\": \"<string,null>\",\n  \"preferredPayIn\": \"<string,null>\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"<string>\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"<string>\",\n      \"variable\": \"<number>\",\n      \"fixed\": \"<number>\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "1f923785-4d1e-4790-9602-f44c195242a7",
+              "name": "Returns a quote object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID of the sender."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": \"<number,null>\",\n  \"targetAccount\": 12345,\n  \"payOut\": \"<string,null>\",\n  \"preferredPayIn\": \"<string,null>\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"MOVING_MONEY_BETWEEN_OWN_ACCOUNTS\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"11144c35-9fe8-4c32-b7fd-d05c2a7734bf\",\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": 129.24,\n  \"payOut\": \"BANK_TRANSFER\",\n  \"preferredPayIn\": \"BANK_TRANSFER\",\n  \"rate\": 1.30445,\n  \"createdTime\": \"2019-04-05T13:18:58Z\",\n  \"user\": 55,\n  \"profile\": 101,\n  \"rateType\": \"FIXED\",\n  \"rateExpirationTime\": \"2019-04-08T13:18:57Z\",\n  \"guaranteedTargetAmountAllowed\": true,\n  \"targetAmountAllowed\": true,\n  \"guaranteedTargetAmount\": false,\n  \"providedAmountType\": \"SOURCE\",\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  },\n  \"paymentOptions\": [\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    },\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    }\n  ],\n  \"status\": \"PENDING\",\n  \"expirationTime\": \"2019-04-05T13:48:58Z\",\n  \"notices\": [\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    },\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "df310511-7d6c-4fae-bd90-524c43f39b70",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID of the sender."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": \"<number,null>\",\n  \"targetAccount\": 12345,\n  \"payOut\": \"<string,null>\",\n  \"preferredPayIn\": \"<string,null>\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"MOVING_MONEY_BETWEEN_OWN_ACCOUNTS\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4e243827-ccb7-41e3-a299-16c559b54349",
+          "name": "Retrieve a quote by ID",
+          "request": {
+            "name": "Retrieve a quote by ID",
+            "description": {
+              "content": "Get quote info by ID. If the quote has expired (not used to create a transfer within 30 minutes of quote creation), it will only be accessible for approximately 48 hours via this endpoint.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "quotes",
+                ":quoteId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) Personal or business profile ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "quoteId",
+                  "description": "(Required) The quote ID (GUID format)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "09359081-7899-4f35-b8fe-da115b465ecb",
+              "name": "Returns a quote object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes",
+                    ":quoteId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) The quote ID (GUID format)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"11144c35-9fe8-4c32-b7fd-d05c2a7734bf\",\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": 129.24,\n  \"payOut\": \"BANK_TRANSFER\",\n  \"preferredPayIn\": \"BANK_TRANSFER\",\n  \"rate\": 1.30445,\n  \"createdTime\": \"2019-04-05T13:18:58Z\",\n  \"user\": 55,\n  \"profile\": 101,\n  \"rateType\": \"FIXED\",\n  \"rateExpirationTime\": \"2019-04-08T13:18:57Z\",\n  \"guaranteedTargetAmountAllowed\": true,\n  \"targetAmountAllowed\": true,\n  \"guaranteedTargetAmount\": false,\n  \"providedAmountType\": \"SOURCE\",\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  },\n  \"paymentOptions\": [\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    },\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    }\n  ],\n  \"status\": \"PENDING\",\n  \"expirationTime\": \"2019-04-05T13:48:58Z\",\n  \"notices\": [\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    },\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "589da65a-e31c-41d3-bbbc-50ae11941c47",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes",
+                    ":quoteId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) The quote ID (GUID format)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "f724138d-474f-4bdd-9692-73c8026ab9e2",
+          "name": "Update a quote",
+          "request": {
+            "name": "Update a quote",
+            "description": {
+              "content": "You should update a quote using a `PATCH` call to add a recipient. This will update the saved quote's data based on who and where the money will be sent to.\n\nUpdating the quote with a recipient may cause the available payment options, prices and estimated delivery times to change from the original quoted amounts. This is due to the fact that sending some currencies to some destinations costs a different amount based on the payment networks we use, for example sending USD to a country outside the USA uses international rather than domestic payment networks and as such costs more, or sending CAD over the Interac network is a more expensive operation.\n\nWhen updating a quote the `payOut` field may change to denote the payment option you should select when sending to this recipient. For example sending USD to a `swift_code` recipient or CAD to an `interac` recipient will change `payOut` to `SWIFT` or `INTERAC` respectively. This field defaults to `BANK_TRANSFER` so it can be used in all cases to help select the correct `paymentOption` and hence show the correct pricing to users.\n\nIf you want to provide more transparency in terms of fees charged when your customers create quote with swift recipient for global currencies, you might consider to set payOut field with SWIFT_OUR value. This will ensure that the recipient receives complete target amount.\n\nIn this case, where pricing changes after a user selects recipient, you should show a message to your customer before confirming the transfer. Please see the section on [Global Currencies](/guides/product/send-money/swift-network-transfers) to learn more how and why this works and the messaging you need to display.\n\n#### Transfer Nature for BRL\nWhen creating or updating a quote, the transfer nature can be set. This is a requirement for transfers to or from BRL and impacts the fees we charge on the quote, specifically the IOF.\n\nNote that IOF is determined based on the transfer nature, sender information, and recipient information. The default IOF will be included in a quote until all relevant information has been included.\n\n{% admonition type=\"info\" %}\nOmitting transfer nature will not prevent the transfer from being created or even funded. However, when attempting to process the transfer, it will be blocked and the money will be refunded to the sender.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "quotes",
+                ":quoteId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) Personal or business profile ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "quoteId",
+                  "description": "(Required) The quote ID (GUID format)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/merge-patch+json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetAccount\": \"<long>\",\n  \"payOut\": \"<string>\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"<string>\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"<string>\",\n      \"variable\": \"<number>\",\n      \"fixed\": \"<number>\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "12e2f21b-4076-4491-85cc-f6918cc8c995",
+              "name": "Returns a quote object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes",
+                    ":quoteId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) The quote ID (GUID format)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"targetAccount\": 12345,\n  \"payOut\": \"SWIFT_OUR\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"MOVING_MONEY_BETWEEN_OWN_ACCOUNTS\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"11144c35-9fe8-4c32-b7fd-d05c2a7734bf\",\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"USD\",\n  \"sourceAmount\": 100,\n  \"targetAmount\": 129.24,\n  \"payOut\": \"BANK_TRANSFER\",\n  \"preferredPayIn\": \"BANK_TRANSFER\",\n  \"rate\": 1.30445,\n  \"createdTime\": \"2019-04-05T13:18:58Z\",\n  \"user\": 55,\n  \"profile\": 101,\n  \"rateType\": \"FIXED\",\n  \"rateExpirationTime\": \"2019-04-08T13:18:57Z\",\n  \"guaranteedTargetAmountAllowed\": true,\n  \"targetAmountAllowed\": true,\n  \"guaranteedTargetAmount\": false,\n  \"providedAmountType\": \"SOURCE\",\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  },\n  \"paymentOptions\": [\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    },\n    {\n      \"disabled\": false,\n      \"estimatedDelivery\": \"2019-04-08T12:30:00Z\",\n      \"formattedEstimatedDelivery\": \"by Apr 8\",\n      \"estimatedDeliveryDelays\": [\n        {\n          \"reason\": \"sample reason\"\n        },\n        {\n          \"reason\": \"sample reason\"\n        }\n      ],\n      \"fee\": {\n        \"transferwise\": 3.04,\n        \"payIn\": 0,\n        \"discount\": 2.27,\n        \"partner\": 0,\n        \"total\": 0.77\n      },\n      \"price\": {\n        \"priceSetId\": 238,\n        \"total\": {\n          \"type\": \"TOTAL\",\n          \"label\": \"Total fees\",\n          \"value\": {\n            \"amount\": 0.77,\n            \"currency\": \"GBP\",\n            \"label\": \"0.77 GBP\"\n          },\n          \"explanation\": {}\n        },\n        \"items\": [\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          },\n          {\n            \"id\": \"string\",\n            \"type\": \"FEE\",\n            \"label\": \"fee\",\n            \"value\": {\n              \"amount\": 0,\n              \"currency\": \"GBP\",\n              \"label\": \"0 GBP\"\n            },\n            \"explanation\": {\n              \"plainText\": \"string\",\n              \"markdown\": \"string\"\n            }\n          }\n        ],\n        \"deferredFee\": {\n          \"amount\": 14.79,\n          \"currency\": \"BRL\"\n        },\n        \"calculatedOn\": {\n          \"unroundedAmountToConvert\": {\n            \"amount\": 179.97342,\n            \"currency\": \"BRL\"\n          }\n        }\n      },\n      \"sourceAmount\": 100,\n      \"targetAmount\": 129.24,\n      \"sourceCurrency\": \"GBP\",\n      \"targetCurrency\": \"USD\",\n      \"payIn\": \"BANK_TRANSFER\",\n      \"payOut\": \"BANK_TRANSFER\",\n      \"allowedProfileTypes\": [\n        \"PERSONAL\",\n        \"BUSINESS\"\n      ],\n      \"payInProduct\": \"CHEAP\",\n      \"feePercentage\": 0.0092,\n      \"disabledReason\": {\n        \"code\": \"string\",\n        \"message\": \"string\"\n      }\n    }\n  ],\n  \"status\": \"PENDING\",\n  \"expirationTime\": \"2019-04-05T13:48:58Z\",\n  \"notices\": [\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    },\n    {\n      \"text\": \"You can have a maximum of 3 open transfers with a guaranteed rate. After that, they'll be transferred using the live rate. Complete or cancel your other transfers to regain the use of guaranteed rate.\",\n      \"link\": \"string\",\n      \"type\": \"WARNING\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "913adbe3-9a57-49ab-869b-99b2bde883ec",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "quotes",
+                    ":quoteId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) Personal or business profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) The quote ID (GUID format)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"targetAccount\": 12345,\n  \"payOut\": \"SWIFT_OUR\",\n  \"paymentMetadata\": {\n    \"transferNature\": \"MOVING_MONEY_BETWEEN_OWN_ACCOUNTS\"\n  },\n  \"pricingConfiguration\": {\n    \"fee\": {\n      \"type\": \"OVERRIDE\",\n      \"variable\": 0.011,\n      \"fixed\": 15.42\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "107aac66-cea5-4b73-a3bf-1d653155e136",
+    "name": "Wise Platform 3ds quote API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

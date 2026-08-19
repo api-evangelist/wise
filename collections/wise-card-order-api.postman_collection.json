@@ -1,0 +1,1999 @@
+{
+  "item": [
+    {
+      "id": "08a8330e-93dc-428f-b997-1e333460e181",
+      "name": "card-order",
+      "description": {
+        "content": "With this set of APIs, you will be able to create cards for your customers. You can also retrieve and view the status of your current card orders, as well as the list of available card programs for the user.\n\n{% admonition type=\"info\" %}\nOn production, each personal profile can order at most 1 physical card and 3 virtual cards. On sandbox, we allow up to 10 physical cards and 30 virtual cards for testing purpose. However, no more than 3 virtual cards can be ordered per day. This limit includes cards and card orders.\n{% /admonition %}\n\nCard order status flow {% #card-order-status-flow .title-3 .m-t-5 %}\n\nThe card order response will contain the `status` field. The initial status is `PLACED` or `REQUIREMENTS_FULFILLED` depending on the requirement fulfillment state:\n\n- `PLACED` - The card order is created. The card will be generated once it has fulfilled all the requirements\n- `REQUIREMENTS_FULFILLED` - The card order has fulfilled all the requirements and the card should be generated in a short while\n- `CARD_DETAILS_CREATED` - The card has been generated\n- `PRODUCED` - The physical card has been produced and waiting to be picked up by delivery vendor (physical card only)\n- `COMPLETED` - The card has been activated and is ready to use. The card order is completed\n- `CANCELLED` - The card order has been cancelled. This can happen if you reach out to Wise Support to cancel a card order\n- `RETURNED` - Delivery failed, the physical card has been returned and will be blocked (physical card only)\n\n![Card order status state machine](/images/diagrams/card-order-status-flow.png)\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "dbcf2fd4-1dfc-42ad-b7d9-8d4282f1929a",
+          "name": "Create a card order",
+          "request": {
+            "name": "Create a card order",
+            "description": {
+              "content": "Creates a new card order. The `program` field value is retrieved from the [retrieve all card programs](/api-reference/card-order/cardorderprogramsget) endpoint.\n\n{% admonition type=\"warning\" %}\nThis request requires an extra field in the header, `X-idempotence-uuid`. This should be generated and used for any subsequent retries in the event that the initial request fails.\n{% /admonition %}\n\nWhen you issue a card under a business profile, the cardholder will automatically default to the [business representative](/api-reference/profile/profilebusinesscreate).\n\nIf the cardholder is not the business representative, create a cardholder [personal profile](/api-reference/profile/profilepersonalcreate) and add the profileId of the cardholder profile to the `cardHolderProfileId` field on the card order request.\n\nFor country-specific address fields and validation rules, see the [card address validation guide](/guides/developer/api-guides/card-address-validation).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Idempotency key. Should be generated and used for any subsequent retries.",
+                "key": "X-idempotence-uuid",
+                "value": "<uuid>"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"program\": \"<string>\",\n  \"cardHolderName\": \"<string>\",\n  \"address\": {\n    \"firstLine\": \"<string>\",\n    \"secondLine\": \"<string,null>\",\n    \"thirdLine\": \"<string,null>\",\n    \"city\": \"<string>\",\n    \"postCode\": \"<string>\",\n    \"state\": \"<string,null>\",\n    \"country\": \"<string>\"\n  },\n  \"embossedName\": \"<string>\",\n  \"phoneNumber\": \"<string>\",\n  \"deliveryOption\": \"<string>\",\n  \"lifetimeLimit\": \"<number>\",\n  \"cardHolderProfileId\": \"<long>\",\n  \"replacementDetails\": {\n    \"cardToken\": \"<string>\",\n    \"reason\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "fee82d59-0c6b-42a3-b7d5-45ce7d662b6f",
+              "name": "OK - Card order created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key. Should be generated and used for any subsequent retries.",
+                    "key": "X-idempotence-uuid",
+                    "value": "054064c9-e01e-49fb-8fd9-b0990b9442f4"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"program\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n  \"cardHolderName\": \"John Smith\",\n  \"address\": {\n    \"firstLine\": \"56 Shoreditch High St\",\n    \"secondLine\": \"The Tea Bldg\",\n    \"thirdLine\": \"<string,null>\",\n    \"city\": \"London\",\n    \"postCode\": \"E1 6JJ\",\n    \"state\": \"<string,null>\",\n    \"country\": \"GB\"\n  },\n  \"embossedName\": \"Smith John\",\n  \"phoneNumber\": \"+441234567890\",\n  \"deliveryOption\": \"<string>\",\n  \"lifetimeLimit\": 100,\n  \"cardHolderProfileId\": 654321,\n  \"replacementDetails\": {\n    \"cardToken\": \"4a75fdb7-5791-49ac-832c-81c4347e4df0\",\n    \"reason\": \"CARD_DAMAGED\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 142,\n  \"profileId\": 123456,\n  \"clientId\": \"your-client-id\",\n  \"cardProgram\": {\n    \"name\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n    \"scheme\": \"VISA\",\n    \"defaultCurrency\": \"GBP\",\n    \"cardType\": \"PHYSICAL\"\n  },\n  \"address\": {\n    \"firstLine\": \"56 Shoreditch High St\",\n    \"secondLine\": \"The Tea Bldg\",\n    \"thirdLine\": \"string\",\n    \"city\": \"London\",\n    \"postCode\": \"E1 6JJ\",\n    \"state\": \"string\",\n    \"country\": \"GB\",\n    \"key_0\": 7133.962312510812,\n    \"key_1\": \"string\"\n  },\n  \"cardToken\": \"4dc0be88-903f-49e4-8237-735f1139e3dd\",\n  \"replacesCard\": \"string\",\n  \"creationTime\": \"2023-07-31T01:43:24.596321434Z\",\n  \"modificationTime\": \"2023-07-31T01:43:24.596321825Z\",\n  \"status\": \"PRODUCED\",\n  \"cardHolderName\": \"John Smith\",\n  \"phoneNumber\": \"+441234567890\",\n  \"lifetimeLimit\": 100,\n  \"deliveryEstimate\": \"2023-10-30T07:11:00.848681Z\",\n  \"deliveryDetails\": {\n    \"deliveryOption\": \"POSTAL_SERVICE_WITH_TRACKING\",\n    \"deliveryVendor\": \"DHL\",\n    \"trackingUrl\": \"https://www.dhl.com/gb-en/home/tracking/tracking-express.html?submit=1&tracking-id=1999473803\",\n    \"trackingNumber\": \"1999473803\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0e77887d-80ff-4b3f-a7e0-12207d58d281",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Idempotency key. Should be generated and used for any subsequent retries.",
+                    "key": "X-idempotence-uuid",
+                    "value": "054064c9-e01e-49fb-8fd9-b0990b9442f4"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"program\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n  \"cardHolderName\": \"John Smith\",\n  \"address\": {\n    \"firstLine\": \"56 Shoreditch High St\",\n    \"secondLine\": \"The Tea Bldg\",\n    \"thirdLine\": \"<string,null>\",\n    \"city\": \"London\",\n    \"postCode\": \"E1 6JJ\",\n    \"state\": \"<string,null>\",\n    \"country\": \"GB\"\n  },\n  \"embossedName\": \"Smith John\",\n  \"phoneNumber\": \"+441234567890\",\n  \"deliveryOption\": \"<string>\",\n  \"lifetimeLimit\": 100,\n  \"cardHolderProfileId\": 654321,\n  \"replacementDetails\": {\n    \"cardToken\": \"4a75fdb7-5791-49ac-832c-81c4347e4df0\",\n    \"reason\": \"CARD_DAMAGED\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "9385f8e0-c12d-4620-93c9-748447bee6fd",
+          "name": "Retrieve all card orders",
+          "request": {
+            "name": "Retrieve all card orders",
+            "description": {
+              "content": "Retrieves a list of card orders created for the specified `profileId`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "<integer>",
+                  "description": "The maximum number of card orders to return per page. This number can be between 10 - 100, and will default to 10."
+                },
+                {
+                  "disabled": false,
+                  "key": "pageNumber",
+                  "value": "<integer>",
+                  "description": "The page number to retrieve the next set of card orders. The number has to be greater or equal to 1, and will default to 1."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "909dd996-5239-4c33-98b1-4a2ed6569b00",
+              "name": "OK - Successfully retrieved card orders.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"totalCount\": 5,\n  \"cardOrders\": [\n    {\n      \"id\": 142,\n      \"profileId\": 123456,\n      \"clientId\": \"your-client-id\",\n      \"cardProgram\": {\n        \"name\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n        \"scheme\": \"VISA\",\n        \"defaultCurrency\": \"GBP\",\n        \"cardType\": \"PHYSICAL\"\n      },\n      \"address\": {\n        \"firstLine\": \"56 Shoreditch High St\",\n        \"secondLine\": \"The Tea Bldg\",\n        \"thirdLine\": \"string\",\n        \"city\": \"London\",\n        \"postCode\": \"E1 6JJ\",\n        \"state\": \"string\",\n        \"country\": \"GB\"\n      },\n      \"cardToken\": \"4dc0be88-903f-49e4-8237-735f1139e3dd\",\n      \"replacesCard\": \"string\",\n      \"creationTime\": \"2023-07-31T01:43:24.596321434Z\",\n      \"modificationTime\": \"2023-07-31T01:43:24.596321825Z\",\n      \"status\": \"PRODUCED\",\n      \"cardHolderName\": \"John Smith\",\n      \"phoneNumber\": \"+441234567890\",\n      \"lifetimeLimit\": 100,\n      \"deliveryEstimate\": \"2023-10-30T07:11:00.848681Z\",\n      \"deliveryDetails\": {\n        \"deliveryOption\": \"POSTAL_SERVICE_WITH_TRACKING\",\n        \"deliveryVendor\": \"DHL\",\n        \"trackingUrl\": \"https://www.dhl.com/gb-en/home/tracking/tracking-express.html?submit=1&tracking-id=1999473803\",\n        \"trackingNumber\": \"1999473803\"\n      }\n    },\n    {\n      \"id\": 142,\n      \"profileId\": 123456,\n      \"clientId\": \"your-client-id\",\n      \"cardProgram\": {\n        \"name\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n        \"scheme\": \"VISA\",\n        \"defaultCurrency\": \"GBP\",\n        \"cardType\": \"PHYSICAL\"\n      },\n      \"address\": {\n        \"firstLine\": \"56 Shoreditch High St\",\n        \"secondLine\": \"The Tea Bldg\",\n        \"thirdLine\": \"string\",\n        \"city\": \"London\",\n        \"postCode\": \"E1 6JJ\",\n        \"state\": \"string\",\n        \"country\": \"GB\",\n        \"key_0\": false\n      },\n      \"cardToken\": \"4dc0be88-903f-49e4-8237-735f1139e3dd\",\n      \"replacesCard\": \"string\",\n      \"creationTime\": \"2023-07-31T01:43:24.596321434Z\",\n      \"modificationTime\": \"2023-07-31T01:43:24.596321825Z\",\n      \"status\": \"PRODUCED\",\n      \"cardHolderName\": \"John Smith\",\n      \"phoneNumber\": \"+441234567890\",\n      \"lifetimeLimit\": 100,\n      \"deliveryEstimate\": \"2023-10-30T07:11:00.848681Z\",\n      \"deliveryDetails\": {\n        \"deliveryOption\": \"POSTAL_SERVICE_WITH_TRACKING\",\n        \"deliveryVendor\": \"DHL\",\n        \"trackingUrl\": \"https://www.dhl.com/gb-en/home/tracking/tracking-express.html?submit=1&tracking-id=1999473803\",\n        \"trackingNumber\": \"1999473803\"\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "477224df-f12a-4329-88da-e9bfc283c05a",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "pageNumber",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3a18e707-cf36-430f-b6ba-0d4ee4a208b8",
+          "name": "Retrieve a card order",
+          "request": {
+            "name": "Retrieve a card order",
+            "description": {
+              "content": "Retrieves a card order based on the `cardOrderId`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders",
+                ":cardOrderId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "cardOrderId",
+                  "description": "(Required) The card order ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "89734eb6-e4f2-4174-b1b4-1c8e484a6ac8",
+              "name": "OK - Successfully retrieved card order.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 142,\n  \"profileId\": 123456,\n  \"clientId\": \"your-client-id\",\n  \"cardProgram\": {\n    \"name\": \"VISA_DEBIT_BUSINESS_UK_1_PHYSICAL_CARDS_API\",\n    \"scheme\": \"VISA\",\n    \"defaultCurrency\": \"GBP\",\n    \"cardType\": \"PHYSICAL\"\n  },\n  \"address\": {\n    \"firstLine\": \"56 Shoreditch High St\",\n    \"secondLine\": \"The Tea Bldg\",\n    \"thirdLine\": \"string\",\n    \"city\": \"London\",\n    \"postCode\": \"E1 6JJ\",\n    \"state\": \"string\",\n    \"country\": \"GB\",\n    \"key_0\": 7133.962312510812,\n    \"key_1\": \"string\"\n  },\n  \"cardToken\": \"4dc0be88-903f-49e4-8237-735f1139e3dd\",\n  \"replacesCard\": \"string\",\n  \"creationTime\": \"2023-07-31T01:43:24.596321434Z\",\n  \"modificationTime\": \"2023-07-31T01:43:24.596321825Z\",\n  \"status\": \"PRODUCED\",\n  \"cardHolderName\": \"John Smith\",\n  \"phoneNumber\": \"+441234567890\",\n  \"lifetimeLimit\": 100,\n  \"deliveryEstimate\": \"2023-10-30T07:11:00.848681Z\",\n  \"deliveryDetails\": {\n    \"deliveryOption\": \"POSTAL_SERVICE_WITH_TRACKING\",\n    \"deliveryVendor\": \"DHL\",\n    \"trackingUrl\": \"https://www.dhl.com/gb-en/home/tracking/tracking-express.html?submit=1&tracking-id=1999473803\",\n    \"trackingNumber\": \"1999473803\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9e71e797-669d-45e6-981a-e52985e88948",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1c81a372-d6eb-468e-8475-ab516e2b6cae",
+          "name": "Retrieve available card programs",
+          "request": {
+            "name": "Retrieve available card programs",
+            "description": {
+              "content": "Retrieves the list of available card programs for each `profileId`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders",
+                "availability"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "4e484acb-6423-4569-ad70-3a3a01af72df",
+              "name": "OK - Successfully retrieved available card programs.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"cardPrograms\": [\n    {\n      \"name\": \"VISA_DEBIT_BUSINESS_UK_1_CARDS_API\",\n      \"scheme\": \"VISA\",\n      \"defaultCurrency\": \"GBP\",\n      \"cardType\": \"VIRTUAL_NON_UPGRADEABLE\"\n    },\n    {\n      \"name\": \"VISA_DEBIT_BUSINESS_UK_1_CARDS_API\",\n      \"scheme\": \"VISA\",\n      \"defaultCurrency\": \"GBP\",\n      \"cardType\": \"VIRTUAL_NON_UPGRADEABLE\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c706c2c2-2238-4387-a90f-f0706a96cdef",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    "availability"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "65aadc07-ce37-4ed0-bb6e-d95e2cc240b2",
+          "name": "Retrieve card order requirements",
+          "request": {
+            "name": "Retrieve card order requirements",
+            "description": {
+              "content": "Retrieves all card requirements for a `cardOrderId`. A valid card order needs all its requirements status to be `COMPLETED`.\n\nThe type of requirements are:\n- `PIN (optional)`: [Set a PIN](/api-reference/card-order/cardorderpresetpin) on a virtual or physical card order. Contact the team if you need this feature.\n- `VERIFICATION`: Verify your customer by providing KYC evidences. Refer to the [KYC guide](/guides/product/kyc).\n- `ADDRESS`: Provide a valid address for your card order. Refer to [address validation](/api-reference/card-order/cardordervalidateaddress).\n\nA requirement **status** has the following values:\n- `NOT_INITIATED`\n- `NEEDS_ACTION`\n- `PENDING`\n- `COMPLETED`\n- `FAILED`\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders",
+                ":cardOrderId",
+                "requirements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "cardOrderId",
+                  "description": "(Required) The card order ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "0146291e-0631-4c52-a401-f34eaf453497",
+              "name": "OK - Successfully retrieved card order requirements.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId",
+                    "requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"requirements\": [\n    {\n      \"type\": \"PIN\",\n      \"status\": \"NOT_INITIATED\"\n    },\n    {\n      \"type\": \"VERIFICATION\",\n      \"status\": \"PENDING\"\n    },\n    {\n      \"type\": \"ADDRESS\",\n      \"status\": \"COMPLETED\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8d269975-ced4-4512-99f2-4361a915e4b6",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId",
+                    "requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "49343fe7-ee04-4e01-96a6-c2d9c593c17f",
+          "name": "Update card order status",
+          "request": {
+            "name": "Update card order status",
+            "description": {
+              "content": "Updates the status of a card order based on its `cardOrderId`. The status can be updated to one of the following:\n1. `CANCELLED`\n2. `COMPLETED` (deprecated)\n\nThe behaviour for card order cancellation differs across card order statuses:\n- `PLACED`: Card order can be cancelled with no further action required.\n- `REQUIREMENTS_FULFILLED`, `CARD_DETAILS_CREATED`, `PRODUCED`: Card order can be cancelled, and its associated card will be blocked. However, the physical card may have already been produced and may be in delivery. If so, the card will still reach the end user's address. This should be communicated to the end user to prevent confusion.\n- `COMPLETED`, `RETURNED`: Card orders in these statuses cannot be cancelled.\n\n{% admonition type=\"info\" %}\nUpdating a card order status to `COMPLETED` is deprecated. Check with our team whether this is supported in your integration.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "profiles",
+                ":profileId",
+                "card-orders",
+                ":cardOrderId",
+                "status"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "cardOrderId",
+                  "description": "(Required) The card order ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c517fb21-d848-4c57-bcd8-2db81d278e9a",
+              "name": "Accepted - Card order status update has been accepted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CANCELLED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f8f114e3-52a8-4ec4-8c04-a3a9b451de03",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "profiles",
+                    ":profileId",
+                    "card-orders",
+                    ":cardOrderId",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "cardOrderId",
+                      "description": "(Required) The card order ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CANCELLED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6b1bb527-20bd-4f04-afe2-f6ca720cd90c",
+          "name": "Validate an address",
+          "request": {
+            "name": "Validate an address",
+            "description": {
+              "content": "Validates the format of an address for a card order. Make sure to follow country-specific address fields and validation as described in the [card address validation guide](/guides/developer/api-guides/card-address-validation).\n\nFor virtual cards, the address field will be used as a billing address. It will be used for AVS checks in countries where it is required.\n\nFor physical cards, the address field will be used as a delivery address. It will be used to deliver your card and for AVS checks in countries where it is required.\n\n{% admonition type=\"warning\" %}\nWe do not support PO BOX addresses.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "spend",
+                "address",
+                "validate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstLine\": \"<string>\",\n  \"secondLine\": \"<string,null>\",\n  \"thirdLine\": \"<string,null>\",\n  \"city\": \"<string>\",\n  \"postCode\": \"<string>\",\n  \"state\": \"<string,null>\",\n  \"country\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a7d13062-20e5-4710-b905-a9bb3bfe94c7",
+              "name": "OK - Validation result returned. An empty errors collection means the address is valid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "address",
+                    "validate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstLine\": \"56 Shoreditch High St\",\n  \"secondLine\": \"The Tea Bldg\",\n  \"thirdLine\": \"<string,null>\",\n  \"city\": \"London\",\n  \"postCode\": \"E1 6JJ\",\n  \"state\": \"<string,null>\",\n  \"country\": \"GB\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"field\": \"city\",\n      \"message\": \"Required Field\"\n    },\n    {\n      \"field\": \"postCode\",\n      \"message\": \"Please enter a valid postcode\"\n    },\n    {\n      \"field\": \"firstLine\",\n      \"message\": \"Must be less than 30 characters\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "71b26d54-4acf-4abf-9e2f-517983a2d94b",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "spend",
+                    "address",
+                    "validate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstLine\": \"56 Shoreditch High St\",\n  \"secondLine\": \"The Tea Bldg\",\n  \"thirdLine\": \"<string,null>\",\n  \"city\": \"London\",\n  \"postCode\": \"E1 6JJ\",\n  \"state\": \"<string,null>\",\n  \"country\": \"GB\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "01cf2f87-a610-4272-8050-fb8a03c7330b",
+          "name": "Set card PIN",
+          "request": {
+            "name": "Set card PIN",
+            "description": {
+              "content": "Sets a PIN during the card order flow. This endpoint will be accessible for partners that require to set a PIN during the card order flow.\n\nPlease follow [this guide](/guides/product/issue-cards/sensitive-card-details) to use this endpoint.\n\nTo use this endpoint, make sure to set the `api token` and the `card order id` in the headers.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "protocol": "https",
+              "path": [
+                "twcard-data",
+                "v1",
+                "sensitive-card-data",
+                "preset-pin"
+              ],
+              "host": [
+                "twcard",
+                "wise",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The card order ID.",
+                "key": "x-tw-twcard-order-id",
+                "value": "<string>"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keyVersion\": \"<integer>\",\n  \"encryptedPayload\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e682571e-7dd0-4de4-86f9-b0d810d438c2",
+              "name": "OK - PIN set successfully.",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "twcard-data",
+                    "v1",
+                    "sensitive-card-data",
+                    "preset-pin"
+                  ],
+                  "host": [
+                    "twcard",
+                    "wise",
+                    "com"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The card order ID.",
+                    "key": "x-tw-twcard-order-id",
+                    "value": "142"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"keyVersion\": 1,\n  \"encryptedPayload\": \"eyJhbGciOiJSU0...\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"cardOrderId\": \"142\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "73c4551c-a668-4b18-a12e-776177c65158",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "twcard-data",
+                    "v1",
+                    "sensitive-card-data",
+                    "preset-pin"
+                  ],
+                  "host": [
+                    "twcard",
+                    "wise",
+                    "com"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The card order ID.",
+                    "key": "x-tw-twcard-order-id",
+                    "value": "142"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"keyVersion\": 1,\n  \"encryptedPayload\": \"eyJhbGciOiJSU0...\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "a5b1028e-5b93-4736-8f31-b00a9111f992",
+    "name": "Wise Platform 3ds card-order API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

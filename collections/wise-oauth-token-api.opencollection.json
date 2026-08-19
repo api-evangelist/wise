@@ -1,0 +1,44 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds oauth-token API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "oauth-token",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create an OAuth token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/oauth/token",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "form-urlencoded",
+              "data": []
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Exchange credentials or authorisation grants for an OAuth 2.0 access token.\n\nThe `grant_type` field determines which parameters are required and which response fields are returned.\n\nSee [managing token expiration](/api-reference/oauth-token#managing-token-expiration) for guidance on refreshing tokens before they expire.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

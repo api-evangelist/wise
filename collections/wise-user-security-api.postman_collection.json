@@ -1,0 +1,2902 @@
+{
+  "item": [
+    {
+      "id": "b7c87ea8-dd6d-4613-ade0-177e320e3d22",
+      "name": "user-security",
+      "description": {
+        "content": "{% admonition type=\"warning\" %}\nThese endpoints are deprecated. Please refer to [PIN](/api-reference/sca-pin), [Facemaps](/api-reference/sca-facemaps), and [Device Fingerprints](/api-reference/sca-device-fingerprints) to integrate with SCA.\n{% /admonition %}\n\nUser security allows users to set up security-related protections over the API.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "64387c14-13a8-4569-9f52-791640675a66",
+          "name": "List Phone Numbers",
+          "request": {
+            "name": "List Phone Numbers",
+            "description": {
+              "content": "List verified phone numbers for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "application",
+                "users",
+                ":userId",
+                "phone-numbers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "d883cd83-67cb-4503-a7a4-1fb8a5b136eb",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "application",
+                    "users",
+                    ":userId",
+                    "phone-numbers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1230944,\n    \"phoneNumber\": \"+6588888888\",\n    \"type\": \"PRIMARY\",\n    \"verified\": true,\n    \"clientId\": \"clientId\"\n  },\n  {\n    \"id\": 1230944,\n    \"phoneNumber\": \"+6588888888\",\n    \"type\": \"PRIMARY\",\n    \"verified\": true,\n    \"clientId\": \"clientId\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68d45bf9-3df7-4d30-9dc6-dd68966cf37c",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "application",
+                    "users",
+                    ":userId",
+                    "phone-numbers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c1b12894-02aa-4a81-8405-cbd2ae3e23a3",
+          "name": "Update Phone Number",
+          "request": {
+            "name": "Update Phone Number",
+            "description": {
+              "content": "Update a verified phone number for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "application",
+                "users",
+                ":userId",
+                "phone-numbers",
+                ":phoneNumberId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "phoneNumberId",
+                  "description": "(Required) ID of a phone number."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f443296d-bd85-48b1-bf19-aa589d932186",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "application",
+                    "users",
+                    ":userId",
+                    "phone-numbers",
+                    ":phoneNumberId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "phoneNumberId",
+                      "description": "(Required) ID of a phone number."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1230944,\n  \"phoneNumber\": \"+6588888888\",\n  \"type\": \"PRIMARY\",\n  \"verified\": true,\n  \"clientId\": \"clientId\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a6043818-c6bc-4ca7-8937-7cc96fa4e841",
+              "name": "The phone number is already associated with another account.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "application",
+                    "users",
+                    ":userId",
+                    "phone-numbers",
+                    ":phoneNumberId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "phoneNumberId",
+                      "description": "(Required) ID of a phone number."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"code\": \"phone.number.repeated\",\n      \"message\": \"It's linked to an account with the email ****@wise.com\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a7332aeb-d70a-4531-8615-2ac3d502a291",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "application",
+                    "users",
+                    ":userId",
+                    "phone-numbers",
+                    ":phoneNumberId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "phoneNumberId",
+                      "description": "(Required) ID of a phone number."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "273cc564-745e-4c87-96c4-b391c3537362",
+          "name": "Create PIN",
+          "request": {
+            "name": "Create PIN",
+            "description": {
+              "content": "Create PIN for a user as a form of authentication.\n\nCan be used to [verify pin](/api-reference/sca-pin/ottpinverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/auth-and-security/jose-jwe) to understand how encryption and decryption work.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "user",
+                "pin"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "Accept-Encoding",
+                "value": "identity"
+              },
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "Content-Encoding",
+                "value": "identity"
+              },
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "X-tw-jose-method",
+                "value": "jwe"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/jose+json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<string>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3dc1ca8b-77d3-46f1-9e4b-cd9721e8d6ef",
+              "name": "PIN is created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b8d09490-899f-44ef-abc1-4fe0e6afd896",
+              "name": "PIN has already been created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "79503edd-f374-4ca9-a2c8-bcbdf837542e",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e529fb16-6b3e-46dd-b68a-aa3b5751b265",
+          "name": "Delete PIN",
+          "request": {
+            "name": "Delete PIN",
+            "description": {
+              "content": "Remove the PIN from the user's account.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "users",
+                ":userId",
+                "pin"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e3568e1c-a6d3-4edb-b05e-1237299c5dec",
+              "name": "PIN is deleted successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e04f7956-3d54-40f3-a2b6-cb8d92dabd0e",
+              "name": "PIN is not setup for this user.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"code\": \"pin.not.setup\",\n      \"message\": \"PIN has not been setup.\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0535a4b4-f41f-4a90-b333-afa368fa5a99",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "pin"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3891a573-b76f-4804-80dd-3498a0b39b41",
+          "name": "Enrol FaceMap",
+          "request": {
+            "name": "Enrol FaceMap",
+            "description": {
+              "content": "Facial biometric enrolment for Strong Customer Authentication (SCA).\n\nCan be used to [verify facemap](/api-reference/sca-facemaps/ottfacemapverify) when accessing a strongly protected endpoint via [One Time Token Framework](/api-reference/sca-ott).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "user",
+                "facemap",
+                "enrol"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"faceMap\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e05e3a10-d2e5-4989-b6a8-091ca1d54a79",
+              "name": "Enrollment is successful.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"faceMap\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "fe896399-06fc-4326-be60-1a46708d0059",
+              "name": "FaceMap has already been enrolled.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"faceMap\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4bd14446-3d9f-4707-a1d0-8e4df58d344f",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"faceMap\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "652f2c23-a132-4aae-9389-d438f3c1d4d0",
+          "name": "Delete FaceMap",
+          "request": {
+            "name": "Delete FaceMap",
+            "description": {
+              "content": "Remove the FaceMap from the user's account.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "users",
+                ":userId",
+                "facemap",
+                "enrol"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "fe733411-5a41-495c-a565-0e88b89ae103",
+              "name": "FaceMap is deleted successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "420814cd-16d7-4a36-a2a0-fa2f5d94677e",
+              "name": "FaceMap is not setup for this user.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"code\": \"facemap.not.setup\",\n      \"message\": \"FaceMap has not been setup.\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "23d79a03-8ef0-4fd5-a596-07b39d26e723",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "facemap",
+                    "enrol"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "02cc4929-86f3-4c45-8f01-ea88d7be2e0d",
+          "name": "Create Device Fingerprint",
+          "request": {
+            "name": "Create Device Fingerprint",
+            "description": {
+              "content": "A device fingerprint represents a string that identifies a unique device.\n\nThis endpoint is used to register the fingerprint of the device as one of the allowed devices used during an One Time Token (OTT) challenge.\n\nThis can be used to [verify device fingerprint](/api-reference/sca-device-fingerprints/ottdevicefingerprintverify) when clearing a [OTT](/api-reference/sca-ott).\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [JOSE JWE guide](/guides/developer/auth-and-security/jose-jwe) to understand how encryption and decryption work.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "user",
+                "partner-device-fingerprints"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "Accept-Encoding",
+                "value": "identity"
+              },
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "Content-Encoding",
+                "value": "identity"
+              },
+              {
+                "disabled": false,
+                "description": "(Required) ",
+                "key": "X-tw-jose-method",
+                "value": "jwe"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/jose+json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<string>",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3c1a7179-9abe-4381-bdc3-fe7f48cc9920",
+              "name": "The device fingerprint has been successfully created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"deviceFingerprintId\": \"636a5514-aa86-4719-8700-e9a9a0ae7ea7\",\n  \"createdAt\": \"2024-05-24T07:27:58.273205554Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c325d22d-a50b-42ba-aa25-c1037961d046",
+              "name": "Maximum number of device fingerprints reached (defaulted to 3).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "75b86f43-3a5e-475e-a6f2-5e4eb80a232e",
+              "name": "The device fingerprint has already been created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "367954b0-3a1e-4a76-8875-6dd3821bb2df",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "user",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept",
+                    "value": "application/jose+json"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Accept-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "Content-Encoding",
+                    "value": "identity"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) ",
+                    "key": "X-tw-jose-method",
+                    "value": "jwe"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<JWE encrypted string>",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "deb82db9-94a5-42af-81b7-27851e7f7f2c",
+          "name": "List Device Fingerprints",
+          "request": {
+            "name": "List Device Fingerprints",
+            "description": {
+              "content": "Returns a list of device fingerprints created for this user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "users",
+                ":userId",
+                "partner-device-fingerprints"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "07c18937-e515-4b06-9026-305cde931874",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"deviceFingerprintId\": \"636a5514-aa86-4719-8700-e9a9a0ae7ea7\",\n    \"createdAt\": \"2024-05-24T07:27:58.273205554Z\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f2361d9d-dfa3-4628-8d56-91a82719b1c0",
+              "name": "The user is not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9d84c1ca-1c64-47d4-9bed-f1b705364610",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ad551e8c-3020-4661-b7c0-71930e1a8eeb",
+          "name": "Delete Device Fingerprint",
+          "request": {
+            "name": "Delete Device Fingerprint",
+            "description": {
+              "content": "Remove a specific device fingerprint from the allowed devices of a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "users",
+                ":userId",
+                "partner-device-fingerprints",
+                ":deviceFingerprintId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "userId",
+                  "description": "(Required) User ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "deviceFingerprintId",
+                  "description": "(Required) Device fingerprint ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "70ec78c2-c6e7-4c42-8f74-47388238f264",
+              "name": "Device fingerprint has been successfully removed.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints",
+                    ":deviceFingerprintId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "deviceFingerprintId",
+                      "description": "(Required) Device fingerprint ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "8d006b81-2761-45df-89e7-96275bc6ccac",
+              "name": "User or deviceFingerprintId is not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints",
+                    ":deviceFingerprintId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "deviceFingerprintId",
+                      "description": "(Required) Device fingerprint ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1eb84e7e-5a89-4c46-b0a5-f8b450b766fd",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users",
+                    ":userId",
+                    "partner-device-fingerprints",
+                    ":deviceFingerprintId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "userId",
+                      "description": "(Required) User ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "deviceFingerprintId",
+                      "description": "(Required) Device fingerprint ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "e3ec5f43-ecaa-4f4a-9e34-92e115af608d",
+    "name": "Wise Platform 3ds user-security API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

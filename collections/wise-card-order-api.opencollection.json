@@ -1,0 +1,288 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds card-order API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "card-order",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve all card orders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of card orders to return per page. This number can be between 10 - 100, and will default to 10."
+              },
+              {
+                "name": "pageNumber",
+                "value": "1",
+                "type": "query",
+                "description": "The page number to retrieve the next set of card orders. The number has to be greater or equal to 1, and will default to 1."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a list of card orders created for the specified `profileId`."
+        },
+        {
+          "info": {
+            "name": "Create a card order",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders",
+            "headers": [
+              {
+                "name": "X-idempotence-uuid",
+                "value": "054064c9-e01e-49fb-8fd9-b0990b9442f4"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new card order. The `program` field value is retrieved from the [retrieve all card programs](/api-reference/card-order/cardorderprogramsget) endpoint.\n\n{% admonition type=\"warning\" %}\nThis request requires an extra field in the header, `X-idempotence-uuid`. This should be generated and used for any subsequent retries in the event that the initial request fails.\n{% /admonition %}\n\nWhen you issue a card under a business profile, the cardholder will automatically default to the [business "
+        },
+        {
+          "info": {
+            "name": "Retrieve a card order",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders/:cardOrderId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              },
+              {
+                "name": "cardOrderId",
+                "value": "142",
+                "type": "path",
+                "description": "The card order ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a card order based on the `cardOrderId`."
+        },
+        {
+          "info": {
+            "name": "Retrieve available card programs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders/availability",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the list of available card programs for each `profileId`."
+        },
+        {
+          "info": {
+            "name": "Retrieve card order requirements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders/:cardOrderId/requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              },
+              {
+                "name": "cardOrderId",
+                "value": "142",
+                "type": "path",
+                "description": "The card order ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all card requirements for a `cardOrderId`. A valid card order needs all its requirements status to be `COMPLETED`.\n\nThe type of requirements are:\n- `PIN (optional)`: [Set a PIN](/api-reference/card-order/cardorderpresetpin) on a virtual or physical card order. Contact the team if you need this feature.\n- `VERIFICATION`: Verify your customer by providing KYC evidences. Refer to the [KYC guide](/guides/product/kyc).\n- `ADDRESS`: Provide a valid address for your card order. Refer to [addr"
+        },
+        {
+          "info": {
+            "name": "Update card order status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/card-orders/:cardOrderId/status",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              },
+              {
+                "name": "cardOrderId",
+                "value": "142",
+                "type": "path",
+                "description": "The card order ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates the status of a card order based on its `cardOrderId`. The status can be updated to one of the following:\n1. `CANCELLED`\n2. `COMPLETED` (deprecated)\n\nThe behaviour for card order cancellation differs across card order statuses:\n- `PLACED`: Card order can be cancelled with no further action required.\n- `REQUIREMENTS_FULFILLED`, `CARD_DETAILS_CREATED`, `PRODUCED`: Card order can be cancelled, and its associated card will be blocked. However, the physical card may have already been produced"
+        },
+        {
+          "info": {
+            "name": "Validate an address",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/address/validate",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Validates the format of an address for a card order. Make sure to follow country-specific address fields and validation as described in the [card address validation guide](/guides/developer/api-guides/card-address-validation).\n\nFor virtual cards, the address field will be used as a billing address. It will be used for AVS checks in countries where it is required.\n\nFor physical cards, the address field will be used as a delivery address. It will be used to deliver your card and for AVS checks in "
+        },
+        {
+          "info": {
+            "name": "Set card PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/twcard-data/v1/sensitive-card-data/preset-pin",
+            "headers": [
+              {
+                "name": "x-tw-twcard-order-id",
+                "value": "142"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sets a PIN during the card order flow. This endpoint will be accessible for partners that require to set a PIN during the card order flow.\n\nPlease follow [this guide](/guides/product/issue-cards/sensitive-card-details) to use this endpoint.\n\nTo use this endpoint, make sure to set the `api token` and the `card order id` in the headers.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

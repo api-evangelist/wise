@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds facetec API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "facetec",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get FaceTec public key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/facetec/public-key",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve Wise's FaceTec public key to be used when [exporting 3D FaceMap](https://dev.facetec.com/api-guide#export-3d-facemap) from your FaceTec host to Wise.\n\nThe exported FaceMap can be used to [Enrol FaceMap](/api-reference/user-security/usersecurityfacemapenrol).\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

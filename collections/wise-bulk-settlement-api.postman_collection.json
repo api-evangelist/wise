@@ -1,0 +1,243 @@
+{
+  "item": [
+    {
+      "id": "5cc7168e-d5f6-44bd-ba3d-f6c16cb760b6",
+      "name": "bulk-settlement",
+      "description": {
+        "content": "Bulk settlement allows partners to settle multiple transfers in a single bank transfer at the end of a settlement period. This model splits transfer creation/funding from final settlement, allowing Wise to process transfers before receiving funds based on a partner's guarantee.\n\nUse the settlement journal endpoint to submit a list of transfers to be settled, along with the settlement reference that matches your bank transfer payment.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "040f69c7-c711-4089-890e-36f170ec8688",
+          "name": "Send a settlement journal",
+          "request": {
+            "name": "Send a settlement journal",
+            "description": {
+              "content": "Sends the settlement journal to Wise. There are two types of settlement:\n\n- **Same Currency Settlement** — Settle in the same currency as the transfers (e.g., settle USD transfers with USD).\n- **Cross Currency Settlement** — Settle in a different currency (e.g., settle PHP transfers with USD). In this case, you must specify `settlementCurrency` and include `exchangeRate` on every transfer.\n\n{% admonition type=\"info\" %}\nYou must use a client credentials token to authenticate this call.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "settlements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"<string>\",\n  \"settlementReference\": \"<string>\",\n  \"settlementDate\": \"<dateTime>\",\n  \"transfers\": [\n    {\n      \"id\": \"<long>\",\n      \"date\": \"<dateTime>\",\n      \"sourceAmount\": \"<decimal>\",\n      \"sourceCurrency\": \"<string>\",\n      \"customerName\": \"<string>\",\n      \"partnerReference\": \"<string>\",\n      \"comment\": \"<string>\",\n      \"exchangeRate\": \"<decimal>\"\n    },\n    {\n      \"id\": \"<long>\",\n      \"date\": \"<dateTime>\",\n      \"sourceAmount\": \"<decimal>\",\n      \"sourceCurrency\": \"<string>\",\n      \"customerName\": \"<string>\",\n      \"partnerReference\": \"<string>\",\n      \"comment\": \"<string>\",\n      \"exchangeRate\": \"<decimal>\"\n    }\n  ],\n  \"settlementCurrency\": \"<string>\",\n  \"refundedTransfers\": [\n    {\n      \"id\": \"<long>\",\n      \"partnerReference\": \"<string>\",\n      \"exchangeRate\": \"<decimal>\"\n    },\n    {\n      \"id\": \"<long>\",\n      \"partnerReference\": \"<string>\",\n      \"exchangeRate\": \"<decimal>\"\n    }\n  ],\n  \"balanceTransfer\": \"<decimal>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6f0f8cf6-c7d4-42d6-827c-455e78bbb32a",
+              "name": "Settlement journal received successfully. Empty response body.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "settlements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"TRUSTED_BULK_SETTLEMENT\",\n  \"settlementReference\": \"TPFB190322\",\n  \"settlementDate\": \"2019-03-22T23:59:59-05:00\",\n  \"transfers\": [\n    {\n      \"id\": 125678,\n      \"date\": \"2019-03-22T10:00:12-05:00\",\n      \"sourceAmount\": 23.24,\n      \"sourceCurrency\": \"USD\",\n      \"customerName\": \"Joe Bloggs\",\n      \"partnerReference\": \"11111\",\n      \"comment\": \"Extra Data\"\n    },\n    {\n      \"id\": 178889,\n      \"date\": \"2019-03-23T12:40:05-05:00\",\n      \"sourceAmount\": 125.67,\n      \"sourceCurrency\": \"USD\",\n      \"customerName\": \"Mat Newman\",\n      \"partnerReference\": \"11112\",\n      \"comment\": \"Extra Data\"\n    }\n  ],\n  \"refundedTransfers\": [\n    {\n      \"id\": 178880,\n      \"partnerReference\": \"11108\"\n    }\n  ],\n  \"balanceTransfer\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c1146456-a4ba-4d0a-9426-15ef22befabe",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "settlements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"TRUSTED_BULK_SETTLEMENT\",\n  \"settlementReference\": \"TPFB190322\",\n  \"settlementDate\": \"2019-03-22T23:59:59-05:00\",\n  \"transfers\": [\n    {\n      \"id\": 125678,\n      \"date\": \"2019-03-22T10:00:12-05:00\",\n      \"sourceAmount\": 23.24,\n      \"sourceCurrency\": \"USD\",\n      \"customerName\": \"Joe Bloggs\",\n      \"partnerReference\": \"11111\",\n      \"comment\": \"Extra Data\"\n    },\n    {\n      \"id\": 178889,\n      \"date\": \"2019-03-23T12:40:05-05:00\",\n      \"sourceAmount\": 125.67,\n      \"sourceCurrency\": \"USD\",\n      \"customerName\": \"Mat Newman\",\n      \"partnerReference\": \"11112\",\n      \"comment\": \"Extra Data\"\n    }\n  ],\n  \"refundedTransfers\": [\n    {\n      \"id\": 178880,\n      \"partnerReference\": \"11108\"\n    }\n  ],\n  \"balanceTransfer\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "87631601-bd15-45bb-b0e1-f7f61e9a5d4d",
+    "name": "Wise Platform 3ds bulk-settlement API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-otp API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-otp",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Phone Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/application/users/:userId/phone-numbers",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a verified phone number for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Trigger SMS Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/sms/trigger",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To trigger a SMS challenge by sending SMS to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).\n\nThis **OTP** code can be used to clear a SMS challenge by using the [Verify SMS endpoint](/api-reference/sca-otp/ottsmsverify).\n"
+        },
+        {
+          "info": {
+            "name": "Verify SMS Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/sms/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To clear a **SMS** challenge listed in a OTT.\n\nNotes:\n1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.\n2. [Trigger SMS Challenge](/api-reference/sca-otp/ottsmstrigger) is required to be called first.\n3. Since we won't be sending real SMS on sandbox, the **OTP Code** will always be **111111**.\n"
+        },
+        {
+          "info": {
+            "name": "Trigger WhatsApp Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/whatsapp/trigger",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To trigger a WhatsApp challenge by sending WhatsApp message to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).\n\nThis **OTP** code can be used to clear a WHATSAPP challenge by using the [Verify WhatsApp endpoint](/api-reference/sca-otp/ottwhatsappverify).\n"
+        },
+        {
+          "info": {
+            "name": "Verify WhatsApp Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/whatsapp/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To clear a **WHATSAPP** challenge listed in a OTT.\n\nNotes:\n1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.\n2. [Trigger WhatsApp Challenge](/api-reference/sca-otp/ottwhatsapptrigger) is required to be called first.\n3. Since we won't be sending real WhatsApp message on sandbox, the **OTP Code** will always be **111111**.\n"
+        },
+        {
+          "info": {
+            "name": "Trigger Voice Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/voice/trigger",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To trigger a Voice challenge by sending voice message to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).\n\nThis **OTP** code can be used to clear a VOICE challenge by using the [Verify Voice endpoint](/api-reference/sca-otp/ottvoiceverify).\n"
+        },
+        {
+          "info": {
+            "name": "Verify Voice Challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/voice/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To clear a **VOICE** challenge listed in a OTT.\n\nNotes:\n1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.\n2. [Trigger Voice Challenge](/api-reference/sca-otp/ottvoicetrigger) is required to be called first.\n3. Since we won't be sending real voice message on sandbox, the **OTP Code** will always be **111111**.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Phone Number",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v1/application/users/:userId/phone-numbers/:phoneNumberId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User ID."
+              },
+              {
+                "name": "phoneNumberId",
+                "value": "",
+                "type": "path",
+                "description": "ID of a phone number."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete a verified phone number for a user.\n\n{% admonition type=\"warning\" %}\nThis endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

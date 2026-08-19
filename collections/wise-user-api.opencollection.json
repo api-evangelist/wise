@@ -1,0 +1,180 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds user API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "user",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve current user by token",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/me",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get authenticated user details for the user's token submitted in the Authorization header.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve a user by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/users/:userId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "101",
+                "type": "path",
+                "description": "The user ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get authenticated user details by user ID.\n"
+        },
+        {
+          "info": {
+            "name": "Create a user with a registration code",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/user/signup/registration_code",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Wise uses email address as unique identifier for users. If email is new (there is no active user already) then a new user will be created.\n\nWhen you are submitting an email which already exists amongst our users then you will get a warning that \"You're already a member. Please login\". If user already exists then you need to redirect to \"Get user authorization\" webpage.\n"
+        },
+        {
+          "info": {
+            "name": "Check if user exists",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/users/exists",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Check if a user already exists by email. Wise uses email address as unique identifier for users. If email has already been used by a user, it cannot be reused to create a new user.\n\nNote that this uses a `client-credentials-token` and not a `user access_token` for authentication.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve a contact email address",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/users/:userId/contact-email",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "101",
+                "type": "path",
+                "description": "The user ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a contact email address."
+        },
+        {
+          "info": {
+            "name": "Set a contact email address",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/users/:userId/contact-email",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "userId",
+                "value": "101",
+                "type": "path",
+                "description": "The user ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sets a contact email address. The contact email address is used to send notifications to users who have been registered with a dummy email address.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

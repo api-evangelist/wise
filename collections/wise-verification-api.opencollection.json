@@ -1,0 +1,157 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds verification API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "verification",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Upload Evidences (v3)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/additional-verification/upload-evidences",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the profile."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Uploads verification evidence for a specific profile.\n\nThe request body varies significantly between **Personal** and **Business** profiles.\n"
+        },
+        {
+          "info": {
+            "name": "Upload Evidences",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v5/profiles/:profileId/additional-verification/upload-evidences",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the profile."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Uploads verification evidence for a specific profile.\n\nThe request body varies significantly between **Personal** and **Business** profiles.\n\nSubmitting an evidence that was already uploaded will result in an attempt to update the evidence.\n"
+        },
+        {
+          "info": {
+            "name": "Upload Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/verification-status/upload-document",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID (personal or business)."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "files",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "documentType",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Uploads verification documents for review. You can upload multiple files at once.\n\nA valid document must fulfil these requirements:\n\n- The document must be clear.\n- The document needs to be a .jpg, .png., or .pdf file type up to 10MB in size.\n"
+        },
+        {
+          "info": {
+            "name": "Required Evidences",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/verification-status/required-evidences",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the profile."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetches the required evidences for a profile to complete additional customer verification.\n\nIf one or more evidences are returned, the customer should submit those evidences using the upload-evidences endpoint.\n\nSee the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences) for the list of possible evidence types and how to submit them.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

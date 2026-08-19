@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-ott API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-ott",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get status of a one time token",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/one-time-token/status",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve necessary information to clear a OTT.\n"
+        },
+        {
+          "info": {
+            "name": "Get OTT status (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/identity/one-time-token/status",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Use the [new endpoint](/api-reference/sca-ott/ottstatusget) to get status of a one time token instead.\n{% /admonition %}\n\nRetrieve necessary information to clear a OTT.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

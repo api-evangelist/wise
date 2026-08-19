@@ -1,0 +1,150 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds quote API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "quote",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a quote (unauthenticated)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/quotes",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Use this endpoint to get example quotes for people to see the exchange rate and fees Wise offers before a user has created or linked an account. This can drive a version of the quote screen that shows the user what Wise offers before they sign up.\nNote that this endpoint does not require a token to create the resource, however, since it is just an example, the returned quote has no ID so can't be used later to create a transfer.\n\nIn order to get an accurate partner fee, we require a client crede"
+        },
+        {
+          "info": {
+            "name": "Create a quote (authenticated)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/quotes",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "101",
+                "type": "path",
+                "description": "Personal or business profile ID of the sender."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"info\" %}\nYou must use a user access token to authenticate this call and supply the profile with which the quote should be associated. This ensures that quote can be used to create a transfer.\n{% /admonition %}\n\nIf you are funding the transfer from a Multi Currency Balance, you must set the `payIn` as `BALANCE` to get the correct pricing in the quote. Not doing so will default to `BANK_TRANSFER` and the fees will be inconsistent between quote and transfer.\n\n{% admonition type="
+        },
+        {
+          "info": {
+            "name": "Retrieve a quote by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/quotes/:quoteId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "101",
+                "type": "path",
+                "description": "Personal or business profile ID."
+              },
+              {
+                "name": "quoteId",
+                "value": "11144c35-9fe8-4c32-b7fd-d05c2a7734bf",
+                "type": "path",
+                "description": "The quote ID (GUID format)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get quote info by ID. If the quote has expired (not used to create a transfer within 30 minutes of quote creation), it will only be accessible for approximately 48 hours via this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Update a quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v3/profiles/:profileId/quotes/:quoteId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "101",
+                "type": "path",
+                "description": "Personal or business profile ID."
+              },
+              {
+                "name": "quoteId",
+                "value": "11144c35-9fe8-4c32-b7fd-d05c2a7734bf",
+                "type": "path",
+                "description": "The quote ID (GUID format)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "You should update a quote using a `PATCH` call to add a recipient. This will update the saved quote's data based on who and where the money will be sent to.\n\nUpdating the quote with a recipient may cause the available payment options, prices and estimated delivery times to change from the original quoted amounts. This is due to the fact that sending some currencies to some destinations costs a different amount based on the payment networks we use, for example sending USD to a country outside the"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

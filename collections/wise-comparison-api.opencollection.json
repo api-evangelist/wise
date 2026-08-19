@@ -1,0 +1,248 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds comparison API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "comparison",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Request a comparison quote (V3)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/comparisons",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "sourceCurrency",
+                "value": "GBP",
+                "type": "query",
+                "description": "ISO 4217 source currency code"
+              },
+              {
+                "name": "targetCurrency",
+                "value": "EUR",
+                "type": "query",
+                "description": "ISO 4217 target currency code"
+              },
+              {
+                "name": "sendAmount",
+                "value": "10000",
+                "type": "query",
+                "description": "Amount to send in source currency"
+              },
+              {
+                "name": "midMarketRate",
+                "value": "",
+                "type": "query",
+                "description": "Current mid-market rate between the source and target currency"
+              },
+              {
+                "name": "wiseFee",
+                "value": "",
+                "type": "query",
+                "description": "Wise's fee, if the Wise quote is known"
+              },
+              {
+                "name": "wiseEstimatedDelivery",
+                "value": "",
+                "type": "query",
+                "description": "Wise's estimated delivery timestamp, if the Wise quote is known"
+              },
+              {
+                "name": "wiseQuoteCreatedTime",
+                "value": "",
+                "type": "query",
+                "description": "Timestamp when the Wise quote was created"
+              },
+              {
+                "name": "payInMethod",
+                "value": "",
+                "type": "query",
+                "description": "Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)"
+              },
+              {
+                "name": "sourceCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "targetCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by target country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "providerCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by provider country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "providerTypes",
+                "value": "",
+                "type": "query",
+                "description": "Filter by provider type"
+              },
+              {
+                "name": "providers",
+                "value": "",
+                "type": "query",
+                "description": "Filter by specific provider aliases"
+              },
+              {
+                "name": "excludePartners",
+                "value": "",
+                "type": "query",
+                "description": "Exclude Wise's partner banks - default true"
+              }
+            ]
+          },
+          "docs": "{% admonition type=\"warning\" name=\"Deprecated\" %}\nThis endpoint is deprecated. Use the [V4 comparison endpoint](/api-reference/comparison/comparisonget) instead.\n{% /admonition %}\n\nRequest price and speed comparison data for money transfer providers on a given currency route.\n"
+        },
+        {
+          "info": {
+            "name": "Request a comparison quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/comparisons",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "sourceCurrency",
+                "value": "GBP",
+                "type": "query",
+                "description": "ISO 4217 source currency code"
+              },
+              {
+                "name": "targetCurrency",
+                "value": "EUR",
+                "type": "query",
+                "description": "ISO 4217 target currency code"
+              },
+              {
+                "name": "sendAmount",
+                "value": "10000",
+                "type": "query",
+                "description": "Amount to send in source currency. Must provide either `sendAmount` or `recipientGetsAmount`."
+              },
+              {
+                "name": "recipientGetsAmount",
+                "value": "",
+                "type": "query",
+                "description": "Amount to be received in target currency. Must provide either `sendAmount` or `recipientGetsAmount`."
+              },
+              {
+                "name": "midMarketRate",
+                "value": "",
+                "type": "query",
+                "description": "Current mid-market rate between the source and target currency"
+              },
+              {
+                "name": "wiseFee",
+                "value": "",
+                "type": "query",
+                "description": "Wise's fee, if the Wise quote is known"
+              },
+              {
+                "name": "wiseEstimatedDelivery",
+                "value": "",
+                "type": "query",
+                "description": "Wise's estimated delivery timestamp, if the Wise quote is known"
+              },
+              {
+                "name": "wiseQuoteCreatedTime",
+                "value": "",
+                "type": "query",
+                "description": "Timestamp when the Wise quote was created"
+              },
+              {
+                "name": "payInMethod",
+                "value": "",
+                "type": "query",
+                "description": "Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)"
+              },
+              {
+                "name": "sourceCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "targetCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by target country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "providerCountry",
+                "value": "",
+                "type": "query",
+                "description": "Filter by provider country (ISO 3166-1 Alpha-2 code)"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by most popular competitors"
+              },
+              {
+                "name": "numberOfProviders",
+                "value": "",
+                "type": "query",
+                "description": "Number of popular competitors to return if `filter` is set to `POPULAR` - default value is 4"
+              },
+              {
+                "name": "providerTypes",
+                "value": "",
+                "type": "query",
+                "description": "Filter by provider type"
+              },
+              {
+                "name": "providers",
+                "value": "",
+                "type": "query",
+                "description": "Filter by specific provider aliases"
+              },
+              {
+                "name": "excludePartners",
+                "value": "",
+                "type": "query",
+                "description": "Exclude Wise's partner banks - default true"
+              },
+              {
+                "name": "includeWise",
+                "value": "",
+                "type": "query",
+                "description": "Overrides filters to ensure Wise data is returned, even if exclusionary filters are applied"
+              }
+            ]
+          },
+          "docs": "Request price and speed comparison data for money transfer providers on a given currency route.\n\nYou must provide either `sendAmount` or `recipientGetsAmount` (but not both).\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,224 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds spend-limits API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "spend-limits",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve profile limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/spend-limits",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the spend limits that are configured for a profile.\n"
+        },
+        {
+          "info": {
+            "name": "Update profile limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/spend-limits",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update profile daily and monthly spend limits for `PURCHASE` or `ATM_WITHDRAWAL`. Both daily and monthly must be set.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve card limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/:cardToken/spend-limits",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the spend limits that are configured for a card.\n"
+        },
+        {
+          "info": {
+            "name": "Create or update card limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/:cardToken/spend-limits",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create or update card transaction, daily, monthly or lifetime spend limits.\n"
+        },
+        {
+          "info": {
+            "name": "Delete card limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/:cardToken/spend-limits/:granularity",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "",
+                "type": "path",
+                "description": "The card token."
+              },
+              {
+                "name": "granularity",
+                "value": "",
+                "type": "path",
+                "description": "The limit granularity to delete."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete card spend limits for a specific granularity.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve profile spend limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/spending-limits",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the spending limits that are configured for a profile.\n\n{% admonition type=\"warning\" %}\nThis endpoint has been deprecated. Use [Retrieve profile limits](/api-reference/spend-limits/spendlimitsprofileget) instead.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

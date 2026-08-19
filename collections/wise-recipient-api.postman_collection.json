@@ -1,0 +1,3339 @@
+{
+  "item": [
+    {
+      "id": "397d8e17-b756-4ace-900c-f20d4da5a69b",
+      "name": "recipient",
+      "description": {
+        "content": "Recipient or beneficiary is the one who will receive the funds.\n\nRecipient account endpoints use a mixture of our v1 and v2 APIs. Please ensure you address the right version to get the expected results.\n\n{% admonition type=\"info\" %}\nAll recipient IDs are cross compatible with v1 and v2.\n{% /admonition %}\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "333437b9-c0c3-4872-aeb1-1297af140e86",
+          "name": "List recipient accounts (v1)",
+          "request": {
+            "name": "List recipient accounts (v1)",
+            "description": {
+              "content": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 list endpoint](/api-reference/recipient/recipientlist).\n{% /admonition %}\n\nFetch a list of the user's recipient accounts. Use the `currency` and `profile` parameters to filter by currency and/or the owning user profile ID. This endpoint does not support pagination, so please filter by currency to ensure a reasonable response time.\n\nBoth query parameters are optional.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "accounts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "profileId",
+                  "value": "<long>",
+                  "description": "Filter by personal or business profile, returns only those owned by this profile."
+                },
+                {
+                  "disabled": false,
+                  "key": "currency",
+                  "value": "<string>",
+                  "description": "Filter responses by currency."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "c9f6c100-b032-4421-b56a-cb2a59cba724",
+              "name": "Array of v1 recipient account objects.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 40000000,\n    \"business\": 3231,\n    \"profile\": 30000000,\n    \"accountHolderName\": \"John Doe\",\n    \"currency\": \"GBP\",\n    \"country\": \"GB\",\n    \"type\": \"sort_code\",\n    \"details\": {\n      \"legalType\": \"PRIVATE\",\n      \"sortCode\": \"040075\",\n      \"accountNumber\": \"37778842\"\n    },\n    \"user\": 10000000,\n    \"active\": true,\n    \"ownedByCustomer\": false,\n    \"confirmations\": {\n      \"acceptedOutcomes\": false,\n      \"acceptedAt\": \"1989-12-16T11:26:30.387Z\",\n      \"quoteId\": \"string\"\n    }\n  },\n  {\n    \"id\": 40000000,\n    \"business\": 110,\n    \"profile\": 30000000,\n    \"accountHolderName\": \"John Doe\",\n    \"currency\": \"GBP\",\n    \"country\": \"GB\",\n    \"type\": \"sort_code\",\n    \"details\": {\n      \"legalType\": \"PRIVATE\",\n      \"sortCode\": \"040075\",\n      \"accountNumber\": \"37778842\",\n      \"key_0\": \"string\",\n      \"key_1\": 5426\n    },\n    \"user\": 10000000,\n    \"active\": true,\n    \"ownedByCustomer\": false,\n    \"confirmations\": {\n      \"acceptedOutcomes\": false,\n      \"acceptedAt\": \"1968-10-09T16:58:55.908Z\",\n      \"quoteId\": \"string\"\n    }\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fc8361f2-73a1-4b01-b7e4-24f70206c433",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "63e8610c-7188-41b7-9746-392a8dd79594",
+          "name": "Create a recipient account",
+          "request": {
+            "name": "Create a recipient account",
+            "description": {
+              "content": "Creates a recipient account. A **recipient** is a person or institution who is the ultimate beneficiary of your payment.\n\nRecipient data includes three data blocks:\n- General data - the personal details of an individual and basic information about a business.\n- Bank details - account numbers, routing numbers, and other region-specific bank details.\n- Address details - country and street address of an individual or business.\n\nNotes:\n- Date of Birth is optional; consult the account-requirements APIs to confirm if it is needed or contact Wise Support.\n- `ownedByCustomer` is optional but strongly recommended for self-transfers.\n- Email recipients: testing transfers to email recipients in sandbox is not currently possible.\n\nRefund recipients:\n- Use `refund=true` query parameter.\n\n#### Bank account data\nThere are many different variations of bank account details needed depending on recipient target currency. For example:\n\n- **GBP** — sort code and account number\n- **BGN, CHF, DKK, EUR, GEL, GBP, NOK, PKR, PLN, RON, SEK** — IBAN\n- **USD** — routing number, account number, account type\n- **INR** — IFSC code, account number\n- etc.\n\n#### Address data\nRecipient address data is required only if target currency is **USD, PHP, THB or TRY**, or if the source currency is **USD or AUD**.\n\nAddress fields can include:\n- Country\n- State (US, Canada, Brazil)\n- City\n- Address line\n- Zip code\n\n#### accountHolderName rules\n- **Personal recipients:** Full names must include more than one name, and both first and last name must have more than one character. Numbers are not allowed.\n- **Business recipients:** Business names must be in full and can be a single name. The full name cannot be just a single character, but can be made up of a set of single characters (e.g. `\"A\"` is not permitted but `\"A 1\"` or `\"A1\"` is permitted).\n- Special characters `_()'*,.` are allowed for personal and business names.\n- In general the following regex describes permitted characters:\n  `[0-9A-Za-zÀ-ÖØ-öø-ÿ-_()'*,.\\s]`.\n\nRecipient requirements vary depending on recipient type/currency route. A GBP example is provided here.<br>\nMany fields may be `null` in examples. To determine which fields are required for which currency, use the\n**[Recipient Requirements](/api-reference/recipient/recipientAccountRequirementsGet)** endpoint.\n\n#### Create a refund recipient account\n`POST /v1/accounts?refund=true`\n\nSometimes we may need to refund the transfer back to the sender - see the [transfer status here](/guides/product/send-money/tracking-transfers) for cases when this may happen.\n\nA refund recipient is a person or institution where we will refund transfer the money back to if necessary. This is not always a mandatory resource to create. If the funds are sent over a fast local payment network we can usually infer the refund recipient from the bank transaction that funded the transfer. Please discuss this with your Wise implementation team if you are unsure if the refund recipient is needed.\n\nIf funds are sent using a slow domestic payment network, or you are using a bulk settlement model, we may require you to share the bank details of the source bank account.\n\nThe format of the request payload for refund recipient creation will be different depending on the currency you will send transfers from. You may use the [account requirements](/api-reference/recipient/recipientaccountrequirementsget) endpoint to understand the payload requirements when creating the refund recipient for a specific currency.\n\nThe refund recipient account ID returned in the response is used as `sourceAccount` when [creating transfers](/guides/product/send-money/transfers).\n\n#### Create an email recipient account\n`POST /v1/accounts`\n\n{% admonition type=\"warning\" %}\nPlease contact us before attempting to use email recipients. We do not recommend using this feature except for certain use cases.\n{% /admonition %}\n\nIf you don't know recipient bank account details you can set up an email recipient; Wise will collect bank details directly from the recipient.\n\nWise will email your recipient with a link to collect their bank account details securely. After the bank account details have been provided Wise will complete your transfer.\n\nIt's best to confirm that this recipient type is available to your transaction by checking if the `\"type\": \"email\"` class is present in the response from `GET /v1/quotes/{quoteId}/account-requirements` — see **[account requirements](/api-reference/recipient/recipientAccountRequirementsGet)** for more information on how to use this endpoint.\n\nIf planning to send multiple currencies to a single recipient, you will need to create a separate email recipient resource for this beneficiary, for every currency you intend to send to them. We highly encourage you to provide the `{profileId}` if your recipient is receiving a payment from your Business account, especially if you have multiple businesses, or have multiple users administrating your business account.\n\nPlease be aware of the following caveats:\n- Testing of transfers to email recipients in sandbox is not currently possible.\n- Recipients will be required to enter bank details **every time a payment is made**.\n- We highly encourage you to provide the `profileId` if your recipient is receiving a payment from your Business account, especially if you have multiple businesses, or have multiple users administrating your business account.\n- Please refer to our **[help page](https://wise.com/help/articles/2932105/can-i-send-money-to-someone-with-only-their-email-address)** on how this works and any additional constraints not mentioned in this section.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "accounts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "refund",
+                  "value": "false",
+                  "description": "When true, creates a refund recipient account."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currency\": \"<string>\",\n  \"type\": \"<string>\",\n  \"profile\": \"<long>\",\n  \"accountHolderName\": \"<string>\",\n  \"ownedByCustomer\": \"<boolean>\",\n  \"details\": {\n    \"legalType\": \"<string>\",\n    \"sortCode\": \"<string>\",\n    \"accountNumber\": \"<string>\",\n    \"dateOfBirth\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b0869e50-775f-4d08-89f0-bf772507408e",
+              "name": "Recipient account created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "refund",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"ownedByCustomer\": true,\n  \"accountHolderName\": \"John Doe\",\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 40000000,\n  \"creatorId\": 41000000,\n  \"profileId\": 30000000,\n  \"name\": {\n    \"fullName\": \"John Doe\",\n    \"givenName\": \"string\",\n    \"familyName\": \"string\",\n    \"middleName\": \"string\",\n    \"patronymicName\": \"string\",\n    \"cannotHavePatronymicName\": false\n  },\n  \"currency\": \"GBP\",\n  \"country\": \"GB\",\n  \"type\": \"SortCode\",\n  \"legalEntityType\": \"PERSON\",\n  \"active\": true,\n  \"details\": {\n    \"reference\": \"string\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"hashedByLooseHashAlgorithm\": \"ad245621b974efa3ef870895c3wer419a3f01af18a8a5790b47645dba6304194\"\n  },\n  \"commonFieldMap\": {\n    \"accountNumberField\": \"accountNumber\",\n    \"bankCodeField\": \"sortCode\"\n  },\n  \"hash\": \"666ef880f8aa6113fa112ba6531d3ed2c26dd9fgbd7de5136bfb827a6e800479\",\n  \"accountSummary\": \"(04-00-75) 37778842\",\n  \"longAccountSummary\": \"GBP account ending in 8842\",\n  \"displayFields\": [\n    {\n      \"key\": \"details/sortCode\",\n      \"label\": \"UK sort code\",\n      \"value\": \"04-00-75\"\n    },\n    {\n      \"key\": \"details/accountNumber\",\n      \"label\": \"Account number\",\n      \"value\": \"37778842\"\n    }\n  ],\n  \"isInternal\": false,\n  \"ownedByCustomer\": false,\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": \"2019-06-13T21:53:05.989Z\",\n    \"quoteId\": \"string\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      },\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a763ecd9-7d4b-4cdc-a086-b5a7b0055998",
+              "name": "Bad Request — validation error.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "refund",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"ownedByCustomer\": true,\n  \"accountHolderName\": \"John Doe\",\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"timestamp\": \"2024-12-06T06:43:52.472471344Z\",\n  \"errors\": [\n    {\n      \"code\": \"NOT_VALID\",\n      \"message\": \"Unknown bank code. Please check the sort code is correct, or contact customer support for more information.\",\n      \"path\": \"sortCode\",\n      \"arguments\": [\n        \"sortCode\",\n        \"231479\"\n      ]\n    },\n    {\n      \"code\": \"NOT_VALID\",\n      \"message\": \"Unknown bank code. Please check the sort code is correct, or contact customer support for more information.\",\n      \"path\": \"sortCode\",\n      \"arguments\": [\n        \"sortCode\",\n        \"231479\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "322cc86b-e033-4e77-b102-f3b8682951dd",
+              "name": "Unauthorized.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "refund",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"ownedByCustomer\": true,\n  \"accountHolderName\": \"John Doe\",\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error_description\": \"Invalid token\",\n  \"error\": \"invalid_token\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "90353dbc-9a03-4375-8800-db17d59ed6b7",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "refund",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"ownedByCustomer\": true,\n  \"accountHolderName\": \"John Doe\",\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "10d1db70-1c31-4531-8140-5d5519f7c6ac",
+          "name": "List recipient accounts",
+          "request": {
+            "name": "List recipient accounts",
+            "description": {
+              "content": "Fetch a list of the user's recipient accounts. Use the `profileId` parameter to filter by the profile who created the accounts, you should do this based on the personal or business profile ID you have linked to, based on your use case. Other filters are listed below for your convenience, for example `currency` is a useful filter to use when presenting the user a list of recipients to choose from in the case they have already submitted the target currency in your flow.\n\n#### Pagination\nPagination is supported for this endpoint. The response includes the `seekPositionForNext` and `size` parameters to manage this.\n\nIt works by setting `size` and `seekPosition` parameters in the call. Set the value in the `seekPositionForNext` of the previous response into the `seekPosition` parameter of your subsequent call in order to get the next page. To get the current page again, use the `seekPositionForCurrent` value.\n\n#### Sorting\nYou can also set the `sort` parameter to control the sorting of the response, for example:\n\n`?sort=id,asc` sort by `id` ascending.<br>\n`?sort=id,desc` sort by `id` descending.<br>\n`?sort=currency,asc` sort by currency ascending.\n\nAll query parameters are optional.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "accounts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "creatorId",
+                  "value": "<long>",
+                  "description": "Creator of the account."
+                },
+                {
+                  "disabled": false,
+                  "key": "profileId",
+                  "value": "<long>",
+                  "description": "Filter by personal or business profile. Defaults to the personal profile."
+                },
+                {
+                  "disabled": false,
+                  "key": "profile",
+                  "value": "<long>",
+                  "description": "Alias for `profileId`."
+                },
+                {
+                  "disabled": false,
+                  "key": "currency",
+                  "value": "<string>",
+                  "description": "Filter responses by currency. Comma separated values supported (e.g. `USD,GBP`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "true",
+                  "description": "Filter by whether this profile is active. Defaults to `true`."
+                },
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "<string>",
+                  "description": "Filter responses by account type. Comma separated values supported (e.g. `iban,swift_code`)."
+                },
+                {
+                  "disabled": false,
+                  "key": "ownedByCustomer",
+                  "value": "<boolean>",
+                  "description": "Filter to get accounts owned by the customer or not. Leave out to get all accounts."
+                },
+                {
+                  "disabled": false,
+                  "key": "size",
+                  "value": "<integer>",
+                  "description": "Page size of the response. Defaults to a maximum of 20."
+                },
+                {
+                  "disabled": false,
+                  "key": "seekPosition",
+                  "value": "<integer,null-int64>",
+                  "description": "Account ID to start the page of responses from. `null` if no more pages."
+                },
+                {
+                  "disabled": false,
+                  "key": "sort",
+                  "value": "<string>",
+                  "description": "Sorting strategy for the response. Comma separated options - firstly either `id` or `currency`, followed by `asc` or `desc` for direction."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "c27c02f2-b174-4e4c-b9e9-bb42b9b5a799",
+              "name": "Paginated list of recipient accounts.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "creatorId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profile",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ownedByCustomer",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "seekPosition",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "id,asc"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 40000000,\n      \"creatorId\": 41000000,\n      \"profileId\": 30000000,\n      \"name\": {\n        \"fullName\": \"John Doe\",\n        \"givenName\": null,\n        \"familyName\": null,\n        \"middleName\": null,\n        \"patronymicName\": null,\n        \"cannotHavePatronymicName\": null\n      },\n      \"currency\": \"GBP\",\n      \"country\": \"GB\",\n      \"type\": \"SortCode\",\n      \"legalEntityType\": \"PERSON\",\n      \"active\": true,\n      \"details\": {\n        \"reference\": null,\n        \"sortCode\": \"040075\",\n        \"accountNumber\": \"37778842\",\n        \"hashedByLooseHashAlgorithm\": \"ad245621b974efa3ef870895c3wer419a3f01af18a8a5790b47645dba6304194\"\n      },\n      \"commonFieldMap\": {\n        \"accountNumberField\": \"accountNumber\",\n        \"bankCodeField\": \"sortCode\"\n      },\n      \"hash\": \"666ef880f8aa6113fa112ba6531d3ed2c26dd9fgbd7de5136bfb827a6e800479\",\n      \"accountSummary\": \"(04-00-75) 37778842\",\n      \"longAccountSummary\": \"GBP account ending in 8842\",\n      \"displayFields\": [\n        {\n          \"key\": \"details/sortCode\",\n          \"label\": \"UK sort code\",\n          \"value\": \"04-00-75\"\n        },\n        {\n          \"key\": \"details/accountNumber\",\n          \"label\": \"Account number\",\n          \"value\": \"37778842\"\n        }\n      ],\n      \"isInternal\": false,\n      \"ownedByCustomer\": false\n    }\n  ],\n  \"seekPositionForNext\": 40000001,\n  \"seekPositionForCurrent\": 40000000,\n  \"sort\": {\n    \"empty\": true,\n    \"sorted\": false,\n    \"unsorted\": true\n  },\n  \"size\": 20\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7be525f6-16e5-4dbe-94b7-e42e5c92d0ec",
+              "name": "Unauthorized.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "creatorId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profile",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ownedByCustomer",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "seekPosition",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "id,asc"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "54237b96-31ce-4611-934a-ff6cca46be71",
+              "name": "Forbidden.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "creatorId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profile",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ownedByCustomer",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "seekPosition",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "id,asc"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "fe8de121-bf1a-41f8-b42d-8cc9892e9a97",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "creatorId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profileId",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "profile",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "currency",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "ownedByCustomer",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "seekPosition",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "id,asc"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "f5ce58d7-f2a3-4b4c-b95d-27cdeb11d69d",
+          "name": "Get account by ID (v1)",
+          "request": {
+            "name": "Get account by ID (v1)",
+            "description": {
+              "content": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 get endpoint](/api-reference/recipient/recipientget).\n{% /admonition %}\n\nGet recipient account info by ID.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "accounts",
+                ":accountId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b55c7e49-7d85-4df4-a7b6-05b70e0ad8d9",
+              "name": "V1 recipient account details.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 40000000,\n  \"business\": 6559,\n  \"profile\": 30000000,\n  \"accountHolderName\": \"John Doe\",\n  \"currency\": \"GBP\",\n  \"country\": \"GB\",\n  \"type\": \"sort_code\",\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\"\n  },\n  \"user\": 10000000,\n  \"active\": true,\n  \"ownedByCustomer\": false,\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": \"2020-05-05T12:05:44.787Z\",\n    \"quoteId\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "115fea85-db9f-47b5-8073-05afe9bdbb4f",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4b991eee-5d6a-4480-bef2-384e687c56e0",
+          "name": "Get account by ID",
+          "request": {
+            "name": "Get account by ID",
+            "description": {
+              "content": "Get recipient account info by ID.\n\n{% admonition type=\"info\" %}\nV1 and v2 versions are cross compatible, but the v2 endpoint provides additional features.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "accounts",
+                ":accountId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "467779f8-a1b4-4c7a-992e-29e110a477ba",
+              "name": "Recipient account details.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 40000000,\n  \"creatorId\": 41000000,\n  \"profileId\": 30000000,\n  \"name\": {\n    \"fullName\": \"John Doe\",\n    \"givenName\": \"string\",\n    \"familyName\": \"string\",\n    \"middleName\": \"string\",\n    \"patronymicName\": \"string\",\n    \"cannotHavePatronymicName\": false\n  },\n  \"currency\": \"GBP\",\n  \"country\": \"GB\",\n  \"type\": \"SortCode\",\n  \"legalEntityType\": \"PERSON\",\n  \"active\": true,\n  \"details\": {\n    \"reference\": \"string\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"hashedByLooseHashAlgorithm\": \"ad245621b974efa3ef870895c3wer419a3f01af18a8a5790b47645dba6304194\"\n  },\n  \"commonFieldMap\": {\n    \"accountNumberField\": \"accountNumber\",\n    \"bankCodeField\": \"sortCode\"\n  },\n  \"hash\": \"666ef880f8aa6113fa112ba6531d3ed2c26dd9fgbd7de5136bfb827a6e800479\",\n  \"accountSummary\": \"(04-00-75) 37778842\",\n  \"longAccountSummary\": \"GBP account ending in 8842\",\n  \"displayFields\": [\n    {\n      \"key\": \"details/sortCode\",\n      \"label\": \"UK sort code\",\n      \"value\": \"04-00-75\"\n    },\n    {\n      \"key\": \"details/accountNumber\",\n      \"label\": \"Account number\",\n      \"value\": \"37778842\"\n    }\n  ],\n  \"isInternal\": false,\n  \"ownedByCustomer\": false,\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": \"2019-06-13T21:53:05.989Z\",\n    \"quoteId\": \"string\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      },\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e9a74d1e-9c59-4621-aab0-70e775d4e269",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "634cf510-3ac7-4cba-b100-133c15fa6893",
+          "name": "Deactivate a recipient account",
+          "request": {
+            "name": "Deactivate a recipient account",
+            "description": {
+              "content": "Deletes a recipient by changing its status to inactive (`\"active\": false`).\n\nRequesting to delete a recipient that is already inactive returns HTTP 403 (Forbidden).\n\n{% admonition type=\"info\" %}\nOnly active recipients can be deleted and a recipient cannot be reactivated, however you can create a new recipient with the same details instead if necessary.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "accounts",
+                ":accountId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "a1bcd540-bb59-43ee-b1ef-a4e0a7e228b6",
+              "name": "Recipient returned with `active=false`.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 40000000,\n  \"creatorId\": 41000000,\n  \"profileId\": 30000000,\n  \"name\": {\n    \"fullName\": \"John Doe\",\n    \"givenName\": \"string\",\n    \"familyName\": \"string\",\n    \"middleName\": \"string\",\n    \"patronymicName\": \"string\",\n    \"cannotHavePatronymicName\": false\n  },\n  \"currency\": \"GBP\",\n  \"country\": \"GB\",\n  \"type\": \"SortCode\",\n  \"legalEntityType\": \"PERSON\",\n  \"active\": true,\n  \"details\": {\n    \"reference\": \"string\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"hashedByLooseHashAlgorithm\": \"ad245621b974efa3ef870895c3wer419a3f01af18a8a5790b47645dba6304194\"\n  },\n  \"commonFieldMap\": {\n    \"accountNumberField\": \"accountNumber\",\n    \"bankCodeField\": \"sortCode\"\n  },\n  \"hash\": \"666ef880f8aa6113fa112ba6531d3ed2c26dd9fgbd7de5136bfb827a6e800479\",\n  \"accountSummary\": \"(04-00-75) 37778842\",\n  \"longAccountSummary\": \"GBP account ending in 8842\",\n  \"displayFields\": [\n    {\n      \"key\": \"details/sortCode\",\n      \"label\": \"UK sort code\",\n      \"value\": \"04-00-75\"\n    },\n    {\n      \"key\": \"details/accountNumber\",\n      \"label\": \"Account number\",\n      \"value\": \"37778842\"\n    }\n  ],\n  \"isInternal\": false,\n  \"ownedByCustomer\": false,\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": \"2019-06-13T21:53:05.989Z\",\n    \"quoteId\": \"string\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      },\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c34c0a67-8d05-4c66-a1b8-ec4db798e480",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1330e8d5-354d-4dd0-8ef7-3a6b0230a230",
+          "name": "Retrieve recipient account requirements dynamically",
+          "request": {
+            "name": "Retrieve recipient account requirements dynamically",
+            "description": {
+              "content": "{% admonition type=\"info\" %}\nPlease note that to use v1.1 `Accept-Minor-Version: 1` request header must be set.\n{% /admonition %}\n\n`GET /v1/quotes/{quoteId}/account-requirements`<br>\n`POST /v1/quotes/{quoteId}/account-requirements`<br>\n`GET /v1/account-requirements?source=EUR&target=USD&sourceAmount=1000`\n\nYou can use the data returned by this API to build a dynamic user interface for recipient creation. The `GET` and `POST` account-requirements endpoints help you to figure out which fields are required to create a valid recipient for different currencies. This is a step-by-step guide on how these endpoints work.\n\nUse the `GET` endpoint to learn what datapoints are required to send a payment to your beneficiary. As you build that form, use the POST endpoint to learn if any additional datapoints are required as a result of passing a field that has `\"refreshRequirementsOnChange\": true` in the `GET` response. You should be posting the same recipient account payload that will be posted to `/v1/accounts`.\n\nAn example of this would be `address.country`. Some countries, like the United States, have a lower level organization, `\"state\"` or `\"territory\"`. After POSTing the recipient payload with address.country = \"US\", the list of possible states will appear in the response.\n\nThe third endpoint above is used to get account requirements for a specific currency route and amount without referring to a quote but with the amount, source and target currencies passed as URL parameters. Generally this approach is not recommended, you should have your user create a quote resource first and use this to generate the recipient account requirements. This is because some payout methods will only surface when the profile-context is known, for example (at the time of this writing), Business Payments to Chinese Yuan use a different payout method than what is revealed by `GET /v1/account-requirements?source=USD&target=CNY&sourceAmount=1000`.\n\nAll new integrations should use the v1.1 of `GET` and `POST` account requirements, enabled using the `Accept-Minor-Version` header. It enables you to fetch the requirements including both the recipient name and email fields in the dynamic form, simplifying implementation of the form. Name and email address dynamic fields are required to support currencies such as KRW, JPY and RUB, and also remove the need for manual name validation.\n\nThese endpoints allow use of both v1 and v2 quotes using long or UUID based IDs, supporting legacy implementations using v1 quotes.\n\nThese endpoints accept an optional query parameter **originatorLegalEntityType**. When the transfer is initiated by a [Third Party Partner](/guides/product/kyc/partner-accounts) we are not aware whether the actual sender is a business or person. In such cases, this parameter should be passed to receive correct requirements. The legal entity type should be one of the following values: `BUSINESS`, `PRIVATE`. This parameter is optional and the default value is the type of the partner profile.\n\n#### Collecting Recipient Address\n\nNormally our account requirements will instruct when a recipient address is required. However, in some situations it's desirable to force the requirement so that an address can be provided to Wise. To do this, add the query parameter `?addressRequired=true` to your request and address will always be returned as a required field.\n\n{% admonition type=\"warning\" %}\nAddress requirement fields are subject to change. Your integration should be built in a way to handle unrecognized or changed fields.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "quotes",
+                ":quoteId",
+                "account-requirements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "originatorLegalEntityType",
+                  "value": "<string>",
+                  "description": "Legal entity type override for the actual sender."
+                },
+                {
+                  "disabled": false,
+                  "key": "addressRequired",
+                  "value": "false",
+                  "description": "Set to true so address is always required."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "quoteId",
+                  "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Set to `1` to enable v1.1.",
+                "key": "Accept-Minor-Version",
+                "value": "<integer>"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2ed92702-5f3f-45c3-8154-0ed39db994fa",
+              "name": "Dynamic account requirements for building a recipient form.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "addressRequired",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"type\": \"south_korean_paygate\",\n    \"title\": \"PayGate\",\n    \"usageInfo\": \"string\",\n    \"fields\": [\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      },\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"south_korean_paygate\",\n    \"title\": \"PayGate\",\n    \"usageInfo\": \"string\",\n    \"fields\": [\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      },\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      }\n    ]\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e299c671-c44e-4b03-88e1-87377ba8a0df",
+              "name": "Unauthorized.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "addressRequired",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f42caef6-4358-48d3-8699-62c68802e5cf",
+              "name": "Forbidden.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "addressRequired",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f14b8bce-3736-4e2e-9341-5cf833ae6cb8",
+              "name": "Not Found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "addressRequired",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e580f81d-1f5c-49dc-ac69-3a892636e300",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "addressRequired",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a3a5b190-6fcf-46cf-b06c-0aa279415a51",
+          "name": "Retrieve recipient account requirements dynamically (step-by-step)",
+          "request": {
+            "name": "Retrieve recipient account requirements dynamically (step-by-step)",
+            "description": {
+              "content": "POST the same recipient account payload that you will POST to `/v1/accounts`.\n\nUse this endpoint after setting any field that has `refreshRequirementsOnChange=true` in the GET response,\nto discover any additional required fields.\n\nSee the [GET endpoint](/api-reference/recipient/recipientaccountrequirementsget) for a full overview of how the account requirements flow works.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "quotes",
+                ":quoteId",
+                "account-requirements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "originatorLegalEntityType",
+                  "value": "<string>",
+                  "description": "Legal entity type override for the actual sender."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "quoteId",
+                  "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Set to `1` to enable v1.1.",
+                "key": "Accept-Minor-Version",
+                "value": "<integer>"
+              },
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currency\": \"<string>\",\n  \"type\": \"<string>\",\n  \"profile\": \"<long>\",\n  \"accountHolderName\": \"<string>\",\n  \"ownedByCustomer\": \"<boolean>\",\n  \"details\": {\n    \"legalType\": \"<string>\",\n    \"sortCode\": \"<string>\",\n    \"accountNumber\": \"<string>\",\n    \"dateOfBirth\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "491d698f-b80b-4642-ac8c-b017ca947575",
+              "name": "Updated account requirements based on provided data.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"accountHolderName\": \"John Doe\",\n  \"ownedByCustomer\": true,\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"type\": \"south_korean_paygate\",\n    \"title\": \"PayGate\",\n    \"usageInfo\": \"string\",\n    \"fields\": [\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      },\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"south_korean_paygate\",\n    \"title\": \"PayGate\",\n    \"usageInfo\": \"string\",\n    \"fields\": [\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      },\n      {\n        \"name\": \"E-mail\",\n        \"group\": [\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          },\n          {\n            \"type\": \"string\",\n            \"description\": \"Example value for the field (may be empty string).\",\n            \"example\": \"example@example.ex\"\n          }\n        ]\n      }\n    ]\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8f2fbeb5-ce70-4a1a-8aac-2bcc7318d9f0",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "quotes",
+                    ":quoteId",
+                    "account-requirements"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "originatorLegalEntityType",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID (supports long or UUID based IDs)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Set to `1` to enable v1.1.",
+                    "key": "Accept-Minor-Version",
+                    "value": "<integer>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currency\": \"GBP\",\n  \"type\": \"sort_code\",\n  \"profile\": 30000000,\n  \"accountHolderName\": \"John Doe\",\n  \"ownedByCustomer\": true,\n  \"details\": {\n    \"legalType\": \"PRIVATE\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"dateOfBirth\": \"1961-01-01\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "03ab6cb0-224f-4e2b-9f7c-f7a3014cd906",
+          "name": "Check account and quote compatibility (v1)",
+          "request": {
+            "name": "Check account and quote compatibility (v1)",
+            "description": {
+              "content": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 compatibility endpoint](/api-reference/recipient/recipientcompatibilitycheck).\n{% /admonition %}\n\n{% admonition type=\"info\" %}\nUse this version if you are fetching recipients through the v1 API. There are no functional differences between v1 and v2, but the field paths referenced in the response differ between the v1 and v2 recipient resources.\n{% /admonition %}\n\nUse this endpoint to check the compatibility of a recipient account with a quote before creating a transfer. This validation includes:\n\n- Re-validating the recipient account details\n- Checking all required fields are present (e.g., recipient address for USD transfers)\n- Verifying account details with the recipient's bank (for supported currencies)\n\nThis endpoint is optional but recommended to identify potential issues before transfer creation.\n\n{% admonition type=\"info\" %}\nThe confirmations field is only populated for currencies with recipient verification enabled. If absent, only standard validations apply.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "accounts",
+                ":accountId",
+                "quotes",
+                ":quoteId",
+                "compatibility"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "quoteId",
+                  "description": "(Required) Quote ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "bbd68d2f-00a6-4039-b8c9-f0a88eb7c542",
+              "name": "Compatibility result including any verification outcomes. See [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) for details on handling the `confirmations` object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts",
+                    ":accountId",
+                    "quotes",
+                    ":quoteId",
+                    "compatibility"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accountId\": 40000000,\n  \"quoteId\": \"00000000-0000-0000-0000-000000000000\",\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": null,\n    \"quoteId\": \"00000000-0000-0000-0000-000000000000\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"accountHolderName\",\n          \"details/accountNumber\"\n        ],\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"accountHolderName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4c19d125-22dd-48ab-a40b-f5e811b621c1",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "accounts",
+                    ":accountId",
+                    "quotes",
+                    ":quoteId",
+                    "compatibility"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c3728ffc-7b1d-45a2-ba74-a141fa225175",
+          "name": "Check account and quote compatibility",
+          "request": {
+            "name": "Check account and quote compatibility",
+            "description": {
+              "content": "Use this endpoint to check the compatibility of a recipient account with a quote before creating a transfer. This validation includes:\n\n- Re-validating the recipient account details\n- Checking all required fields are present (e.g., recipient address for USD transfers)\n- Verifying account details with the recipient's bank (for supported currencies)\n\nThis endpoint is optional but useful to identify potential issues before transfer creation.\n\n{% admonition type=\"info\" %}\nThe confirmations field is only populated for currencies with recipient verification enabled. If absent, only standard validations apply.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "accounts",
+                ":accountId",
+                "quotes",
+                ":quoteId",
+                "compatibility"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "quoteId",
+                  "description": "(Required) Quote ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "9beef4c8-9565-46c7-bb3a-c1c52f1331d4",
+              "name": "Compatibility result including any verification outcomes. See [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) for details on handling the `confirmations` object.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId",
+                    "quotes",
+                    ":quoteId",
+                    "compatibility"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accountId\": 40000000,\n  \"quoteId\": \"00000000-0000-0000-0000-000000000000\",\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": null,\n    \"quoteId\": \"00000000-0000-0000-0000-000000000000\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "84ee5bb9-b92a-417d-8b6c-3fb4c4d083e6",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId",
+                    "quotes",
+                    ":quoteId",
+                    "compatibility"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "quoteId",
+                      "description": "(Required) Quote ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "62ea22fa-e03b-453b-817b-cc4f64d71bcb",
+          "name": "Accept confirmation outcomes",
+          "request": {
+            "name": "Accept confirmation outcomes",
+            "description": {
+              "content": "When `requiresCustomerAcceptance` is `true` in the confirmation outcomes, the recipient cannot be used for a transfer until the customer explicitly confirms the details. You must present the mismatch to the customer and get their approval.\n\n{% admonition type=\"warning\" %}\nIf the confirmation result contained a `quoteId` then the acceptance request must also specify that as part of the query parameters, otherwise the request will be rejected.\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "accounts",
+                ":accountId",
+                "confirmations"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "quoteId",
+                  "value": "<uuid>",
+                  "description": "Required if the confirmation result contained a `quoteId`."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "accountId",
+                  "description": "(Required) Recipient account ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"acceptedOutcomes\": \"<boolean>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "2903da13-96c6-40c8-9fdb-817465400742",
+              "name": "Recipient with updated confirmation status.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId",
+                    "confirmations"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "quoteId",
+                      "value": "<uuid>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"acceptedOutcomes\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 40000000,\n  \"creatorId\": 41000000,\n  \"profileId\": 30000000,\n  \"name\": {\n    \"fullName\": \"John Doe\",\n    \"givenName\": \"string\",\n    \"familyName\": \"string\",\n    \"middleName\": \"string\",\n    \"patronymicName\": \"string\",\n    \"cannotHavePatronymicName\": false\n  },\n  \"currency\": \"GBP\",\n  \"country\": \"GB\",\n  \"type\": \"SortCode\",\n  \"legalEntityType\": \"PERSON\",\n  \"active\": true,\n  \"details\": {\n    \"reference\": \"string\",\n    \"sortCode\": \"040075\",\n    \"accountNumber\": \"37778842\",\n    \"hashedByLooseHashAlgorithm\": \"ad245621b974efa3ef870895c3wer419a3f01af18a8a5790b47645dba6304194\"\n  },\n  \"commonFieldMap\": {\n    \"accountNumberField\": \"accountNumber\",\n    \"bankCodeField\": \"sortCode\"\n  },\n  \"hash\": \"666ef880f8aa6113fa112ba6531d3ed2c26dd9fgbd7de5136bfb827a6e800479\",\n  \"accountSummary\": \"(04-00-75) 37778842\",\n  \"longAccountSummary\": \"GBP account ending in 8842\",\n  \"displayFields\": [\n    {\n      \"key\": \"details/sortCode\",\n      \"label\": \"UK sort code\",\n      \"value\": \"04-00-75\"\n    },\n    {\n      \"key\": \"details/accountNumber\",\n      \"label\": \"Account number\",\n      \"value\": \"37778842\"\n    }\n  ],\n  \"isInternal\": false,\n  \"ownedByCustomer\": false,\n  \"confirmations\": {\n    \"acceptedOutcomes\": false,\n    \"acceptedAt\": \"2019-06-13T21:53:05.989Z\",\n    \"quoteId\": \"string\",\n    \"outcomes\": [\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      },\n      {\n        \"type\": \"NAME_MATCHING\",\n        \"timestamp\": \"2024-11-11T23:58:11.105916743Z\",\n        \"outcome\": \"PARTIAL_FAILURE\",\n        \"requiresCustomerAcceptance\": true,\n        \"fieldsChecked\": [\n          \"name/fullName\",\n          \"details/accountNumber\"\n        ],\n        \"providedName\": \"John Doe\",\n        \"resolvedName\": \"Joe Doe\",\n        \"message\": \"The name entered is slightly different to the name on the account.\",\n        \"recommendedUpdates\": [\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          },\n          {\n            \"path\": \"name/fullName\",\n            \"value\": \"Joe Doe\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "25536a13-ad91-4f93-929c-4c56a2428a9d",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "accounts",
+                    ":accountId",
+                    "confirmations"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "quoteId",
+                      "value": "<uuid>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "accountId",
+                      "description": "(Required) Recipient account ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"acceptedOutcomes\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "be7e8874-84fb-4527-9b99-df2fcf5b4172",
+    "name": "Wise Platform 3ds recipient API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

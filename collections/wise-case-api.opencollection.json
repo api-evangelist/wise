@@ -1,0 +1,134 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds case API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "case",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a partner case",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/cases",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Cases are used to collect or transmit additional information between Partners and Wise. Use this endpoint to create a new case.\n\n{% admonition type=\"warning\" %}\nPlease do not include PII in the `subject` of a case. Any specific details regarding the case that need to be communicated should be included in the `description`.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve a partner case by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/cases/:caseId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "caseId",
+                "value": "",
+                "type": "path",
+                "description": "Partner Case ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint returns a partner case based on the specified case ID.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve partner case comments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/cases/:caseId/comments",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "caseId",
+                "value": "",
+                "type": "path",
+                "description": "Partner Case ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint returns a comments list object, which is an array of comments that have been associated with the case. Comments are ordered newest to oldest and are not paginated (all comments returned at once).\n"
+        },
+        {
+          "info": {
+            "name": "Add a partner case comment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v1/cases/:caseId/comments",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "caseId",
+                "value": "",
+                "type": "path",
+                "description": "Partner Case ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows for a comment to be placed on a partner case.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

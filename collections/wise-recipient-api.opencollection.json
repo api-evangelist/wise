@@ -1,0 +1,453 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds recipient API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "recipient",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List recipient accounts (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by personal or business profile, returns only those owned by this profile."
+              },
+              {
+                "name": "currency",
+                "value": "",
+                "type": "query",
+                "description": "Filter responses by currency."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 list endpoint](/api-reference/recipient/recipientlist).\n{% /admonition %}\n\nFetch a list of the user's recipient accounts. Use the `currency` and `profile` parameters to filter by currency and/or the owning user profile ID. This endpoint does not support pagination, so please filter by currency to ensure a reasonable response time.\n\nBoth query parameters are optional.\n"
+        },
+        {
+          "info": {
+            "name": "Create a recipient account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "refund",
+                "value": "",
+                "type": "query",
+                "description": "When true, creates a refund recipient account."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a recipient account. A **recipient** is a person or institution who is the ultimate beneficiary of your payment.\n\nRecipient data includes three data blocks:\n- General data - the personal details of an individual and basic information about a business.\n- Bank details - account numbers, routing numbers, and other region-specific bank details.\n- Address details - country and street address of an individual or business.\n\nNotes:\n- Date of Birth is optional; consult the account-requirements AP"
+        },
+        {
+          "info": {
+            "name": "List recipient accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/accounts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "creatorId",
+                "value": "",
+                "type": "query",
+                "description": "Creator of the account."
+              },
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by personal or business profile. Defaults to the personal profile."
+              },
+              {
+                "name": "profile",
+                "value": "",
+                "type": "query",
+                "description": "Alias for `profileId`."
+              },
+              {
+                "name": "currency",
+                "value": "",
+                "type": "query",
+                "description": "Filter responses by currency. Comma separated values supported (e.g. `USD,GBP`)."
+              },
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "Filter by whether this profile is active. Defaults to `true`."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "Filter responses by account type. Comma separated values supported (e.g. `iban,swift_code`)."
+              },
+              {
+                "name": "ownedByCustomer",
+                "value": "",
+                "type": "query",
+                "description": "Filter to get accounts owned by the customer or not. Leave out to get all accounts."
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query",
+                "description": "Page size of the response. Defaults to a maximum of 20."
+              },
+              {
+                "name": "seekPosition",
+                "value": "",
+                "type": "query",
+                "description": "Account ID to start the page of responses from. `null` if no more pages."
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sorting strategy for the response. Comma separated options - firstly either `id` or `currency`, followed by `asc` or `desc` for direction."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetch a list of the user's recipient accounts. Use the `profileId` parameter to filter by the profile who created the accounts, you should do this based on the personal or business profile ID you have linked to, based on your use case. Other filters are listed below for your convenience, for example `currency` is a useful filter to use when presenting the user a list of recipients to choose from in the case they have already submitted the target currency in your flow.\n\n#### Pagination\nPagination"
+        },
+        {
+          "info": {
+            "name": "Get account by ID (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/accounts/:accountId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 get endpoint](/api-reference/recipient/recipientget).\n{% /admonition %}\n\nGet recipient account info by ID.\n"
+        },
+        {
+          "info": {
+            "name": "Get account by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/accounts/:accountId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get recipient account info by ID.\n\n{% admonition type=\"info\" %}\nV1 and v2 versions are cross compatible, but the v2 endpoint provides additional features.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Deactivate a recipient account",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v2/accounts/:accountId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a recipient by changing its status to inactive (`\"active\": false`).\n\nRequesting to delete a recipient that is already inactive returns HTTP 403 (Forbidden).\n\n{% admonition type=\"info\" %}\nOnly active recipients can be deleted and a recipient cannot be reactivated, however you can create a new recipient with the same details instead if necessary.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve recipient account requirements dynamically",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/quotes/:quoteId/account-requirements",
+            "headers": [
+              {
+                "name": "Accept-Minor-Version",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "quoteId",
+                "value": "",
+                "type": "path",
+                "description": "Quote ID (supports long or UUID based IDs)."
+              },
+              {
+                "name": "originatorLegalEntityType",
+                "value": "",
+                "type": "query",
+                "description": "Legal entity type override for the actual sender."
+              },
+              {
+                "name": "addressRequired",
+                "value": "",
+                "type": "query",
+                "description": "Set to true so address is always required."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"info\" %}\nPlease note that to use v1.1 `Accept-Minor-Version: 1` request header must be set.\n{% /admonition %}\n\n`GET /v1/quotes/{quoteId}/account-requirements`<br>\n`POST /v1/quotes/{quoteId}/account-requirements`<br>\n`GET /v1/account-requirements?source=EUR&target=USD&sourceAmount=1000`\n\nYou can use the data returned by this API to build a dynamic user interface for recipient creation. The `GET` and `POST` account-requirements endpoints help you to figure out which fields are "
+        },
+        {
+          "info": {
+            "name": "Retrieve recipient account requirements dynamically (step-by-step)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/quotes/:quoteId/account-requirements",
+            "headers": [
+              {
+                "name": "Accept-Minor-Version",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "quoteId",
+                "value": "",
+                "type": "path",
+                "description": "Quote ID (supports long or UUID based IDs)."
+              },
+              {
+                "name": "originatorLegalEntityType",
+                "value": "",
+                "type": "query",
+                "description": "Legal entity type override for the actual sender."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "POST the same recipient account payload that you will POST to `/v1/accounts`.\n\nUse this endpoint after setting any field that has `refreshRequirementsOnChange=true` in the GET response,\nto discover any additional required fields.\n\nSee the [GET endpoint](/api-reference/recipient/recipientaccountrequirementsget) for a full overview of how the account requirements flow works.\n"
+        },
+        {
+          "info": {
+            "name": "Check account and quote compatibility (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/accounts/:accountId/quotes/:quoteId/compatibility",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              },
+              {
+                "name": "quoteId",
+                "value": "",
+                "type": "path",
+                "description": "Quote ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis is a deprecated v1 endpoint. For new integrations please use the [v2 compatibility endpoint](/api-reference/recipient/recipientcompatibilitycheck).\n{% /admonition %}\n\n{% admonition type=\"info\" %}\nUse this version if you are fetching recipients through the v1 API. There are no functional differences between v1 and v2, but the field paths referenced in the response differ between the v1 and v2 recipient resources.\n{% /admonition %}\n\nUse this endpoint to check t"
+        },
+        {
+          "info": {
+            "name": "Check account and quote compatibility",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/accounts/:accountId/quotes/:quoteId/compatibility",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              },
+              {
+                "name": "quoteId",
+                "value": "",
+                "type": "path",
+                "description": "Quote ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Use this endpoint to check the compatibility of a recipient account with a quote before creating a transfer. This validation includes:\n\n- Re-validating the recipient account details\n- Checking all required fields are present (e.g., recipient address for USD transfers)\n- Verifying account details with the recipient's bank (for supported currencies)\n\nThis endpoint is optional but useful to identify potential issues before transfer creation.\n\n{% admonition type=\"info\" %}\nThe confirmations field is "
+        },
+        {
+          "info": {
+            "name": "Accept confirmation outcomes",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.wise.com/v2/accounts/:accountId/confirmations",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "accountId",
+                "value": "",
+                "type": "path",
+                "description": "Recipient account ID."
+              },
+              {
+                "name": "quoteId",
+                "value": "",
+                "type": "query",
+                "description": "Required if the confirmation result contained a `quoteId`."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "When `requiresCustomerAcceptance` is `true` in the confirmation outcomes, the recipient cannot be used for a transfer until the customer explicitly confirms the details. You must present the mismatch to the customer and get their approval.\n\n{% admonition type=\"warning\" %}\nIf the confirmation result contained a `quoteId` then the acceptance request must also specify that as part of the query parameters, otherwise the request will be rejected.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

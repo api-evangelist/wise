@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds card-sensitive-details API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "card-sensitive-details",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Fetch RSA encryption key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/twcard-data/v1/clientSideEncryption/fetchEncryptingKey",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetches Wise's RSA public key required for encrypting sensitive card data requests.\n\nThis key is used in the [sensitive card details flow](/guides/product/issue-cards/sensitive-card-details) to create JWE (JSON Web Encryption) payloads.\n"
+        },
+        {
+          "info": {
+            "name": "Get sensitive card details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/twcard-data/v1/sensitive-card-data/details",
+            "headers": [
+              {
+                "name": "x-tw-twcard-card-token",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetches the card's Primary Account Number (PAN), security code (CVV2), expiry date, and cardholder name.\n\nRequires an encrypted JWE payload for security. See the [sensitive card details guide](/guides/product/issue-cards/sensitive-card-details) for implementation details.\n\nTo retrieve sensitive card details, the card must be in either `ACTIVE` or `FROZEN` status. A 403 response will be returned for cards in any other status.\n\n{% admonition type=\"warning\" %}\nThis endpoint is SCA protected when ap"
+        },
+        {
+          "info": {
+            "name": "Get card PIN",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/twcard-data/v1/sensitive-card-data/pin",
+            "headers": [
+              {
+                "name": "x-tw-twcard-card-token",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetches the card's PIN.\n\nRequires an encrypted JWE payload for security. See the [sensitive card details guide](/guides/product/issue-cards/sensitive-card-details) for implementation details.\n\n{% admonition type=\"warning\" %}\nThis endpoint is SCA protected when applicable. If your profile is registered within the UK and/or EEA, SCA most likely applies. For more information, see [implementing SCA](/guides/developer/auth-and-security/sca-and-2fa).\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

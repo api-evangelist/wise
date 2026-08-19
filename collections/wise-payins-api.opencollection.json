@@ -1,0 +1,53 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds payins API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "payins",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create PayNow payment details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/payin-sessions/:payinSessionId/paynow",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID of the profile that created the transfer."
+              },
+              {
+                "name": "payinSessionId",
+                "value": "",
+                "type": "path",
+                "description": "Payin Session ID retrieved from Transfer object."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates the encoded QR code and details for the payin session so the user can fund a transfer or balance top-up via a PayNow transaction.\nThis operation supports the SGD currency only.\n\n{% admonition type=\"warning\" %}\nThis operation is not available for sandbox testing.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

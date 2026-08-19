@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds activity API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "activity",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Activities for a Profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/activities",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the profile."
+              },
+              {
+                "name": "monetaryResourceType",
+                "value": "",
+                "type": "query",
+                "description": "Filter activity by resource type."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter by activity status."
+              },
+              {
+                "name": "since",
+                "value": "",
+                "type": "query",
+                "description": "Filter activity list after a certain timestamp. Use ISO 8601 format."
+              },
+              {
+                "name": "until",
+                "value": "",
+                "type": "query",
+                "description": "Filter activity list until a certain timestamp. Use ISO 8601 format."
+              },
+              {
+                "name": "nextCursor",
+                "value": "",
+                "type": "query",
+                "description": "Pagination cursor returned from a previous response. Use the `cursor` value from the response to fetch the next page of activities.\n"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query",
+                "description": "Desired size of query. Min 1, max 100, and default value is 10 if not specified."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of activities belonging to user profile.\n\nActivities represent snapshots of performed actions and can be filtered by various parameters to narrow down the results.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

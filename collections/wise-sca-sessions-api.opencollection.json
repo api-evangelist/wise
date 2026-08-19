@@ -1,0 +1,47 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-sessions API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-sessions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a SCA session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/sca-sessions/authorise",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Manually triggers SCA, returning a one-time token along with a list of associated challenges. These challenges can be cleared with the verify endpoints.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

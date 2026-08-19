@@ -1,0 +1,302 @@
+# Global Payments API: Send & Receive Money
+
+> Wise Platform offer domestic and cross-border payments tools for technology platforms, banks and financial institutions.
+
+## Table of contents
+
+ - [tag.md](https://docs.wise.com/api-reference/3ds/tag.md)
+ - [Language Support: Implementing Internationalisation via API](https://docs.wise.com/guides/developer/language-support.md): Internationalisation support for translation of strings returned by the API is supported for endpoints on the right
+ - [tag.md](https://docs.wise.com/api-reference/activity/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/address/tag.md)
+ - [Performance: API Availability Metrics](https://docs.wise.com/api-performance.md): Wise Platform public endpoint availability metrics for the most recent quarter.
+ - [Wise Platform Product Guides](https://docs.wise.com/guides/product.md)
+ - [tag.md](https://docs.wise.com/api-reference/balance-statement/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/balance/tag.md)
+ - [Error Handling Guide: API Status Codes and Client Errors](https://docs.wise.com/guides/developer/errors.md): This guide is intended for Wise Platform partners to understand how Wise API error codes function
+ - [Regional Guides](https://docs.wise.com/guides/regional.md)
+ - [Open Banking API: Guide for TPPs on Account Access and Payment Initiation](https://docs.wise.com/guides/developer/open-banking.md): The Wise Open Banking API is aimed for Financially Regulated Third Party Providers. This guide gives a full overview of using open banking with Wise.
+ - [15 Jan Detailed Changelog](https://docs.wise.com/changelog/int64-changes.md)
+ - [Setting up a Wise Account](https://docs.wise.com/guides/developer/account-creation.md)
+ - [Versioning](https://docs.wise.com/guides/developer/global-versioning.md)
+ - [Changelog 2023](https://docs.wise.com/changelog/changelog-2023.md): 2023 Wise Platform API changelog.
+ - [Changelog 2024](https://docs.wise.com/changelog/changelog-2024.md): 2024 Wise Platform API changelog.
+ - [Changelog 2025](https://docs.wise.com/changelog/changelog-2025.md): 2025 Wise Platform API changelog.
+ - [Changelog](https://docs.wise.com/changelog.md): API updates and platform release notes. What's changed in the Wise Platform API in the current year.
+ - [Welcome to the Wise API documentation portal](https://docs.wise.com/guides.md): Build global payments and accounts with the Wise Platform API.
+ - [Getting started with Wise API](https://docs.wise.com/guides/developer.md): This guide provides engineers with essential information and key concepts to quickly begin integrating with the Wise API.
+ - [tag.md](https://docs.wise.com/api-reference/bank-account-details/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/batch-group/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/bulk-settlement/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/card/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/card-kiosk-collection/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/card-order/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/card-sensitive-details/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/card-transaction/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/case/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/claim-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/comparison/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/contact/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/currencies/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/delivery-estimate/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/digital-wallet/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/direct-debit-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/disputes/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/facetec/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/incoming-transfer/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/jose/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/kyc-review/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/link-requests/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/multi-currency-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/oauth-token/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/payin-deposit-detail/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/payins/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/profile/tag.md)
+ - [Types of quotes](https://docs.wise.com/api-reference/quote/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/rate/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/recipient/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-device-fingerprints/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-facemaps/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-otp/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-ott/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-pin/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/sca-sessions/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/simulation/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/spend-controls/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/spend-limits/tag.md)
+ - [standard-transfer-tag.md](https://docs.wise.com/api-reference/transfer/standard-transfer-tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/transfer/tag.md)
+ - [third-party-transfer-tag.md](https://docs.wise.com/api-reference/transfer/third-party-transfer-tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/user/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/user-security/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/verification/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/webhook/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/webhook-events/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/3ds/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/activity/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/address/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/balance/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/balance-statement/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/bank-account-details/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/batch-group/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/bulk-settlement/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/card/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/card-kiosk-collection/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/card-order/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/card-sensitive-details/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/card-transaction/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/case/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/claim-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/comparison/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/contact/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/currencies/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/delivery-estimate/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/digital-wallet/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/direct-debit-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/disputes/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/facetec/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/incoming-transfer/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/jose/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/kyc-review/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/multi-currency-account/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/oauth-token/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/payin-deposit-detail/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/payins/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/profile/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/quote/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/rate/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/recipient/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-device-fingerprints/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-facemaps/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-otp/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-ott/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-pin/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/sca-sessions/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/simulation/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/spend-controls/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/spend-limits/tag.md)
+ - [standard-transfer-tag.md](https://docs.wise.com/api-reference/legacy/transfer/standard-transfer-tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/transfer/tag.md)
+ - [third-party-transfer-tag.md](https://docs.wise.com/api-reference/legacy/transfer/third-party-transfer-tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/user/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/user-security/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/verification/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/webhook/tag.md)
+ - [tag.md](https://docs.wise.com/api-reference/legacy/webhook-events/tag.md)
+ - [Card Address Validation](https://docs.wise.com/guides/developer/api-guides/card-address-validation.md)
+ - [API Guides](https://docs.wise.com/guides/developer/api-guides.md)
+ - [Verifying recipient details](https://docs.wise.com/guides/developer/api-guides/recipient-verification.md)
+ - [Client credentials token format migration](https://docs.wise.com/guides/developer/auth-and-security/client-credentials-token-migration.md): Client Credentials Token Format Migration guide: Moving from UUID tokens to JWT tokens
+ - [Security expiry notifications](https://docs.wise.com/guides/developer/auth-and-security/expiry-notifications.md): Rotate JSON Web Signature (JWS) signing keys in Developer Hub (DevHub) by uploading a new public key, switching your signer to the new private key, and then revoking the old key safely.
+ - [Security and access](https://docs.wise.com/guides/developer/auth-and-security.md): Wise uses standard OAuth 2.0 protocol for authentication and authorization, as well as provides advanced security via mTLS and JOSE frameworks.
+ - [Mutual TLS (mTLS) guide for implementing client and server authentication.](https://docs.wise.com/guides/developer/auth-and-security/mtls.md)
+ - [OAuth 2.0 Setup](https://docs.wise.com/guides/developer/auth-and-security/oauth-2-setup.md): Initial setup and management details for OAuth 2.0 with the Wise Platform API.
+ - [One Time Token](https://docs.wise.com/guides/developer/auth-and-security/one-time-token.md): One Time Token (OTT): Managing Strong Customer Authentication sessions.
+ - [Strong Customer Authentication & 2FA](https://docs.wise.com/guides/developer/auth-and-security/sca-and-2fa.md): Strong Customer Authentication (SCA) is a new European regulatory requirement as part of the second Payment Services Directive (PSD2) for authenticating online payments and make them more secure.
+ - [API Environments: Sandbox, Production URLs, and mTLS Endpoints](https://docs.wise.com/guides/developer/environments.md): Wise platform has two environments for testing and production.
+ - [Migrating to the new Sandbox](https://docs.wise.com/guides/developer/environments/sandbox-v2-migration.md)
+ - [Correlation ID](https://docs.wise.com/guides/developer/headers/correlation-id.md)
+ - [Essential webhooks](https://docs.wise.com/guides/developer/webhooks/essential-webhooks.md)
+ - [Event handling guide: Processing webhook delivery and signature verification.](https://docs.wise.com/guides/developer/webhooks/event-handling.md): To receive events, you must set up a publicly accessible HTTPS endpoint and create a subscription that uses this endpoint. Our system will send HTTP POST requests to this endpoint with JSON event payloads.
+ - [Event ordering](https://docs.wise.com/guides/developer/webhooks/event-ordering.md): Learn how to use ordering fields to reconcile the order of webhook events. Wise does not guarantee delivery order, so you should use event-specific timestamp and sequence fields to determine the correct sequence.
+ - [Webhooks and notifications](https://docs.wise.com/guides/developer/webhooks.md): Webhooks are user-defined HTTP callbacks triggered by and describing certain events that occur within the Wise API.
+ - [View and retry events](https://docs.wise.com/guides/developer/webhooks/view-retry-events.md): View webhook history and retry events in in the developer hib.
+ - [Convert from balance to balance](https://docs.wise.com/guides/product/accounts/convert-from-balance-to-balance.md): Exchanging funds between multi-currency balances (currency conversion).
+ - [Multi currency accounts](https://docs.wise.com/guides/product/accounts.md)
+ - [Webhooks for multi-currency accounts](https://docs.wise.com/guides/product/accounts/mca-webhooks.md): Account webhooks: Monitoring balance credits and profile verification events.
+ - [Transfer to balance account](https://docs.wise.com/guides/product/accounts/transfer-to-balance-account.md): Transfer to balance: Funding accounts via bank transfer or API flow.
+ - [Embed on Android](https://docs.wise.com/guides/product/embedded-flows/android.md): Embed a Wise Platform Embedded Flow in an Android app.
+ - [Embed on iOS](https://docs.wise.com/guides/product/embedded-flows/ios.md): Embed a Wise Platform Embedded Flow in an iOS app.
+ - [Embed on web](https://docs.wise.com/guides/product/embedded-flows/web.md): Embed a Wise Platform Embedded Flow in a web application.
+ - [Manage multi-currency balances](https://docs.wise.com/guides/product/issue-cards/balance-currencies.md): Manage how multi-currency balances work for cards receiving refunds or credits.
+ - [mTLS for Webhooks: Securing Real-Time Notifications with Mutual TLS](https://docs.wise.com/guides/developer/auth-and-security/mtls-for-webhooks.md)
+ - [3D Secure (3DS): Implementing Push Notification Challenges for Authentication](https://docs.wise.com/guides/product/issue-cards/3ds.md)
+ - [Transfer Requirements](https://docs.wise.com/guides/developer/api-guides/transfer-requirements.md)
+ - [Address Requirements](https://docs.wise.com/guides/developer/api-guides/address-requirements.md)
+ - [Client credentials tokens](https://docs.wise.com/guides/developer/auth-and-security/client-credentials-token.md): Obtaining and using client credentials tokens in the Wise Platform API OAuth 2.0 flow.
+ - [Embedded SCA component](https://docs.wise.com/guides/developer/auth-and-security/embedded-sca-component.md): Embedded SCA Component: Integrating SCA via JavaScript library.
+ - [Personal API tokens](https://docs.wise.com/guides/developer/auth-and-security/personal-api-token.md): Small-to-medium businesses (SMBs) with Wise business accounts can automate parts of their transfer flow with a Wise personal API token.
+ - [Refresh tokens](https://docs.wise.com/guides/developer/auth-and-security/refresh-tokens.md): Obtain new user access tokens without requiring your user to reauthorize, maintaining long-term access.
+ - [SCA over API](https://docs.wise.com/guides/developer/auth-and-security/sca-over-api.md): SCA over API: Implementing Strong Customer Authentication challenges.
+ - [User access tokens](https://docs.wise.com/guides/developer/auth-and-security/user-access-token.md): Obtaining and using user access tokens in the Wise Platform API OAuth 2.0 flow.
+ - [Subscribe to webhooks](https://docs.wise.com/guides/developer/webhooks/subscribe-to-webhooks.md): Subscribe to webhooks in Developer Hub or programmatically via the API.
+ - [Balance accounts](https://docs.wise.com/guides/product/accounts/balance-accounts.md): Create, manage, and retrieve currency balances for multi-currency accounts
+ - [Balance limits](https://docs.wise.com/guides/product/accounts/balance-limits.md): Managing deposit capacity and regulatory compliance.
+ - [Bank account details](https://docs.wise.com/guides/product/accounts/bank-account-details.md): Ordering and issuing local account details for multi-currency accounts.
+ - [Multi-currency accounts](https://docs.wise.com/guides/product/accounts/managing-accounts.md): Checking eligibility and multi-currency account creation flow.
+ - [Transfer from balance account](https://docs.wise.com/guides/product/accounts/transfer-from-balance-account.md): Transfer from balance: Sending money from a balance account via API.
+ - [Embedded Flows](https://docs.wise.com/guides/product/embedded-flows.md): Use Wise-hosted Embedded Flows when integrating Wise Platform into your product.
+ - [Best Practices Guide: Operational Advice for Card Issuance and Tokenization](https://docs.wise.com/guides/product/issue-cards/card-best-practices.md)
+ - [Digital Wallets: Manual provisioning and Push provisioning APIs for Apple Pay and Google Pay](https://docs.wise.com/guides/product/issue-cards/card-digital-wallet.md)
+ - [Card Kiosk Collection: Ordering Physical Cards for Automated Pickup](https://docs.wise.com/guides/product/issue-cards/card-kiosk-collection.md)
+ - [Card Management: Controlling Status, Permissions, and Spending Limits](https://docs.wise.com/guides/product/issue-cards/card-management.md)
+ - [Spend Controls API: Configuring Authorization Rules by Merchant Category and Currency](https://docs.wise.com/guides/product/issue-cards/card-spend-controls.md)
+ - [Card Transactions: API Guide to Viewing, Tracking, and Webhook Statuses](https://docs.wise.com/guides/product/issue-cards/card-transaction.md)
+ - [Card Issuance API: Guide to Issuing, Ordering, and Managing Cards](https://docs.wise.com/guides/product/issue-cards.md)
+ - [Ordering Cards: Issuing, Activating, and Managing Physical & Virtual Cards](https://docs.wise.com/guides/product/issue-cards/ordering-cards.md)
+ - [Partner pooled funding: Manage business account liquidity by pulling funds from partner funds](https://docs.wise.com/guides/product/issue-cards/partner-pooled-funding.md)
+ - [Relayed Authorisation: Approve or decline card transactions in real time](https://docs.wise.com/guides/product/issue-cards/relayed-authorisation.md)
+ - [Sensitive Card Details: PCI-DSS Compliant Encryption and Decryption Guide](https://docs.wise.com/guides/product/issue-cards/sensitive-card-details.md)
+ - [Business categories](https://docs.wise.com/guides/product/kyc/business-categories.md)
+ - [Onboarding & KYC](https://docs.wise.com/guides/product/kyc.md)
+ - [Migrating to industry categories](https://docs.wise.com/guides/product/kyc/migrate-business-profile-industry-categories.md)
+ - [Amendments, traces, and recalls](https://docs.wise.com/guides/product/partner/amend-trace-recall.md): Operational guide for managing amendments, traces, and recalls for SWIFT transfers.
+ - [Support for business accounts](https://docs.wise.com/guides/product/partner/business-account-support.md)
+ - [Case handling](https://docs.wise.com/guides/product/partner/case-handling.md)
+ - [Wise Platform partner support](https://docs.wise.com/guides/product/partner.md): Getting support as a Wise Platform partner.
+ - [Supporting customer queries](https://docs.wise.com/guides/product/partner/operations.md): Learn how to reduce customer contacts and help your customers with queries.
+ - [Case message types](https://docs.wise.com/guides/product/partner/submission-types.md)
+ - [Wise Platform Technical Integration Support](https://docs.wise.com/guides/product/partner/wptechsupport.md): Contact us for help with your Wise Platform API integration.
+ - [Receive money: Guide to accepting local and international transfers](https://docs.wise.com/guides/product/receive-money.md)
+ - [Returns: Initiate a return for received payments](https://docs.wise.com/guides/product/receive-money/initiate-a-return.md)
+ - [Set up to receive transfers: Account details and BIC connection guide](https://docs.wise.com/guides/product/receive-money/setup.md)
+ - [Send Money API: Creating and funding global money transfers](https://docs.wise.com/guides/product/send-money.md)
+ - [Recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification.md): Wise performs validation and verification checks on recipient accounts to ensure successful transfers to the correct recipients.
+ - [Recipients](https://docs.wise.com/guides/product/send-money/recipients.md): Recipient accounts are the beneficiary of funds in a transfer. Learn how to create and retrieve recipient accounts.
+ - [Global Currencies: Implementing SWIFT network transfers and fees](https://docs.wise.com/guides/product/send-money/swift-network-transfers.md): Global Currencies is a Wise product that allows customers to send currencies to countries other than the one they are domestic to. For example, sending US dollars to a person or business in Hong Kong, rather than the USA.
+ - [Transfer Requirements](https://docs.wise.com/guides/product/send-money/transfer-requirements.md)
+ - [Transfer creation API: Requirements and transfer types](https://docs.wise.com/guides/product/send-money/transfers.md)
+ - [cpf-cnpj-and-financial-capacity.md](https://docs.wise.com/guides/regional/brazil/cpf-cnpj-and-financial-capacity.md)
+ - [index.md](https://docs.wise.com/guides/regional/brazil.md)
+ - [pix-payments.md](https://docs.wise.com/guides/regional/brazil/pix-payments.md)
+ - [index.md](https://docs.wise.com/guides/regional/european-union.md)
+ - [index.md](https://docs.wise.com/guides/regional/india.md)
+ - [JSON Object Signing and Encryption](https://docs.wise.com/guides/developer/auth-and-security/jose.md): An intro to the JOSE framework and how Wise implements JOSE with JWS, JWE, and JWS+JWE.
+ - [Rotate JWE keys](https://docs.wise.com/guides/developer/auth-and-security/jose/jose-jwe-key-rotation.md): Rotate JSON Web Encryption (JWE) keys in Developer Hub (DevHub) by uploading a new public key, switching your encryption key to the new public key, and then revoking the old key safely.
+ - [JSON Web Encryption (JWE)](https://docs.wise.com/guides/developer/auth-and-security/jose/jose-jwe.md): JWE: Encrypting requests and responses with JOSE.
+ - [Rotate JWS keys](https://docs.wise.com/guides/developer/auth-and-security/jose/jose-jws-key-rotation.md): Rotate JSON Web Signature (JWS) keys in Developer Hub (DevHub) by uploading a new public key, switching your signing key to the new private key, and then revoking the old key safely.
+ - [JSON Web Signature (JWS)](https://docs.wise.com/guides/developer/auth-and-security/jose/jose-jws.md): JWS: Implementing API request integrity and non-repudiation.
+ - [Card Disputes: Implementing the Dynamic Flow UI for Submitting Claims](https://docs.wise.com/guides/product/issue-cards/card-disputes-dynamic-flow.md)
+ - [Manage Disputes API: Tracking Status and Withdrawing Claims](https://docs.wise.com/guides/product/issue-cards/card-disputes-management.md)
+ - [Card Testing Guide: Simulating Transactions and Payment Flows in Sandbox](https://docs.wise.com/guides/product/issue-cards/card-testing.md)
+ - [Balance statement API: Reconcile incoming transfers](https://docs.wise.com/guides/product/receive-money/reconcile-incoming-transfers.md)
+ - [Testing Guide: Simulating Incoming Payments in Sandbox for Go-Live](https://docs.wise.com/guides/product/receive-money/test-and-go-live.md)
+ - [Batch Transfers API: Grouping Payments for Single Funding and Processing](https://docs.wise.com/guides/product/send-money/batch-transfers.md): Many of our partner’s customers need to make multiple payments at once. Follow the Batch Transfers guide to integrate with this portion of Wise Platform
+ - [Custom receipts: API for generating transfer and banking partner records.](https://docs.wise.com/guides/product/send-money/receipts.md): Learn how to create and customize your own transfer receipt. You can create a PDF, HTML, or plain text receipt, and share it with your customers via email or other communication channels.
+ - [Standard Transfers: Creating Direct Payments with the Transfer API](https://docs.wise.com/guides/product/send-money/standard-api-transfers.md)
+ - [Third-Party Transfer API: Capturing Originator Details for Compliance](https://docs.wise.com/guides/product/send-money/third-party-api-transfers.md)
+ - [Respond to RFIs](https://docs.wise.com/guides/product/partner/respond-to-rfis.md)
+ - [Subscribe to notifications about Incoming Transfers](https://docs.wise.com/guides/product/receive-money/incoming-transfer-notifications.md)
+ - [Card Disputes API: Direct Submission Guide for Disputes and File Uploads](https://docs.wise.com/guides/product/issue-cards/card-disputes-api.md)
+ - [Personal Token Migration: Final Steps for OAuth 2.0 and mTLS Switchover](https://docs.wise.com/guides/developer/auth-and-security/personal-token-migration/production-integration.md)
+ - [KYC reviews](https://docs.wise.com/guides/product/embedded-flows/flows/kyc-reviews.md)
+ - [Payment instrument](https://docs.wise.com/guides/product/embedded-flows/flows/payment-instrument.md)
+ - [Recipient creation](https://docs.wise.com/guides/product/embedded-flows/flows/recipient-creation.md)
+ - [Partner accounts](https://docs.wise.com/guides/product/kyc/partner-accounts.md): Learn about partner accounts for Wise Platform. Wise partners are the direct customer of Wise either by transacting on their own partner account (First-party), Or by transacting on behalf of their customer, providing originator data (Third-party).
+ - [Accessing Customer Accounts](https://docs.wise.com/guides/product/kyc/partner-kyc/accessing-accounts.md)
+ - [Additional Customer Verification](https://docs.wise.com/guides/product/kyc/partner-kyc/additional-verification.md)
+ - [Partner-Led KYC: Outsourcing Customer Verification to Regulated Entities](https://docs.wise.com/guides/product/kyc/partner-kyc.md)
+ - [List of Supported Evidences](https://docs.wise.com/guides/product/kyc/partner-kyc/supported-evidences.md)
+ - [Updating profiles](https://docs.wise.com/guides/product/kyc/partner-kyc/updating-profiles.md)
+ - [API and hybrid customer onboarding](https://docs.wise.com/guides/product/kyc/wise-kyc/api-hybrid-kyc.md): Build your own customer onboarding experience, leveraging the Wise API for requirements and final submission.
+ - [Hosted customer onboarding](https://docs.wise.com/guides/product/kyc/wise-kyc/hosted-kyc.md): Use Wise’s hosted onboarding method, branded with your company logo and theme colors, to gather customer details.
+ - [Wise-performed KYC](https://docs.wise.com/guides/product/kyc/wise-kyc.md): Wise-performed customer onboarding and KYC for verification
+ - [Funding a transfer](https://docs.wise.com/guides/product/send-money/funding.md): Funding options for settling transfers.
+ - [KYC requirement types](https://docs.wise.com/guides/product/kyc/wise-kyc/kyc-requirement-types.md)
+ - [Quote API guide: FX rates, fees, authenticated vs. unauthenticated quotes for transfers](https://docs.wise.com/guides/product/send-money/quotes.md)
+ - [Update Quote API: Adding recipient data for final price accuracy.](https://docs.wise.com/guides/product/send-money/quotes/update-quote.md)
+ - [Account requirements dynamic form demo](https://docs.wise.com/guides/product/send-money/recipient-verification/account-requirements.md): Explore how Wise account requirements can drive a dynamic recipient form.
+ - [CNY recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification/cny-verification.md)
+ - [EUR recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification/eur-verification.md)
+ - [IDR recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification/idr-verification.md)
+ - [INR recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification/inr-verification.md)
+ - [JWS + JWE](https://docs.wise.com/guides/developer/auth-and-security/jose/jose-jws-jwe.md): JWS+JWE: Implementing API request integrity, authenticity, and confidentiality.
+ - [KRW recipient verification](https://docs.wise.com/guides/product/send-money/recipient-verification/krw-verification.md)
+ - [An introduction to Wise transfer refunds.](https://docs.wise.com/guides/product/send-money/refunds.md): What are transfer refunds, why do they occur, and how does Wise manage them for Wise Platform partners.
+ - [Refund guide for partners using the bulk settlement option to fund transfers.](https://docs.wise.com/guides/product/send-money/refunds/net-settlement.md)
+ - [Refund guide: Implementing direct refunds to the Wise account balance.](https://docs.wise.com/guides/product/send-money/refunds/refund-to-balance.md)
+ - [Personal token migration: Sandbox testing flow for OAuth token exchange](https://docs.wise.com/guides/developer/auth-and-security/personal-token-migration/testing-in-sandbox.md)
+ - [Authenticated quotes: Rate locking API for real money transfers.](https://docs.wise.com/guides/product/send-money/quotes/authenticated-quote.md)
+ - [Flexible partner pricing: Customize transfer fees via quote API.](https://docs.wise.com/guides/product/send-money/quotes/pricing.md): Get started with flexible partner pricing.
+ - [Unauthenticated quotes: Displaying rates and estimates for comparison](https://docs.wise.com/guides/product/send-money/quotes/unauthenticated-quote.md)
+ - [Refund guide: Implementing direct bank account refunds for senders.](https://docs.wise.com/guides/product/send-money/refunds/refund-to-bank-account.md)
+ - [Profile Creation](https://docs.wise.com/guides/product/kyc/partner-accounts/profile-creation.md)
+ - [Refreshing access](https://docs.wise.com/guides/product/kyc/partner-accounts/refreshing-access.md)
+ - [Send Money](https://docs.wise.com/guides/product/kyc/partner-accounts/send-money.md)
+ - [Profile Creation](https://docs.wise.com/guides/product/kyc/partner-kyc/profile-creation.md)
+ - [Refreshing access](https://docs.wise.com/guides/product/kyc/partner-kyc/refreshing-access.md)
+ - [Migrate to OAuth 2.0 and mTLS](https://docs.wise.com/guides/developer/auth-and-security/personal-token-migration.md): Personal Token Migration: Transitioning to OAuth 2.0 and mTLS Security
+ - [Payments use cases: Enterprise, Correspondent, and Embedded payout guides.](https://docs.wise.com/guides/product/send-money/use-cases.md)
+ - [Payouts for Small to Medium Businesses (SMBs)](https://docs.wise.com/guides/product/send-money/use-cases/payouts-smbs.md): Automating payout actions for Wise business accounts.
+ - [KYC Review Status](https://docs.wise.com/guides/product/kyc/wise-kyc/hosted-kyc/kyc-review-status.md)
+ - [Claim Account: Finalize User Onboarding and Authorization](https://docs.wise.com/guides/product/kyc/wise-kyc/redirect-to-wise/claim-account.md)
+ - [User Onboarding: Redirect to Wise for KYC & Verification](https://docs.wise.com/guides/product/kyc/wise-kyc/redirect-to-wise.md): This guide is intended for Wise Platform partners who are not licensed and able to perform know-your-customer or know-your-business (KYC or KYB) checks in-house or where a reliance model (see note) is not possible.
+ - [Prefilling Customer Data: Streamline KYC Onboarding via API](https://docs.wise.com/guides/product/kyc/wise-kyc/redirect-to-wise/prefilling.md): Follow the Onboarding API Guide to make onboarding new users easier by sending portion of required customer data upfront via API.
+ - [User Onboarding](https://docs.wise.com/guides/product/kyc/wise-kyc/redirect-to-wise/user-onboarding.md)
+ - [Bulk settlement](https://docs.wise.com/guides/product/send-money/funding/bulk-settlement.md): Funding and reconciliation for multiple transfers with Wise API.
+ - [Payment instruments payins](https://docs.wise.com/guides/product/send-money/funding/direct-debit/create-payin.md)
+ - [Payment instruments](https://docs.wise.com/guides/product/send-money/funding/direct-debit/create-payment-instrument.md)
+ - [Fund transfers with direct debit](https://docs.wise.com/guides/product/send-money/funding/direct-debit.md): Pulling Funds for transfers via payment instrument API. Fund transfers with direct debit payments coming into your Wise account.
+ - [Direct Debits in the UK and Europe](https://docs.wise.com/guides/product/send-money/funding/direct-debit/mandates-standards.md): Direct Debits in the UK & Europe: Mandate and pre-notification rules.
+ - [Direct debit: Simulating in sandbox](https://docs.wise.com/guides/product/send-money/funding/direct-debit/simulation.md): Testing payment instrument and payin statuses in the sandbox.
+ - [Track third party transfers](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-track-transfers.md): Track third-party (originator) transfers with webhooks, transfer statuses, and delivery estimates.
+ - [Correspondent partner integrations](https://docs.wise.com/guides/product/send-money/use-cases/correspondent.md): “The correspondent partner integration allows licensed banks and financial institutions to transfer funds on behalf of their customers.”
+ - [Recipient creation by target currency](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/recipient-creation-by-currency.md)
+ - [Embedded Finance: Submitting Additional Verification Evidence via API](https://docs.wise.com/guides/product/send-money/use-cases/embedded/additional-verification.md)
+ - [Embedded Finance Setup: Environments, mTLS Security, and Go-Live Checklist](https://docs.wise.com/guides/product/send-money/use-cases/embedded/getting-started.md)
+ - [Embedded finance](https://docs.wise.com/guides/product/send-money/use-cases/embedded.md): Learn about building embedded finance solutions with Wise Platform.
+ - [Embedded Finance: Next Steps and Transfer Implementation Guide](https://docs.wise.com/guides/product/send-money/use-cases/embedded/next-steps.md)
+ - [Affiliate Partners: API for Live Rates, Pricing, and Comparison](https://docs.wise.com/guides/product/send-money/use-cases/affiliates.md): The affiliate partner guide details how to become an affiliate, and how to integrate once approved.
+ - [Embedded Finance: Client Credentials, mTLS, and Token Management](https://docs.wise.com/guides/product/send-money/use-cases/embedded/authentication-and-access.md)
+ - [Embedded Finance: Creating Personal & Business Profiles via API](https://docs.wise.com/guides/product/send-money/use-cases/embedded/onboarding-customers.md)
+ - [Create a new user](https://docs.wise.com/guides/product/kyc/wise-kyc/hosted-kyc/create-a-new-user.md)
+ - [Refreshing Access](https://docs.wise.com/guides/product/kyc/wise-kyc/redirect-to-wise/refresh-access.md)
+ - [Payout failures](https://docs.wise.com/guides/product/send-money/tracking/payout-failures.md): Subscribe to transfers#payout-failure webhooks to get payout failure reason codes and test payout failure flows in Sandbox.
+ - [Tracking transfers](https://docs.wise.com/guides/product/send-money/tracking/transfer-statuses.md): Tracking transfers via webhooks and understanding statuses and delivery estimates for Wise transfers.
+ - [Settlement cycle](https://docs.wise.com/guides/product/send-money/funding/bulk-settlement/settlement-cycle.md): Same-surrency and cross-currency bulk settlements.
+ - [Mark transfers as funded](https://docs.wise.com/guides/product/send-money/funding/bulk-settlement/transfer-funding.md): Marking transfers as funded for bulk settlements.
+ - [Fund transfers from your Wise balance](https://docs.wise.com/guides/product/send-money/funding/fund-from-balance.md): Funding transfers with your Wise account balance.
+ - [Create quote](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-create-auth-quote.md): How correspondent partners create authenticated quotes for their send money flow.
+ - [List or create recipients](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-create-recipient.md): How correspondent partners create and manage recipient account resources for their customers.
+ - [Create third party transfer](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-create-transfer.md): How to create third-party (originator) transfers when you are a correspondent partner.
+ - [Fund transfers](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-fund-transfer.md): Funding third-party (originator) transfers for correspondent partners.
+ - [Correspondent partner onboarding](https://docs.wise.com/guides/product/send-money/use-cases/correspondent/correspondent-partner-onboarding.md): Integration onboarding guide for Correspondent partner accounts.
+ - [Testing refunds](https://docs.wise.com/guides/product/send-money/refunds/testing-refunds.md): Simulate refunds in Sandbox to test the transfers#refund webhook end-to-end, including SWIFT partial refund scenarios.
+ - [Embedded Finance: Updating Customer Profiles for Embedded Payouts Compliance](https://docs.wise.com/guides/product/send-money/use-cases/embedded/updating-profiles.md)
+ - [Enterprise Payouts: Send Money from Your Own Wise Account](https://docs.wise.com/guides/product/send-money/use-cases/enterprise.md): The Partner Account Guide is intended for Wise partners who are the direct customer of Wise either by transacting on their own partner account (First Party), OR by transacting on their partner account as their customer, providing originator data (Third Party)
+ - [WisePublicApi](https://docs.wise.com/remote/wise-public-api.md)
+ - [Enterprise Payouts: Quote, Recipient, Transfer, and Funding API Steps](https://docs.wise.com/guides/product/send-money/use-cases/enterprise/send-money.md)
+ - [Wise Platform API](https://docs.wise.com/api-reference.md)
+ - [Wise Platform API](https://docs.wise.com/api-reference/legacy.md)
+ - [Webhook Sender API](https://docs.wise.com/api-reference/webhook/tmp/generated/openapi.md)
+ - [Webhook Sender API](https://docs.wise.com/api-reference/legacy/webhook/tmp/generated/openapi.md)
+

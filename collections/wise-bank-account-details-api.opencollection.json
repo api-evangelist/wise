@@ -1,0 +1,216 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds bank-account-details API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "bank-account-details",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List bank account detail orders (v1)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/account-details-orders",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to list bank account detail orders for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the bank account assignment requests for a profile and multi-currency account.\n\n{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Please use the [v3 endpoint](/api-reference/bank-account-details/bankaccountdetailsorderslist) instead.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Create bank account details order",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/account-details-orders",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to create the bank account details order for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates an order which will issue account details. It should use the same currency as the balance previously created. Fulfilling all the requirements will complete the order, reaching status `DONE`.\n\nThe possible values for a requirement status are:\n- `PENDING_USER`: The requirement has some pending action from the user.\n- `PENDING_TW`: The requirement has some pending action from Wise.\n- `DONE`: The requirement is completed.\n\nThe more common requirements are:\n- `VERIFICATION`: The user needs to"
+        },
+        {
+          "info": {
+            "name": "Create multiple bank account details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/bank-details",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to create bank account details for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates and assigns a pair of local account details and international account details (where available) that are linked to the target balance specified in the request.\n\n{% admonition type=\"warning\" %}\nPlease reach out to our Support Team for access to this endpoint.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve bank account details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/account-details",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to retrieve bank account details for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a list with all the `AVAILABLE` and `ACTIVE` account details for the given profile, including examples. Account receive options can also include local and international details to receive money on the currency balance.\n\nExample bank account details are returned for any currency where bank account details have not been requested and issued. Examples will always include an `id` of `null`.\n"
+        },
+        {
+          "info": {
+            "name": "List bank account detail orders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/account-details-orders",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile to list bank account detail orders for."
+              },
+              {
+                "name": "currency",
+                "value": "",
+                "type": "query",
+                "description": "Currency code (ISO 4217 Alphabetic Code)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the bank account assignment requests for a profile and multi-currency account.\n\nThe response includes bank-details orders in the following statuses: `PENDING_USER`, `PENDING_TW`, `REQUIREMENTS_FULFILLED`, `DONE`.\n"
+        },
+        {
+          "info": {
+            "name": "Create payment return",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/profiles/:profileId/account-details/payments/:paymentId/returns",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the profile that received the payment."
+              },
+              {
+                "name": "paymentId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the payment to return."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a return for a payment received to bank account details.\n\nWhen you create a return, you must provide the ID of the payment you wish to return as well as the ID of the profile that received the payment. In addition, you can provide a `reason` for the return in the request body. When returning SWIFT payments, `reason` is a required field.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

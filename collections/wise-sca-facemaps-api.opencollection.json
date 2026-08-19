@@ -1,0 +1,146 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-facemaps API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-facemaps",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Verify FaceMap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/facemap/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "To clear a **FACE_MAP** challenge listed in a OTT.\n\nNotes:\n1. User is required to [enrol facemap](/api-reference/user-security/usersecurityfacemapenrol) before the verification can be successful.\n2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.\n"
+        },
+        {
+          "info": {
+            "name": "Create a facemap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/facemaps",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new facemap factor used to resolve a SCA inherence challenge type.\n\nA facemap should be exported from your FaceTec server using the SDK's [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise's FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during the export process.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a facemap",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v2/profiles/:profileId/facemaps",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a facemap associated to a profile.\n\nTo update a facemap for a profile, use this endpoint followed by [Create a facemap](/api-reference/sca-facemaps/scafacemapcreate).\n\n{% admonition type=\"warning\" %}\nThis operation is irreversible.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Verify a facemap",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/facemaps/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verifies a facemap challenge when calling a SCA-secured endpoint. Make sure to [create a facemap](/api-reference/sca-facemaps/scafacemapcreate) before using this endpoint.\n\nA facemap should be exported from your FaceTec server using the SDK's [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise's FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt a facemap during the export process.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

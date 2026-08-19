@@ -1,0 +1,160 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds digital-wallet API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "digital-wallet",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List payment tokens for a card",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/payment-tokens",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "cardToken",
+                "value": "a3f90c98-1cd1-4488-9050-2e32c696f8fa",
+                "type": "path",
+                "description": "The card token."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "You have the option to obtain the payment tokens associated with a card, which can assist in determining if it's already linked to a specific wallet.\nNote that the payment token status associated with the card may not be accurate (for example, after a phone factory reset).\nTherefore, it's advisable to consistently check the wallet instance for the most up-to-date token status.\n"
+        },
+        {
+          "info": {
+            "name": "Manual provisioning payment token activation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/payment-tokens/:paymentTokenUniqueReference/activation",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345",
+                "type": "path",
+                "description": "The profile ID"
+              },
+              {
+                "name": "cardToken",
+                "value": "a3f90c98-1cd1-4488-9050-2e32c696f8fa",
+                "type": "path",
+                "description": "The card token"
+              },
+              {
+                "name": "paymentTokenUniqueReference",
+                "value": "DNITHE382607223583426199",
+                "type": "path",
+                "description": "The payment token unique reference issued by the scheme token service"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint activates the payment token for a card that has been manually added to a wallet provider. Please read this [guide](/guides/product/issue-cards/card-digital-wallet.md) before implementing this API.\n{% admonition type=\"warning\" %}\nThis API is not available for sandbox testing.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Push provisioning for Google Pay",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/twcard-data/v1/push-provisioning/encrypted-payload/google-pay",
+            "headers": [
+              {
+                "name": "x-tw-twcard-card-token",
+                "value": "a3f90c98-1cd1-4488-9050-2e32c696f8fa"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns encrypted cardholder information and other metadata needed for Google Pay push provisioning.\n\n{% admonition type=\"warning\" %}\nThis API is not available for sandbox testing.\n{% /admonition %}\n"
+        },
+        {
+          "info": {
+            "name": "Push Provisioning for Apple Pay",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/twcard-data/v1/push-provisioning/encrypted-payload/apple-pay",
+            "headers": [
+              {
+                "name": "x-tw-twcard-card-token",
+                "value": "a3f90c98-1cd1-4488-9050-2e32c696f8fa"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns encrypted cardholder information and other metadata needed for Apple Pay push provisioning.\n\n{% admonition type=\"warning\" %}\nThis API is not available for sandbox testing.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

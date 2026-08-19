@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds card-kiosk-collection API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "card-kiosk-collection",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve card production status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/production",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business) that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the current production status of a card at a kiosk machine.\n\n**Best practice**: Subscribe to the [card production status change](/guides/developer/webhooks/event-types#cards-card-production-status-change) webhook for real-time notifications. Use this endpoint only when you need to synchronously check the status.\n"
+        },
+        {
+          "info": {
+            "name": "Produce a card",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/:cardToken/production",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The profile ID (personal or business) that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "ca0c8154-1e14-4464-a1ce-dcea7dc3de52",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sends the card production request to a kiosk machine. To confirm that card information has been successfully created, listen to the [card-production-status-change](/guides/developer/webhooks/event-types#cards-card-production-status-change) webhook with status `READY`.\n\n{% admonition type=\"warning\" %}\nCards that were created over 60 days ago will result in a 422 error code and cannot be retried. This is due to the data being obfuscated on our side. In this case, a new card order has to be created"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

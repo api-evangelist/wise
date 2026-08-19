@@ -1,0 +1,51 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "3ds",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Inform challenge result",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/3dsecure/challenge-result",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID (personal or business) associated with the 3DS challenge."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Once the customer has accepted or rejected the push notification for a 3DS challenge, you can use this endpoint to notify us of the result.\n\nYou must call this endpoint before the expiration time, otherwise it will return a 400 error. You can find the expiration information from the [3DS challenge webhook event](/guides/developer/webhooks/event-types#3ds-challenge).\n\nOnly the first call to this endpoint will be processed. Any subsequent duplicate requests will be ignored, although you will still"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

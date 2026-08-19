@@ -1,0 +1,57 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds contact API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "contact",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a contact from an identifier",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/contacts",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "12345678",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "isDirectIdentifierCreation",
+                "value": "true",
+                "type": "query",
+                "description": "Must be set to `true` for identifier-based contact creation."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Finds an existing **discoverable** Wise profile and adds it to your recipient list. The recipient is found by an identifier — such as a Wisetag, email, or phone number — without needing bank details. Use the `contactId` from the response to create a transfer.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

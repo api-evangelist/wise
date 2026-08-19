@@ -1,0 +1,192 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds sca-device-fingerprints API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "sca-device-fingerprints",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Verify Device Fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/one-time-token/partner-device-fingerprint/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "Accept",
+                "value": "application/jose+json"
+              },
+              {
+                "name": "X-TW-JOSE-Method",
+                "value": "jwe"
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "[{% img src=\"https://img.shields.io/badge/jose-direct_encryption-blue\" /%}](/guides/developer/auth-and-security/jose-jwe){% .d-inline-block %}\n\nTo clear a **Device Fingerprint** challenge listed in an OTT.\n\nNotes:\n1. User is required to [create a device fingerprint](/api-reference/user-security/usersecuritydevicefingerprintcreate) before the verification can be successful.\n2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes"
+        },
+        {
+          "info": {
+            "name": "Create a device fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/device-fingerprints",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new device fingerprint factor used to resolve a SCA possession challenge type.\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.\n"
+        },
+        {
+          "info": {
+            "name": "Verify a device fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v2/profiles/:profileId/device-fingerprints/verify",
+            "headers": [
+              {
+                "name": "One-Time-Token",
+                "value": ""
+              },
+              {
+                "name": "Accept",
+                "value": ""
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": ""
+              },
+              {
+                "name": "Content-Encoding",
+                "value": ""
+              },
+              {
+                "name": "X-tw-jose-method",
+                "value": ""
+              },
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verifies a device fingerprint challenge when calling a SCA-secured endpoint. Make sure to [create a device fingerprint](/api-reference/sca-device-fingerprints/scadevicefingerprintcreate) before using this endpoint.\n\nThe request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a device fingerprint",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v2/profiles/:profileId/device-fingerprints/:deviceFingerprintId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "The profile ID."
+              },
+              {
+                "name": "deviceFingerprintId",
+                "value": "",
+                "type": "path",
+                "description": "The device fingerprint ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a device fingerprint associated to a profile. Include the `deviceFingerprintId` in the URL to delete a device fingerprint. This ID is provided in the response when the device fingerprint is created.\n\n{% admonition type=\"warning\" %}\nThis operation is irreversible.\n{% /admonition %}\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

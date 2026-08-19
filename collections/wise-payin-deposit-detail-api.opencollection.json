@@ -1,0 +1,53 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds payin-deposit-detail API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "payin-deposit-detail",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve bank transfer deposit details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/profiles/:profileId/transfers/:transferId/deposit-details/bank-transfer",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              },
+              {
+                "name": "transferId",
+                "value": "",
+                "type": "path",
+                "description": "Transfer ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve the bank details for the account that the customer should send funds to when paying for a Wise transfer via a bank transfer.\n\n`profileId` in the request URL refers to the profile that created the transfer. It can be either the personal profile ID, or the business profile ID.\n\nThe `payinBankAccount` field allows the bank details to be displayed dynamically in a user interface, by displaying the label and value fields.\n\nCurrently, this API supports the following currencies: AUD, BGN, BRL,"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

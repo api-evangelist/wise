@@ -1,0 +1,348 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds disputes API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "disputes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Dispute dynamic flow entry point",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/dispute-form/flows/step/:scheme/:reason",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "14547572",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "scheme",
+                "value": "VISA",
+                "type": "path",
+                "description": "The network of the card that was used to make this transaction."
+              },
+              {
+                "name": "reason",
+                "value": "TROUBLE_WITH_GOODS_SERVICES",
+                "type": "path",
+                "description": "Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget)."
+              },
+              {
+                "name": "transactionId",
+                "value": "6789",
+                "type": "query",
+                "description": "The ID of the transaction being disputed. Can be a comma-separated list of IDs if the reason code has the `supportsMultipleTransactions` flag."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the JSON for initiating the dispute flow. Use this endpoint with Wise's\n[Dynamic Flow framework](https://www.npmjs.com/package/@transferwise/dynamic-flows).\n\nThe JSON response must be passed into the Dynamic Flow framework, which handles the multi-step dispute submission including the generation of subsequent pages and the creation of the dispute.\n\n**Setting up the API**\n\nYou will need to implement a GET API with the following format:\n`GET https://{{yourApiUrl}}/v3/spend/profiles/{{pro"
+        },
+        {
+          "info": {
+            "name": "Retrieve dispute reasons",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/dispute-form/reasons",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "14547572",
+                "type": "path",
+                "description": "Your profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves the list of possible reasons for submitting a dispute.\n\nIf a reason code has `subOptions`, those should be used as the reason code when submitting disputes.\n"
+        },
+        {
+          "info": {
+            "name": "Submit dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/dispute-form/flows/:scheme/:reason",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "14547572",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "scheme",
+                "value": "VISA",
+                "type": "path",
+                "description": "The network of the card that was used to make this transaction."
+              },
+              {
+                "name": "reason",
+                "value": "WRONG_AMOUNT",
+                "type": "path",
+                "description": "Dispute reason code supplied by the [dispute reasons endpoint](/api-reference/disputes/disputereasonsget)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Submit a dispute for a card transaction.\n\nThe request body structure varies per dispute reason code. All reasons share a common structure with `transaction`, `form`, `disclaimer`, and `files` objects, but the fields within `form` and `files` differ per reason.\n\nFor per-reason request body details, see the [disputes via API guide](/guides/product/issue-cards/card-disputes-api#reason-examples).\n"
+        },
+        {
+          "info": {
+            "name": "Upload dispute file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/dispute-form/file",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "14547572",
+                "type": "path",
+                "description": "Your profile ID."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "receipt",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Upload a file for use in a dispute submission. Use the returned file ID in the `files` object when submitting a dispute.\n\nA dispute referencing the returned file ID must be submitted no later than **two hours** after the file upload, otherwise the file will expire and must be re-uploaded.\n"
+        },
+        {
+          "info": {
+            "name": "List disputes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/disputes",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "16605997",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "status",
+                "value": "ACTIVE",
+                "type": "query",
+                "description": "Filter by dispute status."
+              },
+              {
+                "name": "transactionId",
+                "value": "2040",
+                "type": "query",
+                "description": "Filter by card transaction ID."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "The maximum number of disputes to return per page. Between 10 and 100, defaults to 10."
+              },
+              {
+                "name": "pageNumber",
+                "value": "1",
+                "type": "query",
+                "description": "The page number to retrieve. Must be at least 1, defaults to 1."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List disputes for a profile with optional filters.\n"
+        },
+        {
+          "info": {
+            "name": "Get dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/disputes/:disputeId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "16605997",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "disputeId",
+                "value": "51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb",
+                "type": "path",
+                "description": "The dispute ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a dispute by its ID.\n"
+        },
+        {
+          "info": {
+            "name": "Withdraw dispute",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/disputes/:disputeId/status",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "16605997",
+                "type": "path",
+                "description": "Your profile ID."
+              },
+              {
+                "name": "disputeId",
+                "value": "51e2dc60-9e4b-4ff5-b917-b90cc5e1ecfb",
+                "type": "path",
+                "description": "The dispute ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Withdraw a dispute by setting its status to `CLOSED`.\n\nYou can only withdraw a dispute if `canWithdraw` is `true` on the dispute resource.\n"
+        },
+        {
+          "info": {
+            "name": "Upload dispute file (v3)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/dispute-form/file",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "14547572",
+                "type": "path",
+                "description": "Your profile ID."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "receipt",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Use the [v4 upload dispute file endpoint](/api-reference/disputes/disputefileupload) instead.\n{% /admonition %}\n\nSubmit a file for disputes.\n\nThis API is not available for sandbox testing.\n\nUse the `fileId` in the response for the dispute submission.\n\n**NB:** A dispute referencing the returned `fileId` must be submitted no later than **two hours** after the file submission, otherwise the file will expire and must be re-submitted.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,317 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds webhook API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "webhook",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Application Webhook Subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/applications/:clientKey/subscriptions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientKey",
+                "value": "",
+                "type": "path",
+                "description": "Your application's client key."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List all webhook subscriptions for your application."
+        },
+        {
+          "info": {
+            "name": "Create Application Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/applications/:clientKey/subscriptions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientKey",
+                "value": "",
+                "type": "path",
+                "description": "Your application's client key."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a webhook subscription at the application level.\n\n`clientKey` can be received upon obtaining client credentials from our tech support.\n"
+        },
+        {
+          "info": {
+            "name": "Get Application Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/applications/:clientKey/subscriptions/:subscriptionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientKey",
+                "value": "",
+                "type": "path",
+                "description": "Your application's client key."
+              },
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the subscription."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve an application webhook subscription by its identifier."
+        },
+        {
+          "info": {
+            "name": "Delete Application Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v3/applications/:clientKey/subscriptions/:subscriptionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientKey",
+                "value": "",
+                "type": "path",
+                "description": "Your application's client key."
+              },
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the subscription."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete an application webhook subscription by its identifier."
+        },
+        {
+          "info": {
+            "name": "Test Application Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/applications/:clientKey/subscriptions/:subscriptionId/test-notifications",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "clientKey",
+                "value": "",
+                "type": "path",
+                "description": "Your application's client key."
+              },
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the subscription."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Generate test notifications for an existing application subscription.\n\nTest notifications will have the correct structure for their source subscription's event type and version, and will contain \"dummy\" data. These data include random UUIDs, entity IDs of zero, current dates and times, and hard-coded status codes.\n\nTest notifications are delivered with the usual notification HTTP request headers, including a unique delivery ID for the notification, and a \"test notification\" flag set to true. You"
+        },
+        {
+          "info": {
+            "name": "List Profile Webhook Subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/subscriptions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the profile."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List all webhook subscriptions for a profile."
+        },
+        {
+          "info": {
+            "name": "Create Profile Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v3/profiles/:profileId/subscriptions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the profile you are subscribing to."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a webhook subscription at the profile level."
+        },
+        {
+          "info": {
+            "name": "Get Profile Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/profiles/:profileId/subscriptions/:subscriptionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the profile."
+              },
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the subscription."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a profile webhook subscription by its identifier."
+        },
+        {
+          "info": {
+            "name": "Delete Profile Webhook Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.wise.com/v3/profiles/:profileId/subscriptions/:subscriptionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the profile."
+              },
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the subscription."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete a profile webhook subscription by its identifier."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

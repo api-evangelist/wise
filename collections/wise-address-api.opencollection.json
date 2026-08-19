@@ -1,0 +1,147 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds address API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "address",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Addresses for a Profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/addresses",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profile",
+                "value": "12345678",
+                "type": "query",
+                "description": "The profile ID to list addresses for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of addresses belonging to user profile."
+        },
+        {
+          "info": {
+            "name": "Create or Update an Address",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/addresses",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds address info to user profile.\n\nList of required fields are different for different countries. Use the [address requirements endpoint](#operation/addressRequirementsGet) to dynamically discover required fields.\n\nFor updating personal profiles, consider using [the personal profile update endpoint](/api-reference/profile/profilepersonalupdate) instead. It allows submitting the address information alongside other profile data.\n\n**State field** is required for US, CA, BR, and AU addresses.\n\n**Oc"
+        },
+        {
+          "info": {
+            "name": "Retrieve an Address by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/addresses/:addressId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "addressId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the address."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get address info by ID."
+        },
+        {
+          "info": {
+            "name": "Get Address Requirements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/address-requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of fields required to create a valid address. Use this as a starting point to discover required fields.\n\nThe response contains 4 required top-level fields:\n- `country` (select field with list of values)\n- `city` (text field)\n- `postCode` (text field)\n- `firstLine` (text field)\n\nIf a field has `refreshRequirementsOnChange: true`, call the POST endpoint with that field's value to discover additional required fields.\n\nFor a step-by-step walkthrough, see the [Address Requirements gu"
+        },
+        {
+          "info": {
+            "name": "Get Address Requirements (with context)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.wise.com/v1/address-requirements",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of fields required to create a valid address, based on the provided context.\n\nUse this endpoint to dynamically discover additional required fields based on selected values. For example:\n- Posting `{\"details\": {\"country\": \"US\"}}` will add \"state\" to the list of fields.\n- Posting `{\"details\": {\"country\": \"CA\"}}` will add \"occupations\" to the list of fields.\n\nContinue calling this endpoint with field values until all fields with `refreshRequirementsOnChange: true` have been populat"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

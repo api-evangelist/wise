@@ -1,0 +1,335 @@
+{
+  "item": [
+    {
+      "id": "0ece4d23-999e-45db-bab1-7c0cfe900ebb",
+      "name": "activity",
+      "description": {
+        "content": "Activity represents a snapshot of a performed action for a profile.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "e8d3104f-6a93-4bb4-b043-5015af913030",
+          "name": "List Activities for a Profile",
+          "request": {
+            "name": "List Activities for a Profile",
+            "description": {
+              "content": "List of activities belonging to user profile.\n\nActivities represent snapshots of performed actions and can be filtered by various parameters to narrow down the results.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "profiles",
+                ":profileId",
+                "activities"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "monetaryResourceType",
+                  "value": "<string>",
+                  "description": "Filter activity by resource type."
+                },
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>",
+                  "description": "Filter by activity status."
+                },
+                {
+                  "disabled": false,
+                  "key": "since",
+                  "value": "<dateTime>",
+                  "description": "Filter activity list after a certain timestamp. Use ISO 8601 format."
+                },
+                {
+                  "disabled": false,
+                  "key": "until",
+                  "value": "<dateTime>",
+                  "description": "Filter activity list until a certain timestamp. Use ISO 8601 format."
+                },
+                {
+                  "disabled": false,
+                  "key": "nextCursor",
+                  "value": "<string>",
+                  "description": "Pagination cursor returned from a previous response. Use the `cursor` value from the response to fetch the next page of activities.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "size",
+                  "value": "10",
+                  "description": "Desired size of query. Min 1, max 100, and default value is 10 if not specified."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The unique identifier of the profile."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e4bb0252-5bec-473e-8bcb-7b273265b8ad",
+              "name": "OK - Successfully retrieved activities.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "profiles",
+                    ":profileId",
+                    "activities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "monetaryResourceType",
+                      "value": "TRANSFER"
+                    },
+                    {
+                      "key": "status",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "key": "since",
+                      "value": "2025-03-10T11:56:30.376Z"
+                    },
+                    {
+                      "key": "until",
+                      "value": "2025-03-30T23:59:59.999Z"
+                    },
+                    {
+                      "key": "nextCursor",
+                      "value": ""
+                    },
+                    {
+                      "key": "size",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"cursor\": \"WyJQUklPUklUWSIsMTAwMDAxNjY5NzA4MjI0MDAwMDE2MDk5OV0=\",\n  \"activities\": [\n    {\n      \"id\": \"TU9ORVRBUllfQUNUSVZJVFk6OjE0NTU4OTk4OjpDQVJEX1RSQU5TQUNUSU9OOjozNDMwNDk=\",\n      \"type\": \"CARD_PAYMENT\",\n      \"resource\": {\n        \"type\": \"CARD_TRANSACTION\",\n        \"id\": \"343049\"\n      },\n      \"title\": \"<strong>Test Payment</strong>\",\n      \"description\": \"\",\n      \"primaryAmount\": \"150 JPY\",\n      \"secondaryAmount\": \"1.50 SGD\",\n      \"status\": \"COMPLETED\",\n      \"createdOn\": \"2023-01-01T00:00:00.000Z\",\n      \"updatedOn\": \"2023-01-01T00:00:00.000Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "eed05635-7eb4-4948-aafd-a9bb7523b733",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "profiles",
+                    ":profileId",
+                    "activities"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "monetaryResourceType",
+                      "value": "TRANSFER"
+                    },
+                    {
+                      "key": "status",
+                      "value": "IN_PROGRESS"
+                    },
+                    {
+                      "key": "since",
+                      "value": "2025-03-10T11:56:30.376Z"
+                    },
+                    {
+                      "key": "until",
+                      "value": "2025-03-30T23:59:59.999Z"
+                    },
+                    {
+                      "key": "nextCursor",
+                      "value": ""
+                    },
+                    {
+                      "key": "size",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "9e51face-3459-4569-83dc-ed332f605123",
+    "name": "Wise Platform 3ds activity API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

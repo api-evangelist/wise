@@ -1,0 +1,1931 @@
+{
+  "item": [
+    {
+      "id": "bf247dde-e3c6-4e01-a281-4e7b12d80583",
+      "name": "verification",
+      "description": {
+        "content": "In certain situations, additional evidence is required to verify customers and ensure we’re compliant with the KYC regulations.\n\nAdditional Verification APIs support a list of evidences that can be found in the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences).\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and your customers are primarily based in the EU,\nrefer to this [Onboarding EU customers](/guides/product/kyc/partner-kyc/additional-verification#onboarding-eu-customers) guide\nfor instructions on how to use these APIs.\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and you are onboarding high risk business customers\nbased primarily based in the US, refer to\nthis [Onboarding High Risk US Businesses](/guides/product/kyc/partner-kyc/additional-verification#onboarding-high-risk-us-businesses) guide for \ninstructions on how to use these APIs.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "800998a1-f925-409b-8f7a-d5cfa091c3c1",
+          "name": "Upload Evidences (v3)",
+          "request": {
+            "name": "Upload Evidences (v3)",
+            "description": {
+              "content": "Uploads verification evidence for a specific profile.\n\nThe request body varies significantly between **Personal** and **Business** profiles.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "additional-verification",
+                "upload-evidences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The unique identifier of the profile."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountPurpose\": \"<string>\",\n  \"accountPurposeExplanation\": \"<string>\",\n  \"intendedCountries\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"yearlyAnticipatedVolume\": \"<string>\",\n  \"mainSourceOfIncome\": \"<string>\",\n  \"annualIncome\": \"<string>\",\n  \"incomeExplanation\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "b4acba3c-87d7-4783-afc7-848eb7d4c0db",
+              "name": "No Content - Evidence successfully uploaded.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "57e16287-9663-4361-ac56-9140789000dd",
+              "name": "Bad Request - Invalid request payload (e.g. no evidence, misspelled evidence, unexpected value).\nInvalid evidence is populated in the response message.\nNote that correct evidence might be successfully uploaded.\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c62aa3fd-d274-4d52-8540-b6f38c62ecab",
+              "name": "Forbidden - The client is not authorized to perform this request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "21bfb316-441d-4238-83f9-017bab54997f",
+              "name": "Conflict - One or more evidences are already uploaded and can't be re-submitted without an agent review.\nUnacceptable evidence is populated in the response message.\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "edff9133-20d3-4c28-8bf2-282c40365c21",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "9532a20f-0c9c-4cd8-876e-ea0695c1412d",
+          "name": "Upload Evidences",
+          "request": {
+            "name": "Upload Evidences",
+            "description": {
+              "content": "Uploads verification evidence for a specific profile.\n\nThe request body varies significantly between **Personal** and **Business** profiles.\n\nSubmitting an evidence that was already uploaded will result in an attempt to update the evidence.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v5",
+                "profiles",
+                ":profileId",
+                "additional-verification",
+                "upload-evidences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The unique identifier of the profile."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountPurpose\": \"<string>\",\n  \"accountPurposeExplanation\": \"<string>\",\n  \"intendedCountries\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"yearlyAnticipatedVolume\": \"<string>\",\n  \"mainSourceOfIncome\": \"<string>\",\n  \"annualIncome\": \"<string>\",\n  \"incomeExplanation\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "63a4059f-771c-466e-85fb-670ea931c1ba",
+              "name": "Multi-Status - Evidence(s) successfully uploaded, fully or partially.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v5",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Multi-Status (WebDAV) (RFC 4918)",
+              "code": 207,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"overallStatus\": \"SUCCESS\",\n  \"results\": [\n    {\n      \"evidenceRequirementKey\": \"accountPurpose\",\n      \"result\": \"SUCCESS\",\n      \"message\": \"SUCCESS\"\n    },\n    {\n      \"evidenceRequirementKey\": \"annualIncome\",\n      \"result\": \"SUCCESS\",\n      \"message\": \"SUCCESS\"\n    },\n    {\n      \"evidenceRequirementKey\": \"intendedCountries\",\n      \"result\": \"SUCCESS\",\n      \"message\": \"SUCCESS\"\n    },\n    {\n      \"evidenceRequirementKey\": \"mainSourceOfIncome\",\n      \"result\": \"SUCCESS\",\n      \"message\": \"SUCCESS\"\n    },\n    {\n      \"evidenceRequirementKey\": \"yearlyAnticipatedVolume\",\n      \"result\": \"SUCCESS\",\n      \"message\": \"SUCCESS\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "338aa5a9-d38e-4886-8a6f-6f26183914d0",
+              "name": "Bad Request - Invalid request payload (e.g. no evidence, misspelled evidence, unexpected value).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v5",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b03d7336-ee37-4b27-b27a-10227ad55984",
+              "name": "Forbidden - The client is not authorized to perform this request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v5",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "86aad83d-cec3-4a0c-b3ea-c45f81e27a36",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v5",
+                    "profiles",
+                    ":profileId",
+                    "additional-verification",
+                    "upload-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accountPurpose\": \"MOVING_SAVINGS\",\n  \"intendedCountries\": [\n    \"deu\",\n    \"esp\"\n  ],\n  \"yearlyAnticipatedVolume\": \"0_2350\",\n  \"mainSourceOfIncome\": \"SALARY\",\n  \"annualIncome\": \"0_11500\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b6dd36f6-6bc2-46b4-9f6a-996559743fdd",
+          "name": "Upload Document",
+          "request": {
+            "name": "Upload Document",
+            "description": {
+              "content": "Uploads verification documents for review. You can upload multiple files at once.\n\nA valid document must fulfil these requirements:\n\n- The document must be clear.\n- The document needs to be a .jpg, .png., or .pdf file type up to 10MB in size.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "verification-status",
+                "upload-document"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID (personal or business)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "description": "(Required) Path of the files to be uploaded."
+                },
+                {
+                  "key": "documentType",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "aabfa151-bd78-43fe-9cec-42112000ade4",
+              "name": "No Content - Document successfully uploaded.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "8db1e038-0b67-4779-906e-731d990daaac",
+              "name": "Bad Request - Document cannot be uploaded in the current format. Check file size and extension.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6be5e64d-3b9f-4cc8-8ba7-5f0dae2a13f9",
+              "name": "Forbidden - The client is not authorized to perform this request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c8dc919f-186a-49db-addd-9bb70fb61690",
+              "name": "Conflict - Document is already uploaded and cannot be re-submitted before review.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "47d3aa87-d08f-4286-bfbb-6f7fd191d4e7",
+              "name": "Payload Too Large - Requested file size is too large.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Request Entity Too Large",
+              "code": 413,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "14636433-cc81-4165-9e7d-88872cb28f16",
+              "name": "Unsupported Media Type - Request payload is in an unsupported format.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Unsupported Media Type",
+              "code": 415,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7e336f84-eee1-46f1-ac51-37ea3ba32e15",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "upload-document"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID (personal or business)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Path of the files to be uploaded.",
+                        "type": "text/plain"
+                      },
+                      "key": "files",
+                      "value": "@/Users/test/file.png",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) Type of document being uploaded.\n\nRead our guides on acceptable documents for each of the following:\n- Source of wealth - [guide](/guides/product/kyc/partner-kyc/additional-verification#source-of-wealth-document)\n- Id Proof - [guide](https://wise.com/help/articles/2949801/how-does-wise-verify-my-identity?origin=search-ID+coument+)\n- Address Proof - [guide](https://wise.com/help/articles/2949804/how-does-wise-verify-my-address?origin=search-proof+of+address+)\n- Trading Address Proof - [guide](/guides/product/kyc/partner-kyc/additional-verification#proof-of-trading-address-document)\n- Business Authorisation Letter - [guide](/guides/product/kyc/partner-kyc/additional-verification#business-authorisation-letter-document)\n (This can only be one of SOURCE_OF_WEALTH,ID_PROOF,ADDRESS_PROOF,TRADING_ADDRESS_PROOF,BUSINESS_AUTH_REP_PROOF_BY_AUTH_LETTER)",
+                        "type": "text/plain"
+                      },
+                      "key": "documentType",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6d9cc64c-f4e6-4b78-8c01-38389705525e",
+          "name": "Required Evidences",
+          "request": {
+            "name": "Required Evidences",
+            "description": {
+              "content": "Fetches the required evidences for a profile to complete additional customer verification.\n\nIf one or more evidences are returned, the customer should submit those evidences using the upload-evidences endpoint.\n\nSee the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences) for the list of possible evidence types and how to submit them.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "profiles",
+                ":profileId",
+                "verification-status",
+                "required-evidences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The unique identifier of the profile."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "53d27e6e-f105-4f95-8db0-416239399ae1",
+              "name": "OK - Successfully retrieved required evidences.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "required-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"required_evidences\": [\n    \"SOURCE_OF_WEALTH\",\n    \"INCOME\",\n    \"USE_CASE_COUNTRIES\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1fbaef4d-13a6-4514-be60-5dc99bd1fd2a",
+              "name": "Forbidden - The client is not authorized to perform this request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "required-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2e9941a1-7141-4f1b-8066-2f685a75cbd6",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "profiles",
+                    ":profileId",
+                    "verification-status",
+                    "required-evidences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The unique identifier of the profile."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "2a4884d7-1ffe-4fa2-9d2d-23d771f00fe3",
+    "name": "Wise Platform 3ds verification API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

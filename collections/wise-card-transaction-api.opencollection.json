@@ -1,0 +1,147 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds card-transaction API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "card-transaction",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get card transaction (V3)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v3/spend/profiles/:profileId/cards/transactions/:transactionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "transactionId",
+                "value": "342671",
+                "type": "path",
+                "description": "The ID of the transaction."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThis endpoint is deprecated. Use the [V4 Get card transaction](/api-reference/card-transaction/cardtransactionget) endpoint instead.\n{% /admonition %}\n\nRetrieve a card transaction by its ID.\n\nUse in conjunction with the [V2.0.0 card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change).\n\nWhen a refund happens, a separate transaction will be added with a `REFUND` transaction type.\n"
+        },
+        {
+          "info": {
+            "name": "Get card transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/transactions/:transactionId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "transactionId",
+                "value": "342671",
+                "type": "path",
+                "description": "The ID of the transaction."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a card transaction by its ID.\n\nUse in conjunction with the [card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change) for versions V2.1.0 and later.\n\n{% admonition type=\"warning\" %}\nOnly transactions created in the past 90 days can be accessed. A 422 error code will be returned otherwise.\n{% /admonition %}\n\nWhen a refund happens, a separate transaction will be added with a `REFUND` transaction type.\n"
+        },
+        {
+          "info": {
+            "name": "List card transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/spend/profiles/:profileId/cards/:cardToken/transactions",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "123456",
+                "type": "path",
+                "description": "The ID of the profile that owns the card."
+              },
+              {
+                "name": "cardToken",
+                "value": "59123122-223d-45f9-b840-0ad4a4f80937",
+                "type": "path",
+                "description": "The unique token identifying the card."
+              },
+              {
+                "name": "fromCreationTime",
+                "value": "2025-12-15T00:00:00Z",
+                "type": "query",
+                "description": "Start of range for transaction creation time in UTC, in ISO-8601 format."
+              },
+              {
+                "name": "toCreationTime",
+                "value": "2026-01-15T00:00:10Z",
+                "type": "query",
+                "description": "End of range for transaction creation time in UTC, in ISO-8601 format."
+              },
+              {
+                "name": "pageSize",
+                "value": "10",
+                "type": "query",
+                "description": "Page size of query between 10 and 100 inclusive, defaults to 20."
+              },
+              {
+                "name": "lastId",
+                "value": "342672",
+                "type": "query",
+                "description": "A pagination cursor that marks your position in the list. Include the ID of the last transaction from the previous page to retrieve the next page (transactions with IDs less than the provided value)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a list of card transactions for a specific card. Transactions are ordered by transaction ID in descending order.\n\nUse in conjunction with the [card transaction state change webhook](/guides/developer/webhooks/event-types#cards-transaction-state-change) for versions V2.1.0 and later.\n\n{% admonition type=\"warning\" %}\nOnly transactions created in the past 90 days can be accessed. A 422 error code will be returned otherwise.\n{% /admonition %}\n\nThe `debits` and `credits` fields are not inclu"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

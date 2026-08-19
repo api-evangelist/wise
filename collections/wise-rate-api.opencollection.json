@@ -1,0 +1,77 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds rate API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "rate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve current rates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/rates",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "source",
+                "value": "EUR",
+                "type": "query",
+                "description": "Source (send) currency code."
+              },
+              {
+                "name": "target",
+                "value": "USD",
+                "type": "query",
+                "description": "Target (receive) currency code."
+              },
+              {
+                "name": "time",
+                "value": "2019-02-13T14:53:01",
+                "type": "query",
+                "description": "Timestamp to get historic exchange rate. <br>Supports only Timestamp (combined date and time). Timezone offset is supported but optional. <br>Supported examples: `2019-03-13T14:53:01` or `2019-03-13T14:53:01+0100`.\n"
+              },
+              {
+                "name": "from",
+                "value": "2019-02-13T14:53:01",
+                "type": "query",
+                "description": "Period start date/time to get exchange rate history. <br>Supports Timestamp (combined date and time) or Date (date only). <br>Supported examples: `2019-03-13T14:53:01` or `2019-03-13`.\n"
+              },
+              {
+                "name": "to",
+                "value": "2019-03-13T14:53:01",
+                "type": "query",
+                "description": "Period end date/time to get exchange rate history. <br>Supports Timestamp (combined date and time) or Date (date only). <br>Timezone offset is supported but optional. <br>Supported examples: `2019-03-13T14:53:01+0100` or `2019-03-13+0100`.\n"
+              },
+              {
+                "name": "group",
+                "value": "day",
+                "type": "query",
+                "description": "Interval for history grouping."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "{% admonition type=\"warning\" %}\nThe `from`, `to`, and `group` parameters are not testable in our Sandbox environment at this time.\n{% /admonition %}\n\n`GET /v1/rates`<br>\nFetch latest exchange rates of all currencies.\n\n`GET /v1/rates?source=EUR&target=USD`<br>\nFetch latest exchange rate of one currency pair.\n\n`GET /v1/rates?source=EUR&target=USD&time=2019-02-13T14:53:01`<br>\nFetch exchange rate of specific historical timestamp.\n\n`GET /v1/rates?source=EUR&target=USD&from=2019-02-13T14:53:01&to=201"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

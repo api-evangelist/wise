@@ -1,0 +1,146 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds multi-currency-account API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "multi-currency-account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve available currencies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/borderless-accounts-configuration/profiles/:profileId/available-currencies",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all currencies that are available for balance accounts. This includes those that can have funds added from external accounts, as well as those that a balance can be held in.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve payin currencies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v2/borderless-accounts-configuration/profiles/:profileId/payin-currencies",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all currencies available for balance accounts that also support bank account details. You can use this list to create a balance account for the currency included and then subsequently create bank account details.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve multi currency account for a profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/profiles/:profileId/multi-currency-account",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "path",
+                "description": "Profile ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the multi-currency account details for the specified profile. If the user does not yet have a multi-currency account, a `404 Not Found` will be returned.\n"
+        },
+        {
+          "info": {
+            "name": "Retrieve multi currency account eligibility",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v4/multi-currency-account/eligibility",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "profileId",
+                "value": "",
+                "type": "query",
+                "description": "Profile ID to check eligibility for."
+              },
+              {
+                "name": "country",
+                "value": "FR",
+                "type": "query",
+                "description": "2-letter ISO 3166 country code to check eligibility for."
+              },
+              {
+                "name": "state",
+                "value": "CA",
+                "type": "query",
+                "description": "2-letter state/province code. Required when `country` is `US`."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Checks eligibility for a multi-currency account for either a specific profile or for a location. Customers in some countries and states/provinces may not be eligible for a multi currency account.\n\nTo check a profile, pass the `profileId` as a query parameter.\n\nTo check a specific location, pass the `country` using 2-letter ISO 3166 codes. If the country is `US`, a valid 2-letter `state` parameter must also be passed.\n\n- Example (France): `/v4/multi-currency-account/eligibility?country=FR`\n- Exam"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

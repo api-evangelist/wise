@@ -1,0 +1,53 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Wise Platform 3ds delivery-estimate API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "delivery-estimate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get the delivery estimate for a transfer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.wise.com/v1/delivery-estimates/:transferId",
+            "headers": [
+              {
+                "name": "X-External-Correlation-Id",
+                "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+              }
+            ],
+            "params": [
+              {
+                "name": "transferId",
+                "value": "12345678",
+                "type": "path",
+                "description": "The ID of the transfer."
+              },
+              {
+                "name": "timezone",
+                "value": "Asia/Singapore",
+                "type": "query",
+                "description": "Timezone ID for the formatted text. Defaults to `UTC` if not provided."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the live delivery estimate for a transfer by the transfer ID.\n\nThe delivery estimate is the time at which we currently expect the transfer to arrive in the beneficiary's bank account. This is not a guaranteed time but we are working hard to make these estimates as accurate as possible.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,838 @@
+{
+  "item": [
+    {
+      "id": "2a492dfa-7635-4e0c-8c98-d2354a85934a",
+      "name": "comparison",
+      "description": {
+        "content": "The comparison API can be used to request price and speed information about various money transfer providers. This includes not only Wise but other providers in the market.\n\nPrice Estimation {% #comparison-price-estimation .title-3 .m-t-5 %}\n\nThe quotes (price and speed) provided by this API are based off of real quotes collected from 3rd party websites. We collect both the advertised exchange rate and fee for each provider for various amounts. When a comparison is requested, we calculate the markup percentage of the collected exchange rate on the mid-market rate at the time of collection. We then apply this markup to the current mid-market rate to provide a realistic estimate of what each provider offers. We collect data for all providers around once per hour to ensure we provide as accurate and up-to-date information as possible.\n\nNote: Today, we only provide estimations for FX transactions with a Bank Transfer pay-in and pay-out option. This is important to stress as many providers offer significantly different fees and exchange rates when used debit/credit card, cash etc.\n\nFor more details on the data collection process please see the following page:\n[https://wise.com/gb/compare/disclaimer](https://wise.com/gb/compare/disclaimer)\n\nIf you have questions or suspect any data to be inaccurate or incomplete please contact us at: [comparison@wise.com](mailto:comparison@wise.com)\n\nDelivery Estimation {% #comparison-delivery-estimation .title-3 .m-t-5 %}\n\nSimilar to price, we collect speed data for most (if not all) providers which we have price information for. Many providers display speed estimates to their customers in a number of different ways.\n\nSome examples:\n\n- \"The transfer should be complete within 2-5 days\"\n- \"The money should arrive in your account within 48 hours\"\n- \"Should arrive by 26th Aug\"\n- \"Could take up to 4 working days\"\n\nThe below API intends to model these in a consistent format by providing a minimum and maximum range for all delivery estimations. An estimate that states \"up to X\" will have \"max\" set to a duration but \"min\" as null; \"from X\" will have \"min\" set to a duration and \"max\" as null. Finally, for those providers who offer a specific, point in time estimation (like Wise), the API will surface a duration where \"min\" and \"max\" are equal.\n\nQuotes structure {% #comparison-quotes-structure .title-3 .m-t-5 %}\n\nIn order to provide the most flexible and accurate data for clients, we surface a denormalized list of quotes per provider where each quote represents a unique collection of comparison \"dimensions\".\n\nA single given provider may expose multiple quotes for the same currency route. The most common example is where a provider offers different pricing for two different countries which use the same currency, e.g.:\n\nProvider X:\n\n- GBP EUR 1000 [GB -> ES] fee: 10, rate: 1.5\n- GBP EUR 1000 [GB -> DE] fee: 8, rate: 1.5\n- GBP EUR 1000 [GB -> FR] fee: 10, rate: 1.35\n\nThe same principle applies for speed, i.e. a provider may have different speed estimates for different target countries. Hence, we expose these as discrete quotes, where a quote is a unique combination of route, country, speed and price factors.\n\nA client may choose to reduce this set of quotes down to a single or several quotes in order to display a relevant quote to a given user. An example where we take the cheapest quote for a given currency route (and also surface the target country) can be seen at the below link:\n\n[https://wise.com/gb/compare/?sourceCurrency=GBP&targetCurrency=EUR&sendAmount=1000](https://wise.com/gb/compare/?sourceCurrency=GBP&targetCurrency=EUR&sendAmount=1000)\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "251decb4-5ded-4267-954e-94f04082d351",
+          "name": "Request a comparison quote (V3)",
+          "request": {
+            "name": "Request a comparison quote (V3)",
+            "description": {
+              "content": "{% admonition type=\"warning\" name=\"Deprecated\" %}\nThis endpoint is deprecated. Use the [V4 comparison endpoint](/api-reference/comparison/comparisonget) instead.\n{% /admonition %}\n\nRequest price and speed comparison data for money transfer providers on a given currency route.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "comparisons"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "sourceCurrency",
+                  "value": "<string>",
+                  "description": "(Required) ISO 4217 source currency code"
+                },
+                {
+                  "disabled": false,
+                  "key": "targetCurrency",
+                  "value": "<string>",
+                  "description": "(Required) ISO 4217 target currency code"
+                },
+                {
+                  "disabled": false,
+                  "key": "sendAmount",
+                  "value": "<number>",
+                  "description": "(Required) Amount to send in source currency"
+                },
+                {
+                  "disabled": false,
+                  "key": "midMarketRate",
+                  "value": "<number>",
+                  "description": "Current mid-market rate between the source and target currency"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseFee",
+                  "value": "<number>",
+                  "description": "Wise's fee, if the Wise quote is known"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseEstimatedDelivery",
+                  "value": "<string>",
+                  "description": "Wise's estimated delivery timestamp, if the Wise quote is known"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseQuoteCreatedTime",
+                  "value": "<string>",
+                  "description": "Timestamp when the Wise quote was created"
+                },
+                {
+                  "disabled": false,
+                  "key": "payInMethod",
+                  "value": "<string>",
+                  "description": "Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)"
+                },
+                {
+                  "disabled": false,
+                  "key": "sourceCountry",
+                  "value": "<string>",
+                  "description": "Filter by source country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "targetCountry",
+                  "value": "<string>",
+                  "description": "Filter by target country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerCountry",
+                  "value": "<string>",
+                  "description": "Filter by provider country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerTypes",
+                  "value": "<string>",
+                  "description": "Filter by provider type"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerTypes",
+                  "value": "<string>",
+                  "description": "Filter by provider type"
+                },
+                {
+                  "disabled": false,
+                  "key": "providers",
+                  "value": "<string>",
+                  "description": "Filter by specific provider aliases"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludePartners",
+                  "value": "<boolean>",
+                  "description": "Exclude Wise's partner banks - default true"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a7ab553e-2ec8-40d6-b64a-8fb812d5def9",
+              "name": "Comparison data retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "comparisons"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sourceCurrency",
+                      "value": "GBP"
+                    },
+                    {
+                      "key": "targetCurrency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "sendAmount",
+                      "value": "10000"
+                    },
+                    {
+                      "key": "midMarketRate",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseFee",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseEstimatedDelivery",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wiseQuoteCreatedTime",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "payInMethod",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sourceCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "targetCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providers",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludePartners",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"EUR\",\n  \"sourceCountry\": null,\n  \"targetCountry\": null,\n  \"providerCountry\": null,\n  \"providerTypes\": [\n    \"bank\",\n    \"moneyTransferProvider\"\n  ],\n  \"amount\": 10000,\n  \"providerType\": null,\n  \"providers\": [\n    {\n      \"id\": 39,\n      \"alias\": \"wise\",\n      \"name\": \"Wise\",\n      \"logos\": {\n        \"normal\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo.png\"\n        },\n        \"inverse\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png\"\n        },\n        \"white\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png\"\n        },\n        \"circle\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg\",\n          \"pngUrl\": null\n        },\n        \"altText\": \"Wise\"\n      },\n      \"type\": \"moneyTransferProvider\",\n      \"partner\": false,\n      \"quotes\": [\n        {\n          \"rate\": 1.15989,\n          \"fee\": 37.12,\n          \"dateCollected\": \"2019-10-22T14:36:43Z\",\n          \"sourceCountry\": null,\n          \"targetCountry\": null,\n          \"markup\": 0,\n          \"receivedAmount\": 11555.84,\n          \"deliveryEstimation\": {\n            \"duration\": {\n              \"min\": \"PT20H8M16.305111S\",\n              \"max\": \"PT20H8M16.305111S\"\n            },\n            \"providerGivesEstimate\": true,\n            \"durationType\": \"CALENDAR\",\n            \"deliveryDate\": {\n              \"min\": \"2025-02-05T15:08:00.000000492Z\",\n              \"max\": \"2025-02-05T15:08:00.000000492Z\"\n            }\n          }\n        }\n      ],\n      \"logo\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo.svg\"\n    },\n    {\n      \"id\": 1,\n      \"alias\": \"barclays\",\n      \"name\": \"Barclays\",\n      \"logos\": {\n        \"normal\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays.svg\",\n          \"pngUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays.png\"\n        },\n        \"inverse\": {\n          \"svgUrl\": null,\n          \"pngUrl\": null\n        },\n        \"white\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays--white.svg\",\n          \"pngUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays--white.png\"\n        },\n        \"circle\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays-mark.svg\",\n          \"pngUrl\": null\n        },\n        \"altText\": \"Barclays\"\n      },\n      \"type\": \"bank\",\n      \"partner\": false,\n      \"quotes\": [\n        {\n          \"rate\": 1.12792426,\n          \"fee\": 0,\n          \"dateCollected\": \"2019-10-22T14:00:04Z\",\n          \"sourceCountry\": \"GB\",\n          \"targetCountry\": \"ES\",\n          \"markup\": 2.75592858,\n          \"receivedAmount\": 11279.24,\n          \"deliveryEstimation\": {\n            \"duration\": {\n              \"min\": \"PT24H\",\n              \"max\": \"PT24H\"\n            },\n            \"providerGivesEstimate\": true,\n            \"durationType\": \"CALENDAR\",\n            \"deliveryDate\": {\n              \"min\": \"2025-02-06T13:12:13.428650596Z\",\n              \"max\": \"2025-02-06T13:12:13.428650596Z\"\n            }\n          }\n        }\n      ],\n      \"logo\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays.svg\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6bad7b1d-fbac-4717-9675-c97f02c75a8d",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "comparisons"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sourceCurrency",
+                      "value": "GBP"
+                    },
+                    {
+                      "key": "targetCurrency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "sendAmount",
+                      "value": "10000"
+                    },
+                    {
+                      "key": "midMarketRate",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseFee",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseEstimatedDelivery",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wiseQuoteCreatedTime",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "payInMethod",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sourceCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "targetCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providers",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludePartners",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "db0cca0e-24b6-4987-b12f-58e7cfa333e4",
+          "name": "Request a comparison quote",
+          "request": {
+            "name": "Request a comparison quote",
+            "description": {
+              "content": "Request price and speed comparison data for money transfer providers on a given currency route.\n\nYou must provide either `sendAmount` or `recipientGetsAmount` (but not both).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v4",
+                "comparisons"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "sourceCurrency",
+                  "value": "<string>",
+                  "description": "(Required) ISO 4217 source currency code"
+                },
+                {
+                  "disabled": false,
+                  "key": "targetCurrency",
+                  "value": "<string>",
+                  "description": "(Required) ISO 4217 target currency code"
+                },
+                {
+                  "disabled": false,
+                  "key": "sendAmount",
+                  "value": "<number>",
+                  "description": "Amount to send in source currency. Must provide either `sendAmount` or `recipientGetsAmount`."
+                },
+                {
+                  "disabled": false,
+                  "key": "recipientGetsAmount",
+                  "value": "<number>",
+                  "description": "Amount to be received in target currency. Must provide either `sendAmount` or `recipientGetsAmount`."
+                },
+                {
+                  "disabled": false,
+                  "key": "midMarketRate",
+                  "value": "<number>",
+                  "description": "Current mid-market rate between the source and target currency"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseFee",
+                  "value": "<number>",
+                  "description": "Wise's fee, if the Wise quote is known"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseEstimatedDelivery",
+                  "value": "<string>",
+                  "description": "Wise's estimated delivery timestamp, if the Wise quote is known"
+                },
+                {
+                  "disabled": false,
+                  "key": "wiseQuoteCreatedTime",
+                  "value": "<string>",
+                  "description": "Timestamp when the Wise quote was created"
+                },
+                {
+                  "disabled": false,
+                  "key": "payInMethod",
+                  "value": "<string>",
+                  "description": "Change the pay-in method of the Wise quote only (all other quotes will remain as bank transfer)"
+                },
+                {
+                  "disabled": false,
+                  "key": "sourceCountry",
+                  "value": "<string>",
+                  "description": "Filter by source country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "targetCountry",
+                  "value": "<string>",
+                  "description": "Filter by target country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerCountry",
+                  "value": "<string>",
+                  "description": "Filter by provider country (ISO 3166-1 Alpha-2 code)"
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Filter by most popular competitors"
+                },
+                {
+                  "disabled": false,
+                  "key": "numberOfProviders",
+                  "value": "<integer>",
+                  "description": "Number of popular competitors to return if `filter` is set to `POPULAR` - default value is 4"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerTypes",
+                  "value": "<string>",
+                  "description": "Filter by provider type"
+                },
+                {
+                  "disabled": false,
+                  "key": "providerTypes",
+                  "value": "<string>",
+                  "description": "Filter by provider type"
+                },
+                {
+                  "disabled": false,
+                  "key": "providers",
+                  "value": "<string>",
+                  "description": "Filter by specific provider aliases"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludePartners",
+                  "value": "<boolean>",
+                  "description": "Exclude Wise's partner banks - default true"
+                },
+                {
+                  "disabled": false,
+                  "key": "includeWise",
+                  "value": "<boolean>",
+                  "description": "Overrides filters to ensure Wise data is returned, even if exclusionary filters are applied"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "b6547001-ccae-4d84-a7a4-d17b2a575f16",
+              "name": "Comparison data retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v4",
+                    "comparisons"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sourceCurrency",
+                      "value": "GBP"
+                    },
+                    {
+                      "key": "targetCurrency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "sendAmount",
+                      "value": "10000"
+                    },
+                    {
+                      "key": "recipientGetsAmount",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "midMarketRate",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseFee",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseEstimatedDelivery",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wiseQuoteCreatedTime",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "payInMethod",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sourceCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "targetCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "numberOfProviders",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providers",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludePartners",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "includeWise",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"sourceCurrency\": \"GBP\",\n  \"targetCurrency\": \"EUR\",\n  \"sourceCountry\": null,\n  \"targetCountry\": null,\n  \"providerCountry\": null,\n  \"providerTypes\": [\n    \"bank\",\n    \"moneyTransferProvider\"\n  ],\n  \"amount\": 10000,\n  \"amountType\": \"SEND\",\n  \"providers\": [\n    {\n      \"id\": 39,\n      \"alias\": \"wise\",\n      \"name\": \"Wise\",\n      \"logos\": {\n        \"normal\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo.png\"\n        },\n        \"inverse\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png\"\n        },\n        \"white\": {\n          \"svgUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg\",\n          \"pngUrl\": \"https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png\"\n        },\n        \"circle\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg\",\n          \"pngUrl\": null\n        },\n        \"altText\": \"Wise\"\n      },\n      \"type\": \"moneyTransferProvider\",\n      \"partner\": false,\n      \"quotes\": [\n        {\n          \"rate\": 1.15989,\n          \"fee\": 37.12,\n          \"dateCollected\": \"2019-10-22T14:36:43Z\",\n          \"sourceCountry\": null,\n          \"targetCountry\": null,\n          \"markup\": 0,\n          \"receivedAmount\": 11555.84,\n          \"sendAmount\": null,\n          \"deliveryEstimation\": {\n            \"duration\": {\n              \"min\": \"PT20H8M16.305111S\",\n              \"max\": \"PT20H8M16.305111S\"\n            },\n            \"providerGivesEstimate\": true\n          },\n          \"isConsideredMidMarketRate\": true\n        }\n      ]\n    },\n    {\n      \"id\": 1,\n      \"alias\": \"barclays\",\n      \"name\": \"Barclays\",\n      \"logos\": {\n        \"normal\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays.svg\",\n          \"pngUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays.png\"\n        },\n        \"inverse\": {\n          \"svgUrl\": null,\n          \"pngUrl\": null\n        },\n        \"white\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays--white.svg\",\n          \"pngUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays--white.png\"\n        },\n        \"circle\": {\n          \"svgUrl\": \"https://dq8dwmysp7hk1.cloudfront.net/logos/barclays-mark.svg\",\n          \"pngUrl\": null\n        },\n        \"altText\": \"Barclays\"\n      },\n      \"type\": \"bank\",\n      \"partner\": false,\n      \"quotes\": [\n        {\n          \"rate\": 1.12792426,\n          \"fee\": 0,\n          \"dateCollected\": \"2019-10-22T14:00:04Z\",\n          \"sourceCountry\": \"GB\",\n          \"targetCountry\": \"ES\",\n          \"markup\": 2.75592858,\n          \"receivedAmount\": 11279.24,\n          \"sendAmount\": null,\n          \"deliveryEstimation\": {\n            \"duration\": {\n              \"min\": \"PT24H\",\n              \"max\": \"PT24H\"\n            },\n            \"providerGivesEstimate\": true\n          },\n          \"isConsideredMidMarketRate\": false\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c7015cd3-48dc-4307-95af-c9cdcff04600",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v4",
+                    "comparisons"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "sourceCurrency",
+                      "value": "GBP"
+                    },
+                    {
+                      "key": "targetCurrency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "sendAmount",
+                      "value": "10000"
+                    },
+                    {
+                      "key": "recipientGetsAmount",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "midMarketRate",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseFee",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "wiseEstimatedDelivery",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wiseQuoteCreatedTime",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "payInMethod",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sourceCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "targetCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerCountry",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "numberOfProviders",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providerTypes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "providers",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludePartners",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "includeWise",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "4a686c30-dca9-4f6e-946a-be01bb3045f1",
+    "name": "Wise Platform 3ds comparison API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}

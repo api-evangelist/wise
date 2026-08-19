@@ -1,0 +1,348 @@
+{
+  "item": [
+    {
+      "id": "596786ff-beed-47d9-98b9-8859a54fe5fc",
+      "name": "balance-statement",
+      "description": {
+        "content": "Balance statements contain transactional activities on a Wise Multi-Currency Account, including deposits, withdrawals, conversions, card transactions, and fees.\n\nStatements can be retrieved in multiple formats: JSON, CSV, PDF, XLSX, CAMT.053, MT940, or QIF.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "cef4703a-4703-4857-83be-6dfa020d6da7",
+          "name": "Get Balance Statement",
+          "request": {
+            "name": "Get Balance Statement",
+            "description": {
+              "content": "Retrieve a statement for the specified balance account.\n\nThe response format depends on the URL path:\n- `statement.json` - JSON format\n- `statement.csv` - CSV format\n- `statement.pdf` - PDF format (includes Wise branding)\n- `statement.xlsx` - Excel format\n- `statement.xml` - CAMT.053 XML format\n- `statement.mt940` - MT940 format\n- `statement.qif` - QIF format\n\nThe period between `intervalStart` and `intervalEnd` cannot exceed 469 days (around 1 year 3 months).\n\n{% admonition type=\"warning\" %}\nThis endpoint is SCA protected when it applies. If your profile is registered within the UK and/or EEA, SCA most likely applies to you.\nThe additional authentication is only required once every 90 days, viewing the statement on the website or in the mobile app counts towards that as well.\n\n[Learn more](/guides/developer/auth-and-security/sca-and-2fa)\n{% /admonition %}\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "profiles",
+                ":profileId",
+                "balance-statements",
+                ":balanceId",
+                "statement.json"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "currency",
+                  "value": "<string>",
+                  "description": "(Required) Currency of the balance statement requested (ISO 4217 Alphabetic Code)."
+                },
+                {
+                  "disabled": false,
+                  "key": "intervalStart",
+                  "value": "<dateTime>",
+                  "description": "(Required) Statement start time in UTC."
+                },
+                {
+                  "disabled": false,
+                  "key": "intervalEnd",
+                  "value": "<dateTime>",
+                  "description": "(Required) Statement end time in UTC."
+                },
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "<string>",
+                  "description": "Statement type:\n- `COMPACT` - Single statement line per transaction\n- `FLAT` - Accounting statements where transaction fees are on a separate line\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "statementLocale",
+                  "value": "<string>",
+                  "description": "Language for the statement. Supports 2 character language codes."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "profileId",
+                  "description": "(Required) The profile ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "balanceId",
+                  "description": "(Required) The balance ID to get the statement for."
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                "key": "X-External-Correlation-Id",
+                "value": "<uuid>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "ac793022-29cc-413a-ac68-ddbd2a470efb",
+              "name": "OK - Successfully retrieved balance statement.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "profiles",
+                    ":profileId",
+                    "balance-statements",
+                    ":balanceId",
+                    "statement.json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "currency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "intervalStart",
+                      "value": "2025-03-01T00:00:00.000Z"
+                    },
+                    {
+                      "key": "intervalEnd",
+                      "value": "2025-04-30T23:59:59.999Z"
+                    },
+                    {
+                      "key": "type",
+                      "value": "COMPACT"
+                    },
+                    {
+                      "key": "statementLocale",
+                      "value": "en"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "balanceId",
+                      "description": "(Required) The balance ID to get the statement for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accountHolder\": {\n    \"type\": \"PERSONAL\",\n    \"address\": {\n      \"addressFirstLine\": \"Veerenni 24\",\n      \"city\": \"Tallinn\",\n      \"postCode\": \"12112\",\n      \"stateCode\": \"\",\n      \"countryName\": \"Estonia\"\n    },\n    \"firstName\": \"Oliver\",\n    \"lastName\": \"Wilson\"\n  },\n  \"issuer\": {\n    \"name\": \"TransferWise Ltd.\",\n    \"firstLine\": \"56 Shoreditch High Street\",\n    \"city\": \"London\",\n    \"postCode\": \"E1 6JJ\",\n    \"stateCode\": \"\",\n    \"country\": \"United Kingdom\"\n  },\n  \"bankDetails\": {},\n  \"transactions\": [\n    {\n      \"type\": \"DEBIT\",\n      \"date\": \"2018-04-30T08:47:05.832Z\",\n      \"amount\": {\n        \"value\": -7.76,\n        \"currency\": \"EUR\"\n      },\n      \"totalFees\": {\n        \"value\": 0.04,\n        \"currency\": \"EUR\"\n      },\n      \"details\": {\n        \"type\": \"CARD\",\n        \"description\": \"Card transaction of 6.80 GBP issued by Tfl.gov.uk/cp TFL TRAVEL CH\",\n        \"amount\": {\n          \"value\": 6.8,\n          \"currency\": \"GBP\"\n        },\n        \"senderName\": \"HEIN LAURI\",\n        \"senderAccount\": \"EE76 1700 0170 0049 6704\",\n        \"paymentReference\": \"SVWZ+topup card\",\n        \"category\": \"Transportation Suburban and Loca\",\n        \"merchant\": {\n          \"name\": \"Tfl.gov.uk/cp\",\n          \"firstLine\": \"string\",\n          \"postCode\": \"SW1H 0TL\",\n          \"city\": \"TFL TRAVEL CH\",\n          \"state\": \"\",\n          \"country\": \"GB\",\n          \"category\": \"Transportation Suburban and Loca\"\n        },\n        \"sourceAmount\": {\n          \"value\": 8.69,\n          \"currency\": \"GBP\"\n        },\n        \"targetAmount\": {\n          \"value\": 9.94,\n          \"currency\": \"EUR\"\n        },\n        \"fee\": {\n          \"value\": 0.03,\n          \"currency\": \"GBP\"\n        },\n        \"rate\": 1.147806\n      },\n      \"exchangeDetails\": {\n        \"forAmount\": {\n          \"value\": 6.8,\n          \"currency\": \"GBP\"\n        },\n        \"rate\": 8145.925117523749\n      },\n      \"runningBalance\": {\n        \"value\": 16.01,\n        \"currency\": \"EUR\"\n      },\n      \"referenceNumber\": \"CARD-249281\"\n    },\n    {\n      \"type\": \"DEBIT\",\n      \"date\": \"2018-04-30T08:47:05.832Z\",\n      \"amount\": {\n        \"value\": -7.76,\n        \"currency\": \"EUR\"\n      },\n      \"totalFees\": {\n        \"value\": 0.04,\n        \"currency\": \"EUR\"\n      },\n      \"details\": {\n        \"type\": \"CARD\",\n        \"description\": \"Card transaction of 6.80 GBP issued by Tfl.gov.uk/cp TFL TRAVEL CH\",\n        \"amount\": {\n          \"value\": 6.8,\n          \"currency\": \"GBP\"\n        },\n        \"senderName\": \"HEIN LAURI\",\n        \"senderAccount\": \"EE76 1700 0170 0049 6704\",\n        \"paymentReference\": \"SVWZ+topup card\",\n        \"category\": \"Transportation Suburban and Loca\",\n        \"merchant\": {\n          \"name\": \"Tfl.gov.uk/cp\",\n          \"firstLine\": \"string\",\n          \"postCode\": \"SW1H 0TL\",\n          \"city\": \"TFL TRAVEL CH\",\n          \"state\": \"\",\n          \"country\": \"GB\",\n          \"category\": \"Transportation Suburban and Loca\"\n        },\n        \"sourceAmount\": {\n          \"value\": 8.69,\n          \"currency\": \"GBP\"\n        },\n        \"targetAmount\": {\n          \"value\": 9.94,\n          \"currency\": \"EUR\"\n        },\n        \"fee\": {\n          \"value\": 0.03,\n          \"currency\": \"GBP\"\n        },\n        \"rate\": 1.147806\n      },\n      \"exchangeDetails\": {\n        \"forAmount\": {\n          \"value\": 6.8,\n          \"currency\": \"GBP\"\n        },\n        \"rate\": 8480.68244562455\n      },\n      \"runningBalance\": {\n        \"value\": 16.01,\n        \"currency\": \"EUR\"\n      },\n      \"referenceNumber\": \"CARD-249281\"\n    }\n  ],\n  \"endOfStatementBalance\": {\n    \"value\": 9.94,\n    \"currency\": \"EUR\"\n  },\n  \"query\": {\n    \"intervalStart\": \"2018-03-01T00:00:00Z\",\n    \"intervalEnd\": \"2018-04-30T23:59:59.999Z\",\n    \"currency\": \"EUR\",\n    \"accountId\": 64\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c6af7097-d47e-491d-87f9-152c55890f6b",
+              "name": "Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "profiles",
+                    ":profileId",
+                    "balance-statements",
+                    ":balanceId",
+                    "statement.json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "currency",
+                      "value": "EUR"
+                    },
+                    {
+                      "key": "intervalStart",
+                      "value": "2025-03-01T00:00:00.000Z"
+                    },
+                    {
+                      "key": "intervalEnd",
+                      "value": "2025-04-30T23:59:59.999Z"
+                    },
+                    {
+                      "key": "type",
+                      "value": "COMPACT"
+                    },
+                    {
+                      "key": "statementLocale",
+                      "value": "en"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "profileId",
+                      "description": "(Required) The profile ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "balanceId",
+                      "description": "(Required) The balance ID to get the statement for."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).\n",
+                    "key": "X-External-Correlation-Id",
+                    "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Number of seconds to wait before retrying the request.",
+                  "key": "Retry-After",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "description": "Identifies the rate limiter that triggered the 429 response.",
+                  "key": "X-Rate-Limited-By",
+                  "value": "wise-public-api"
+                },
+                {
+                  "disabled": false,
+                  "description": "Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).",
+                  "key": "X-External-Correlation-Id",
+                  "value": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                },
+                {
+                  "disabled": false,
+                  "description": "Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.",
+                  "key": "x-trace-id",
+                  "value": "fba501b6d453b96789f52338f019341f"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.wise.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "aba8e533-b005-49ac-b794-0384dfbee0a1",
+    "name": "Wise Platform 3ds balance-statement API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n",
+      "type": "text/plain"
+    }
+  }
+}
