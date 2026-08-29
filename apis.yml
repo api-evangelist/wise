@@ -6,6 +6,18 @@ description: Wise (formerly TransferWise) provides cross-border payments and mul
   accounts for personal and business customers. The Wise Platform API exposes profiles,
   balances, transfers, recipients, quotes, multi-currency accounts, cards, statements,
   and webhooks.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: self-serve
@@ -2783,6 +2795,9 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 common:
+- type: CapabilityMap
+  url: capabilities/wise-capability-edges.yml
+  name: Wise Business Capability Map
 - type: AgenticAccess
   url: agentic-access/wise-agentic-access.yml
 - type: VulnerabilityDisclosure
