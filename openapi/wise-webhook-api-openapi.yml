@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds webhook API
-  version: "1.0"
+  title: Wise Platform Webhook API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -419,21 +419,39 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    subscription-request:
+      title: Subscription Request
+      type: object
+      required:
+      - name
+      - trigger_on
+      - delivery
+      properties:
+        name:
+          type: string
+          description: A custom name for your webhook to ease with identification.
+          example: 'Webhook Subscription #1'
+        trigger_on:
+          type: string
+          description: '[Choose from a list of available events](/guides/developer/webhooks/event-types).
+
+            '
+          example: transfers#state-change
+        delivery:
+          type: object
+          required:
+          - version
+          - url
+          properties:
+            version:
+              type: string
+              description: The event representation semantic version.
+              example: 4.0.0
+            url:
+              type: string
+              description: The URL where your server will be listening for events.
+              example: https://your.webhook.url/12345
     subscription:
       title: Subscription
       type: object
@@ -491,38 +509,6 @@ components:
           format: date-time
           description: Timestamp of when the subscription was created.
           example: '2019-10-10T13:55:57Z'
-    subscription-request:
-      title: Subscription Request
-      type: object
-      required:
-      - name
-      - trigger_on
-      - delivery
-      properties:
-        name:
-          type: string
-          description: A custom name for your webhook to ease with identification.
-          example: 'Webhook Subscription #1'
-        trigger_on:
-          type: string
-          description: '[Choose from a list of available events](/guides/developer/webhooks/event-types).
-
-            '
-          example: transfers#state-change
-        delivery:
-          type: object
-          required:
-          - version
-          - url
-          properties:
-            version:
-              type: string
-              description: The event representation semantic version.
-              example: 4.0.0
-            url:
-              type: string
-              description: The URL where your server will be listening for events.
-              example: https://your.webhook.url/12345
     test-notification:
       title: Test Notification
       type: object
@@ -575,6 +561,20 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

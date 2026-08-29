@@ -997,9 +997,8 @@ apis:
         - Use another payment method, e.g. Contactless
         - Use another card
         - If the issue persists with multiple terminals, they'll need to replace their card as it may
-    be damaged
-    - `CONTACTLESS_DISABLED` - `POS_CONTACTLESS` permission (contactless payments) is disabled. The customer
-    will need to enable the permission to allow contactless transactions.
+    be damaged - `CONTACTLESS_DISABLED` - `POS_CONTACTLESS` permission (contactless payments) is disabled.
+    The customer will need to enable the permission to allow contactless transactions.
 
     - `ECOM_DISABLED` - `ECOM` permission (online payments) is disabled. The customer will need to enable
     the permission to allow e-commerce transactions.
@@ -2794,6 +2793,30 @@ apis:
     url: asyncapi/wise-webhooks-asyncapi.yml
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
+- aid: wise:wise-webhook-event-api
+  name: Wise Webhook Event API
+  description: >-
+    Webhook events are notifications sent by Wise to your server when specific actions occur. Subscribe
+    to events using the [Webhook](/api-reference/webhook) endpoints at the application or profile level.
+
+
+    See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification,
+    and best practices.
+
+
+    {% admonition type="info" %}
+
+    We're migrating event type documentation to this section. For a complete list of available event types,
+    see the [Event Types](/guides/developer/webhooks/event-types) guide.
+
+    {% /admonition %}
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - webhook-event
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-webhook-event-api-openapi.yml
 common:
 - type: CapabilityMap
   url: capabilities/wise-capability-edges.yml

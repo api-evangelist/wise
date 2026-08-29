@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds activity API
-  version: "1.0"
+  title: Wise Platform Activity API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -128,33 +128,36 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    ActivityResourceType:
+    ActivityType:
       type: string
-      description: Type of Activity Monetary Resource.
-      example: TRANSFER
+      description: Type of Activity.
+      example: CARD_PAYMENT
       enum:
-      - ACCRUAL_CHARGE
       - ACQUIRING_PAYMENT
-      - ASSETS_WITHDRAWAL
+      - AUTO_CONVERSION
+      - BALANCE_ADJUSTMENT
+      - BALANCE_ASSET_FEE
       - BALANCE_CASHBACK
+      - BALANCE_DEPOSIT
+      - BALANCE_HOLD_FEE
       - BALANCE_INTEREST
-      - BALANCE_TRANSACTION
       - BANK_DETAILS_ORDER
       - BATCH_TRANSFER
       - CARD_CASHBACK
+      - CARD_CHECK
       - CARD_ORDER
-      - CARD_TRANSACTION
-      - DIRECT_DEBIT_INSTRUCTION
+      - CARD_PAYMENT
+      - CASH_WITHDRAWAL
+      - CLAIMABLE_SEND_ORDER
       - DIRECT_DEBIT_TRANSACTION
+      - EXCESS_REFUND
       - FEE_REFUND
-      - INCIDENT_REFUND
       - INCORPORATION_ORDER
-      - OPERATIONAL_TRANSACTION
+      - INTERBALANCE
       - PAYMENT_REQUEST
+      - PREFUNDING_TRANSFER
       - REWARD
-      - REWARDS_REDEMPTION
-      - SEND_ORDER
-      - SEND_ORDER_EXECUTION
+      - SCHEDULED_SEND_ORDER
       - TRANSFER
     Activity:
       type: object
@@ -259,51 +262,34 @@ components:
       - UPCOMING
       - COMPLETED
       - CANCELLED
-    ActivityType:
+    ActivityResourceType:
       type: string
-      description: Type of Activity.
-      example: CARD_PAYMENT
+      description: Type of Activity Monetary Resource.
+      example: TRANSFER
       enum:
+      - ACCRUAL_CHARGE
       - ACQUIRING_PAYMENT
-      - AUTO_CONVERSION
-      - BALANCE_ADJUSTMENT
-      - BALANCE_ASSET_FEE
+      - ASSETS_WITHDRAWAL
       - BALANCE_CASHBACK
-      - BALANCE_DEPOSIT
-      - BALANCE_HOLD_FEE
       - BALANCE_INTEREST
+      - BALANCE_TRANSACTION
       - BANK_DETAILS_ORDER
       - BATCH_TRANSFER
       - CARD_CASHBACK
-      - CARD_CHECK
       - CARD_ORDER
-      - CARD_PAYMENT
-      - CASH_WITHDRAWAL
-      - CLAIMABLE_SEND_ORDER
+      - CARD_TRANSACTION
+      - DIRECT_DEBIT_INSTRUCTION
       - DIRECT_DEBIT_TRANSACTION
-      - EXCESS_REFUND
       - FEE_REFUND
+      - INCIDENT_REFUND
       - INCORPORATION_ORDER
-      - INTERBALANCE
+      - OPERATIONAL_TRANSACTION
       - PAYMENT_REQUEST
-      - PREFUNDING_TRANSFER
       - REWARD
-      - SCHEDULED_SEND_ORDER
+      - REWARDS_REDEMPTION
+      - SEND_ORDER
+      - SEND_ORDER_EXECUTION
       - TRANSFER
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -342,6 +328,20 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

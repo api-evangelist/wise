@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds batch-group API
-  version: "1.0"
+  title: Wise Platform Batch Group API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -589,20 +589,6 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     BatchGroup:
       title: Batch Group
@@ -677,79 +663,6 @@ components:
             '
           items:
             $ref: '#/components/schemas/PayInDetails'
-    PaymentInitiation:
-      type: object
-      description: Payment initiation for funding a batch group via direct debit.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Payment initiation ID.
-          example: 12345
-        batchGroupId:
-          type: string
-          format: uuid
-          description: Batch group ID.
-          example: 068e186d-9632-4937-b753-af3e53f4d0b0
-        reference:
-          type: string
-          description: Payment reference that will be passed to the network. Can be used for reconciliation.
-          example: B1234567
-        userId:
-          type: integer
-          format: int64
-          description: The ID of the user who initiated this payment.
-          example: 33333333
-        profileId:
-          type: integer
-          format: int64
-          description: The ID of the profile this payment belongs to.
-          example: 44444444
-        type:
-          type: string
-          description: Payment type.
-          enum:
-          - DIRECT_DEBIT
-          example: DIRECT_DEBIT
-        status:
-          type: string
-          description: 'Payment initiation status:
-
-            - `NEW` — Payment initiation created
-
-            - `PROCESSING` — Payment is being processed
-
-            - `COMPLETED` — Payment completed successfully
-
-            - `FAILED` — Payment failed
-
-            - `CHARGED_BACK` — Payment was charged back
-
-            '
-          enum:
-          - NEW
-          - PROCESSING
-          - COMPLETED
-          - FAILED
-          - CHARGED_BACK
-          example: NEW
-        accountId:
-          type: integer
-          format: int64
-          description: External account ID associated with the payment.
-          example: 1
-        transferId:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Transfer ID of the direct debit payment. Present only after the direct debit is initiated.
-          example: null
-        createdTime:
-          type: string
-          format: date-time
-          description: Date and time when the payment initiation was created.
-          example: '2022-01-01T19:51:41.423404Z'
     PayInDetails:
       type: object
       description: Pay-in details describe how the batch group can be funded. Only populated when a batch group is in the `COMPLETED` state.
@@ -913,6 +826,79 @@ components:
           - 'null'
           description: Clearing number. Provided only when the currency route requires it (such as SEK).
           example: null
+    PaymentInitiation:
+      type: object
+      description: Payment initiation for funding a batch group via direct debit.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Payment initiation ID.
+          example: 12345
+        batchGroupId:
+          type: string
+          format: uuid
+          description: Batch group ID.
+          example: 068e186d-9632-4937-b753-af3e53f4d0b0
+        reference:
+          type: string
+          description: Payment reference that will be passed to the network. Can be used for reconciliation.
+          example: B1234567
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user who initiated this payment.
+          example: 33333333
+        profileId:
+          type: integer
+          format: int64
+          description: The ID of the profile this payment belongs to.
+          example: 44444444
+        type:
+          type: string
+          description: Payment type.
+          enum:
+          - DIRECT_DEBIT
+          example: DIRECT_DEBIT
+        status:
+          type: string
+          description: 'Payment initiation status:
+
+            - `NEW` — Payment initiation created
+
+            - `PROCESSING` — Payment is being processed
+
+            - `COMPLETED` — Payment completed successfully
+
+            - `FAILED` — Payment failed
+
+            - `CHARGED_BACK` — Payment was charged back
+
+            '
+          enum:
+          - NEW
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+          - CHARGED_BACK
+          example: NEW
+        accountId:
+          type: integer
+          format: int64
+          description: External account ID associated with the payment.
+          example: 1
+        transferId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Transfer ID of the direct debit payment. Present only after the direct debit is initiated.
+          example: null
+        createdTime:
+          type: string
+          format: date-time
+          description: Date and time when the payment initiation was created.
+          example: '2022-01-01T19:51:41.423404Z'
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -951,6 +937,20 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds bank-account-details API
-  version: "1.0"
+  title: Wise Platform Bank Account Details API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -577,22 +577,290 @@ paths:
               $ref: '#/components/headers/x-trace-id'
         '429':
           $ref: '#/components/responses/429'
-components:
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+webhooks:
+  account-details-payment#state-change:
+    post:
+      operationId: eventAccountDetailsPaymentStateChange
+      summary: Account details payment state change
+      description: 'Triggered every time a pay-in is made into the specified account details.
+
+        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+
+
+        Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
+
+        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+
+
+        * Event type: `account-details-payment#state-change`
+
+        * Profile level subscriptions: Supported
+
+        * Application level subscriptions: Supported
 
         '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+      tags:
+      - bank-account-details
+      parameters:
+      - $ref: '#/components/parameters/x-signature-sha256'
+      - $ref: '#/components/parameters/x-delivery-id'
+      - $ref: '#/components/parameters/x-test-notification'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Account Details Payment State Change Event
+              discriminator:
+                propertyName: schema_version
+                mapping:
+                  4.0.0: '#/components/schemas/v4.0.0-3'
+                  2.0.0: '#/components/schemas/v2.0.0-3'
+              oneOf:
+              - $ref: '#/components/schemas/v4.0.0-3'
+              - $ref: '#/components/schemas/v2.0.0-3'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+          description: Return any `2xx` status to acknowledge receipt of the event.
+components:
   schemas:
+    v4.0.0-3:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 36c3f762-560d-4f07-84f9-5d8a3cacabbb
+        event_type:
+          type: string
+          description: Event type identifier
+          example: account-details-payment#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2024-01-01T12:34:56.123Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: Balance ID which is linked to the account detail
+                  example: 12345
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the payment
+                  example: 1
+                type:
+                  type: string
+                  description: Type of the resource
+                  example: balance-account
+            account_details_id:
+              type: string
+              description: Account detail ID where the pay-in was received
+              example: '1'
+            target_account_id:
+              type: string
+              description: Balance ID which is linked to the account detail
+              example: '12345'
+            transfer:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: ID of the incoming transfer
+                  example: 36454
+                type:
+                  type: string
+                  description: Type of the transfer
+                  example: credit
+                amount:
+                  type: number
+                  format: decimal
+                  description: Transfer amount
+                  example: 120
+                currency:
+                  type: string
+                  description: Currency code
+                  example: EUR
+            sender:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Sender name
+                  example: Test Sender
+                account_number:
+                  type: string
+                  description: Sender account number
+                  example: '12345678'
+                bank_code:
+                  type: string
+                  description: Sender bank code
+                  example: TESTBANK
+                address:
+                  type: string
+                  description: Sender address
+                  example: Test Address
+            current_state:
+              type: string
+              description: Current state of the payment
+              enum:
+              - PROCESSING
+              - COMPLETED
+              - CANCELLED
+              - REFUNDED
+              example: COMPLETED
+            previous_state:
+              type: string
+              description: Previous state of the payment
+              enum:
+              - PROCESSING
+              - COMPLETED
+              - CANCELLED
+              - REFUNDED
+              example: PROCESSING
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred
+              example: '2026-02-24T11:10:13.789Z'
+    v2.0.0-3:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 36c3f762-560d-4f07-84f9-5d8a3cacabbb
+        event_type:
+          type: string
+          description: Event type identifier
+          example: account-details-payment#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2024-01-01T12:34:56Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: Balance ID which is linked to the account detail
+                  example: 12345
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the payment
+                  example: 1
+                type:
+                  type: string
+                  description: Type of the resource
+                  example: balance-account
+            account_details_id:
+              type: string
+              description: Account detail ID where the pay-in was received
+              example: '1'
+            target_account_id:
+              type: string
+              description: Balance ID which is linked to the account detail
+              example: '12345'
+            transfer:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: ID of the incoming transfer
+                  example: 36454
+                type:
+                  type: string
+                  description: Type of the transfer
+                  example: credit
+                amount:
+                  type: number
+                  format: decimal
+                  description: Transfer amount
+                  example: 120
+                currency:
+                  type: string
+                  description: Currency code
+                  example: EUR
+            sender:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Sender name
+                  example: Test Sender
+                account_number:
+                  type: string
+                  description: Sender account number
+                  example: '12345678'
+                bank_code:
+                  type: string
+                  description: Sender bank code
+                  example: TESTBANK
+                address:
+                  type: string
+                  description: Sender address
+                  example: Test Address
+            current_state:
+              type: string
+              description: Current state of the payment
+              enum:
+              - PROCESSING
+              - COMPLETED
+              - CANCELLED
+              - REFUNDED
+              example: COMPLETED
+            previous_state:
+              type: string
+              description: Previous state of the payment
+              enum:
+              - PROCESSING
+              - COMPLETED
+              - CANCELLED
+              - REFUNDED
+              example: PROCESSING
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred
+              example: '2026-02-24T11:10:13Z'
     BankAccountDetails:
       type: object
       title: Bank Account Details
@@ -767,6 +1035,49 @@ components:
                 type: boolean
                 description: Whether the feature is supported.
                 example: true
+  parameters:
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
   headers:
     X-External-Correlation-Id:
       x-global: true

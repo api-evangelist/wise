@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds card API
-  version: "1.0"
+  title: Wise Platform Card API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -558,8 +558,150 @@ paths:
               $ref: '#/components/headers/x-trace-id'
         '429':
           $ref: '#/components/responses/429'
+webhooks:
+  cards#manual-provisioning-verification:
+    post:
+      operationId: eventCardsManualProvisioningVerification
+      summary: Cards manual provisioning verification
+      description: 'Triggered when a card is manually added to a wallet provider, and the verification methods required to complete the wallet provisioning are returned.
+
+        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+
+
+        * Event type: `cards#manual-provisioning-verification`
+
+        * Profile level subscriptions: Not Supported
+
+        * Application level subscriptions: Supported
+
+        '
+      tags:
+      - card
+      parameters:
+      - $ref: '#/components/parameters/x-signature-sha256'
+      - $ref: '#/components/parameters/x-delivery-id'
+      - $ref: '#/components/parameters/x-test-notification'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v2.0.0-4'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+          description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
+    Permission:
+      type: object
+      description: Spending permission configuration for a card.
+      x-tags:
+      - card
+      properties:
+        type:
+          type: string
+          description: 'The type of transaction this permission controls:
+
+            - `ECOM` - Online transactions
+
+            - `POS_CHIP` - Physical point-of-sale transactions with chip
+
+            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
+
+            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
+
+            - `ATM_WITHDRAWAL` - ATM withdrawals
+
+            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
+
+            '
+          enum:
+          - ECOM
+          - POS_CHIP
+          - POS_MAGSTRIPE
+          - POS_CONTACTLESS
+          - ATM_WITHDRAWAL
+          - MOBILE_WALLETS
+          example: ECOM
+        isEnabled:
+          type: boolean
+          description: Indicates if this permission type is enabled.
+          example: false
+        isLocked:
+          type: boolean
+          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
+          example: false
+    v2.0.0-4:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 5281e333-a4d9-4960-aec3-553267a9a8aa
+        event_type:
+          type: string
+          description: Event type identifier
+          example: cards#manual-provisioning-verification
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2026-03-09T05:52:37Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the card
+                  example: 9953556
+                client_id:
+                  type: string
+                  description: Your api_client_id
+                  example: tw-test-card-issuance
+                card_token:
+                  type: string
+                  description: Unique identifier of the card
+                  example: 72393ec3-0707-4bf1-00b7-744f7a380d2c
+                type:
+                  type: string
+                  description: Resource type (always `card`)
+                  example: card
+            payment_token_unique_reference:
+              type: string
+              description: The payment token unique reference associated to the card
+              example: DNITHE352605523102858206
+            last_four_digits:
+              type: string
+              description: The last four digits for the card Primary Account Number (PAN)
+              example: '8237'
+            creation_time:
+              type: string
+              format: date-time
+              description: The time when the card provisioning request was created
+              example: '2026-03-09T05:52:37.274962Z'
+            wallet_name:
+              type: string
+              description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
+              example: Google Pay
     Card:
       type: object
       description: The Card resource represents a Wise card linked to a profile.
@@ -681,46 +823,27 @@ components:
           format: date-time
           description: Time when the card was last modified.
           example: '2022-05-31T01:43:24.596321825Z'
-    Permission:
-      type: object
-      description: Spending permission configuration for a card.
-      x-tags:
-      - card
-      properties:
-        type:
-          type: string
-          description: 'The type of transaction this permission controls:
-
-            - `ECOM` - Online transactions
-
-            - `POS_CHIP` - Physical point-of-sale transactions with chip
-
-            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
-
-            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
-
-            - `ATM_WITHDRAWAL` - ATM withdrawals
-
-            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
-
-            '
-          enum:
-          - ECOM
-          - POS_CHIP
-          - POS_MAGSTRIPE
-          - POS_CONTACTLESS
-          - ATM_WITHDRAWAL
-          - MOBILE_WALLETS
-          example: ECOM
-        isEnabled:
-          type: boolean
-          description: Indicates if this permission type is enabled.
-          example: false
-        isLocked:
-          type: boolean
-          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
-          example: false
   parameters:
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
     X-External-Correlation-Id:
       x-global: true
       name: X-External-Correlation-Id
@@ -734,6 +857,15 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
   headers:
     X-External-Correlation-Id:
       x-global: true

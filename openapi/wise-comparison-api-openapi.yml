@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds comparison API
-  version: "1.0"
+  title: Wise Platform Comparison API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -522,222 +522,22 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   schemas:
-    Comparison:
-      title: Comparison
-      type: object
-      additionalProperties: true
-      description: V4 comparison response containing price and speed estimates from various money transfer providers.
-      properties:
-        sourceCurrency:
-          type:
-          - string
-          - 'null'
-          description: ISO 4217 source currency code
-          example: GBP
-        targetCurrency:
-          type:
-          - string
-          - 'null'
-          description: ISO 4217 target currency code
-          example: EUR
-        sourceCountry:
-          type:
-          - string
-          - 'null'
-          description: Source country (ISO 3166-1 Alpha-2 code)
-          example: null
-        targetCountry:
-          type:
-          - string
-          - 'null'
-          description: Target country (ISO 3166-1 Alpha-2 code)
-          example: null
-        providerCountry:
-          type:
-          - string
-          - 'null'
-          description: Provider country (ISO 3166-1 Alpha-2 code)
-          example: null
-        providerTypes:
-          type: array
-          description: List of provider types included in the response
-          items:
-            type: string
-          example:
-          - bank
-          - moneyTransferProvider
-        amount:
-          type: number
-          description: The comparison amount
-          example: 10000
-        amountType:
-          type: string
-          description: Whether the amount represents a send amount or recipient gets amount
-          example: SEND
-        providers:
-          type: array
-          description: List of providers with their estimated quotes
-          items:
-            type: object
-            additionalProperties: true
-            properties:
-              id:
-                type: integer
-                format: int64
-                description: Provider ID
-                example: 39
-              alias:
-                type: string
-                description: Provider alias (lowercase slug name)
-                example: wise
-              name:
-                type: string
-                description: Provider name (presentational / formal name)
-                example: Wise
-              logos:
-                type: object
-                description: URLs pointing to provider logos (svg, png)
-                properties:
-                  normal:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.png
-                  inverse:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png
-                  white:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png
-                  circle:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: null
-                  altText:
-                    type: string
-                    description: Alt text for the provider logo
-                    example: Wise
-              type:
-                type: string
-                description: 'Provider type: bank, money transfer provider, or travel money'
-                example: moneyTransferProvider
-              partner:
-                type: boolean
-                description: Whether a partner of Wise or not
-                example: false
-              quotes:
-                type: array
-                description: An array of estimated quotes per provider
-                items:
-                  type: object
-                  additionalProperties: true
-                  properties:
-                    rate:
-                      type: number
-                      description: The live estimated exchange rate for the provider for this quote
-                      example: 1.15989
-                    fee:
-                      type: number
-                      description: The estimated fee for the provider for this quote
-                      example: 37.12
-                    dateCollected:
-                      type: string
-                      description: The date of collection for the original quote
-                      example: '2019-10-22T14:36:43Z'
-                    sourceCountry:
-                      type:
-                      - string
-                      - 'null'
-                      description: Source country (ISO 3166-1 Alpha-2 code)
-                      example: null
-                    targetCountry:
-                      type:
-                      - string
-                      - 'null'
-                      description: Target country (ISO 3166-1 Alpha-2 code)
-                      example: null
-                    markup:
-                      type: number
-                      description: Percentage markup on the quoted rate compared to the mid-market rate
-                      example: 0
-                    receivedAmount:
-                      type:
-                      - number
-                      - 'null'
-                      description: The total estimated received amount for the provider for this quote (non-null only if a send amount request was made)
-                      example: 11555.84
-                    sendAmount:
-                      type:
-                      - number
-                      - 'null'
-                      description: The total estimated send amount for the provider for this quote (non-null only if a recipient gets amount request was made)
-                      example: null
-                    isConsideredMidMarketRate:
-                      type: boolean
-                      description: Whether the provider's rate is close enough to the true mid-market rate to be classified as a mid-market rate
-                      example: true
-                    deliveryEstimation:
-                      type: object
-                      description: Delivery estimation details - i.e. a speed estimate
-                      properties:
-                        duration:
-                          type: object
-                          description: Duration range
-                          properties:
-                            min:
-                              type:
-                              - string
-                              - 'null'
-                              description: Minimum quoted time for transaction delivery (ISO 8601 duration format)
-                              example: PT20H8M16.305111S
-                            max:
-                              type:
-                              - string
-                              - 'null'
-                              description: Maximum quoted time for transaction delivery (ISO 8601 duration format)
-                              example: PT20H8M16.305111S
-                        providerGivesEstimate:
-                          type: boolean
-                          description: Whether a provider publicly surfaces a speed estimate or not
-                          example: true
     ComparisonV3:
       title: Comparison (V3)
       type: object
@@ -976,35 +776,221 @@ components:
                               - 'null'
                               description: Maximum estimated delivery date
                               example: '2025-02-05T15:08:00.000000492Z'
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
+    Comparison:
+      title: Comparison
+      type: object
+      additionalProperties: true
+      description: V4 comparison response containing price and speed estimates from various money transfer providers.
+      properties:
+        sourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 source currency code
+          example: GBP
+        targetCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 target currency code
+          example: EUR
+        sourceCountry:
+          type:
+          - string
+          - 'null'
+          description: Source country (ISO 3166-1 Alpha-2 code)
+          example: null
+        targetCountry:
+          type:
+          - string
+          - 'null'
+          description: Target country (ISO 3166-1 Alpha-2 code)
+          example: null
+        providerCountry:
+          type:
+          - string
+          - 'null'
+          description: Provider country (ISO 3166-1 Alpha-2 code)
+          example: null
+        providerTypes:
+          type: array
+          description: List of provider types included in the response
+          items:
+            type: string
+          example:
+          - bank
+          - moneyTransferProvider
+        amount:
+          type: number
+          description: The comparison amount
+          example: 10000
+        amountType:
+          type: string
+          description: Whether the amount represents a send amount or recipient gets amount
+          example: SEND
+        providers:
+          type: array
+          description: List of providers with their estimated quotes
+          items:
+            type: object
+            additionalProperties: true
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Provider ID
+                example: 39
+              alias:
+                type: string
+                description: Provider alias (lowercase slug name)
+                example: wise
+              name:
+                type: string
+                description: Provider name (presentational / formal name)
+                example: Wise
+              logos:
+                type: object
+                description: URLs pointing to provider logos (svg, png)
+                properties:
+                  normal:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.png
+                  inverse:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png
+                  white:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png
+                  circle:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                  altText:
+                    type: string
+                    description: Alt text for the provider logo
+                    example: Wise
+              type:
+                type: string
+                description: 'Provider type: bank, money transfer provider, or travel money'
+                example: moneyTransferProvider
+              partner:
+                type: boolean
+                description: Whether a partner of Wise or not
+                example: false
+              quotes:
+                type: array
+                description: An array of estimated quotes per provider
+                items:
+                  type: object
+                  additionalProperties: true
+                  properties:
+                    rate:
+                      type: number
+                      description: The live estimated exchange rate for the provider for this quote
+                      example: 1.15989
+                    fee:
+                      type: number
+                      description: The estimated fee for the provider for this quote
+                      example: 37.12
+                    dateCollected:
+                      type: string
+                      description: The date of collection for the original quote
+                      example: '2019-10-22T14:36:43Z'
+                    sourceCountry:
+                      type:
+                      - string
+                      - 'null'
+                      description: Source country (ISO 3166-1 Alpha-2 code)
+                      example: null
+                    targetCountry:
+                      type:
+                      - string
+                      - 'null'
+                      description: Target country (ISO 3166-1 Alpha-2 code)
+                      example: null
+                    markup:
+                      type: number
+                      description: Percentage markup on the quoted rate compared to the mid-market rate
+                      example: 0
+                    receivedAmount:
+                      type:
+                      - number
+                      - 'null'
+                      description: The total estimated received amount for the provider for this quote (non-null only if a send amount request was made)
+                      example: 11555.84
+                    sendAmount:
+                      type:
+                      - number
+                      - 'null'
+                      description: The total estimated send amount for the provider for this quote (non-null only if a recipient gets amount request was made)
+                      example: null
+                    isConsideredMidMarketRate:
+                      type: boolean
+                      description: Whether the provider's rate is close enough to the true mid-market rate to be classified as a mid-market rate
+                      example: true
+                    deliveryEstimation:
+                      type: object
+                      description: Delivery estimation details - i.e. a speed estimate
+                      properties:
+                        duration:
+                          type: object
+                          description: Duration range
+                          properties:
+                            min:
+                              type:
+                              - string
+                              - 'null'
+                              description: Minimum quoted time for transaction delivery (ISO 8601 duration format)
+                              example: PT20H8M16.305111S
+                            max:
+                              type:
+                              - string
+                              - 'null'
+                              description: Maximum quoted time for transaction delivery (ISO 8601 duration format)
+                              example: PT20H8M16.305111S
+                        providerGivesEstimate:
+                          type: boolean
+                          description: Whether a provider publicly surfaces a speed estimate or not
+                          example: true
   responses:
     '429':
       x-global: true
@@ -1028,6 +1014,20 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds transfer API
-  version: "1.0"
+  title: Wise Platform Transfer API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -1523,8 +1523,210 @@ paths:
               $ref: '#/components/headers/x-trace-id'
         '429':
           $ref: '#/components/responses/429'
+webhooks:
+  transfers#state-change:
+    post:
+      operationId: eventTransfersStateChange
+      summary: Transfer state change
+      description: 'Triggered every time a transfer''s status is updated.
+
+        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+
+
+        Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
+
+        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+
+
+        {% admonition type="warning" %}
+
+        For topup-to-balance transfers, `transfers#state-change` events will **not** be triggered.
+
+        To listen to these, subscribe to the `balances#update` event instead.
+
+        {% /admonition %}
+
+
+        * Event type: `transfers#state-change`
+
+        * Profile level subscriptions: Supported
+
+        * Application level subscriptions: Supported
+
+        '
+      tags:
+      - transfer
+      parameters:
+      - $ref: '#/components/parameters/x-signature-sha256'
+      - $ref: '#/components/parameters/x-delivery-id'
+      - $ref: '#/components/parameters/x-test-notification'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Transfer State Change Event
+              discriminator:
+                propertyName: schema_version
+                mapping:
+                  4.0.0: '#/components/schemas/v4.0.0'
+                  2.0.0: '#/components/schemas/v2.0.0'
+              oneOf:
+              - $ref: '#/components/schemas/v4.0.0'
+              - $ref: '#/components/schemas/v2.0.0'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+          description: Return any `2xx` status to acknowledge receipt of the event.
+  transfers#active-cases:
+    post:
+      operationId: eventTransfersActiveCases
+      summary: Transfer active cases
+      description: 'Triggered every time a transfer''s list of active cases is updated.
+
+        Active cases indicate potential problems with transfer processing.
+
+        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+
+
+        * Event type: `transfers#active-cases`
+
+        * Profile level subscriptions: Supported
+
+        * Application level subscriptions: Supported
+
+        '
+      tags:
+      - transfer
+      parameters:
+      - $ref: '#/components/parameters/x-signature-sha256'
+      - $ref: '#/components/parameters/x-delivery-id'
+      - $ref: '#/components/parameters/x-test-notification'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Transfer Active Cases Event
+              discriminator:
+                propertyName: schema_version
+                mapping:
+                  4.0.0: '#/components/schemas/v4.0.0-2'
+                  2.0.0: '#/components/schemas/v2.0.0-2'
+              oneOf:
+              - $ref: '#/components/schemas/v4.0.0-2'
+              - $ref: '#/components/schemas/v2.0.0-2'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+          description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
+    payment:
+      title: Payment
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Payment ID
+          example: 50000000
+        method:
+          type: string
+          description: The payment method used to pay for the transfer
+          example: BANK_TRANSFER
+        pricingVariant:
+          type:
+          - string
+          - 'null'
+          description: The qualifier that allows to apply different pricing policy within the same payment method. Often the value might be the payment method itself
+          example: null
+        amount:
+          type: number
+          description: Transfer source amount
+          example: 1000
+        currency:
+          type: string
+          description: Transfer source currency
+          example: GBP
+        timeCreated:
+          type: string
+          format: date-time
+          description: Date of when payment was created
+          example: '2020-01-01T12:30:15.000Z'
+        timeUpdated:
+          type: string
+          format: date-time
+          description: Date of when payment was updated
+          example: '2020-01-01T12:30:15.000Z'
+    v4.0.0-2:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#active-cases
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56.123Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            active_cases:
+              type: array
+              items:
+                type: string
+              description: Ongoing issues related to the transfer
+              example:
+              - deposit_amount_less_invoice
     transfer:
       title: Standard Transfer
       x-tags:
@@ -1634,43 +1836,72 @@ components:
           format: uuid
           description: ID of the Payin Session generated for the transfer, which can be used for certain payin methods when funding the transfer
           example: 23330542-8e9e-419f-95eb-312b880f92ad
-    payment:
-      title: Payment
+    v4.0.0:
+      title: Schema version 4.0.0
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          description: Payment ID
-          example: 50000000
-        method:
+        schema_version:
           type: string
-          description: The payment method used to pay for the transfer
-          example: BANK_TRANSFER
-        pricingVariant:
-          type:
-          - string
-          - 'null'
-          description: The qualifier that allows to apply different pricing policy within the same payment method. Often the value might be the payment method itself
-          example: null
-        amount:
-          type: number
-          description: Transfer source amount
-          example: 1000
-        currency:
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
           type: string
-          description: Transfer source currency
-          example: GBP
-        timeCreated:
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
           type: string
           format: date-time
-          description: Date of when payment was created
-          example: '2020-01-01T12:30:15.000Z'
-        timeUpdated:
-          type: string
-          format: date-time
-          description: Date of when payment was updated
-          example: '2020-01-01T12:30:15.000Z'
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56.123Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56.789Z'
     originator-transfer:
       title: Originator Transfer
       x-tags:
@@ -1937,7 +2168,149 @@ components:
                           name:
                             type: string
                             description: Value name
+    v2.0.0:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56Z'
+    v2.0.0-2:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#active-cases
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            active_cases:
+              type: array
+              items:
+                type: string
+              description: Ongoing issues related to the transfer
+              example:
+              - deposit_amount_less_invoice
   parameters:
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
     X-External-Correlation-Id:
       x-global: true
       name: X-External-Correlation-Id
@@ -1951,6 +2324,15 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
   headers:
     X-External-Correlation-Id:
       x-global: true

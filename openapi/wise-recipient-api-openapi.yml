@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Wise Platform 3ds recipient API
-  version: "1.0"
+  title: Wise Platform Recipient API
+  version: ''
   description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
 servers:
 - url: https://api.wise.com
@@ -972,6 +972,178 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
+    recipient-v1:
+      type: object
+      title: Recipient Account (v1)
+      description: 'Deprecated v1 recipient account object. For new integrations, use the v2 resource which includes additional fields such as `displayFields`, `accountSummary`, and `longAccountSummary`.
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Recipient account ID.
+          example: 40000000
+        business:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Business profile ID (if applicable).
+          example: null
+        profile:
+          type: integer
+          format: int64
+          description: Personal or business profile ID.
+          example: 30000000
+        accountHolderName:
+          type: string
+          description: Recipient full name.
+          example: John Doe
+        currency:
+          type: string
+          description: 3 character currency code.
+          example: GBP
+        country:
+          type: string
+          description: 2 character country code.
+          example: GB
+        type:
+          type: string
+          description: Recipient type.
+          example: sort_code
+        details:
+          type: object
+          description: Currency-specific fields. All possible fields are returned, with unused fields set to `null`.
+          properties:
+            legalType:
+              type: string
+              description: Recipient legal type.
+              example: PRIVATE
+            sortCode:
+              type: string
+              description: Recipient bank sort code (GBP example).
+              example: '040075'
+            accountNumber:
+              type: string
+              description: Recipient bank account number (GBP example).
+              example: '37778842'
+          additionalProperties: true
+        user:
+          type: integer
+          format: int64
+          description: User that created or owns this recipient.
+          example: 10000000
+        active:
+          type: boolean
+          description: Status of the recipient.
+          example: true
+        ownedByCustomer:
+          type: boolean
+          description: Whether this account is owned by the sending user.
+          example: false
+        confirmations:
+          type: object
+          description: Verification results for the recipient's details.
+          properties:
+            acceptedOutcomes:
+              type: boolean
+              example: false
+            acceptedAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+              example: null
+            quoteId:
+              type:
+              - string
+              - 'null'
+              example: null
+            outcomes:
+              type: array
+              items:
+                type: object
+    confirmations:
+      type: object
+      description: 'Verification results for the recipient''s details. Only populated for currencies with recipient verification enabled (KRW, INR, IDR, EUR). See the [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) guide for how to handle these.
+
+        '
+      properties:
+        acceptedOutcomes:
+          type: boolean
+          description: Whether we've received an explicit customer acceptance.
+          example: false
+        acceptedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp indicating time of outcome acceptance, `null` if has not been accepted.
+          example: null
+        quoteId:
+          type:
+          - string
+          - 'null'
+          description: If the confirmation check was run as part of a quote compatibility check, then the `quoteId` will be on the result. If `quoteId` is present, then the outcome acceptance will need the `quoteId` to be specified as well.
+          example: null
+        outcomes:
+          type: array
+          description: Array of confirmation outcomes. At the moment it is safe to assume that there is only one element in the outcomes list.
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: 'The type of confirmation. Possible values: `ACCOUNT_EXISTENCE`, `NAME_MATCHING`, `NAME_RESOLUTION`.'
+                example: NAME_MATCHING
+              timestamp:
+                type: string
+                format: date-time
+                description: Timestamp of when the confirmation check was performed.
+                example: '2024-11-11T23:58:11.105916743Z'
+              outcome:
+                type: string
+                description: 'The actual outcome of the confirmation. Possible values: `SUCCESS`, `PARTIAL_FAILURE`, `FAILURE`, `COULD_NOT_CHECK`.'
+                example: PARTIAL_FAILURE
+              requiresCustomerAcceptance:
+                type: boolean
+                description: Whether we require customer acceptance. Whether this value is true or false is dependent on the currency and the nature of the confirmation.
+                example: true
+              fieldsChecked:
+                type: array
+                description: Fields we used to confirm the account.
+                items:
+                  type: string
+                example:
+                - name/fullName
+                - details/accountNumber
+              providedName:
+                type: string
+                description: The name that the customer provided when creating the recipient account. Only populated for NAME_MATCHING and NAME_RESOLUTION types for certain outcomes.
+                example: John Doe
+              resolvedName:
+                type: string
+                description: The name that we resolved during name matching or name resolution.
+                example: Joe Doe
+              message:
+                type: string
+                description: Customer facing message about the outcome of the check.
+                example: The name entered is slightly different to the name on the account.
+              recommendedUpdates:
+                type: array
+                description: Shows what are the correct values for some of the fields we've checked.
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      description: The field path to update.
+                      example: name/fullName
+                    value:
+                      type: string
+                      description: The recommended value for the field.
+                      example: Joe Doe
     recipient:
       type: object
       title: Recipient Account
@@ -1203,178 +1375,61 @@ components:
                           type: string
                           description: The recommended value for the field.
                           example: Joe Doe
-    recipient-v1:
+    recipient-create-request:
       type: object
-      title: Recipient Account (v1)
-      description: 'Deprecated v1 recipient account object. For new integrations, use the v2 resource which includes additional fields such as `displayFields`, `accountSummary`, and `longAccountSummary`.
+      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
 
         '
       properties:
-        id:
-          type: integer
-          format: int64
-          description: Recipient account ID.
-          example: 40000000
-        business:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Business profile ID (if applicable).
-          example: null
+        currency:
+          type: string
+          description: 3 character currency code.
+          example: GBP
+        type:
+          type: string
+          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
+          example: sort_code
         profile:
           type: integer
           format: int64
-          description: Personal or business profile ID.
+          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
           example: 30000000
         accountHolderName:
           type: string
           description: Recipient full name.
           example: John Doe
-        currency:
-          type: string
-          description: 3 character currency code.
-          example: GBP
-        country:
-          type: string
-          description: 2 character country code.
-          example: GB
-        type:
-          type: string
-          description: Recipient type.
-          example: sort_code
+        ownedByCustomer:
+          type: boolean
+          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
+
+            '
+          example: true
         details:
           type: object
-          description: Currency-specific fields. All possible fields are returned, with unused fields set to `null`.
+          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
+
+            '
           properties:
             legalType:
               type: string
-              description: Recipient legal type.
+              description: Recipient legal type (when applicable).
+              enum:
+              - PRIVATE
+              - BUSINESS
               example: PRIVATE
             sortCode:
               type: string
-              description: Recipient bank sort code (GBP example).
+              description: Sort code (GBP example).
               example: '040075'
             accountNumber:
               type: string
-              description: Recipient bank account number (GBP example).
+              description: Account number (GBP example).
               example: '37778842'
+            dateOfBirth:
+              type: string
+              description: Date of birth in ISO 8601 date format (Optional for GBP example).
+              example: '1961-01-01'
           additionalProperties: true
-        user:
-          type: integer
-          format: int64
-          description: User that created or owns this recipient.
-          example: 10000000
-        active:
-          type: boolean
-          description: Status of the recipient.
-          example: true
-        ownedByCustomer:
-          type: boolean
-          description: Whether this account is owned by the sending user.
-          example: false
-        confirmations:
-          type: object
-          description: Verification results for the recipient's details.
-          properties:
-            acceptedOutcomes:
-              type: boolean
-              example: false
-            acceptedAt:
-              type:
-              - string
-              - 'null'
-              format: date-time
-              example: null
-            quoteId:
-              type:
-              - string
-              - 'null'
-              example: null
-            outcomes:
-              type: array
-              items:
-                type: object
-    confirmations:
-      type: object
-      description: 'Verification results for the recipient''s details. Only populated for currencies with recipient verification enabled (KRW, INR, IDR, EUR). See the [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) guide for how to handle these.
-
-        '
-      properties:
-        acceptedOutcomes:
-          type: boolean
-          description: Whether we've received an explicit customer acceptance.
-          example: false
-        acceptedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp indicating time of outcome acceptance, `null` if has not been accepted.
-          example: null
-        quoteId:
-          type:
-          - string
-          - 'null'
-          description: If the confirmation check was run as part of a quote compatibility check, then the `quoteId` will be on the result. If `quoteId` is present, then the outcome acceptance will need the `quoteId` to be specified as well.
-          example: null
-        outcomes:
-          type: array
-          description: Array of confirmation outcomes. At the moment it is safe to assume that there is only one element in the outcomes list.
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                description: 'The type of confirmation. Possible values: `ACCOUNT_EXISTENCE`, `NAME_MATCHING`, `NAME_RESOLUTION`.'
-                example: NAME_MATCHING
-              timestamp:
-                type: string
-                format: date-time
-                description: Timestamp of when the confirmation check was performed.
-                example: '2024-11-11T23:58:11.105916743Z'
-              outcome:
-                type: string
-                description: 'The actual outcome of the confirmation. Possible values: `SUCCESS`, `PARTIAL_FAILURE`, `FAILURE`, `COULD_NOT_CHECK`.'
-                example: PARTIAL_FAILURE
-              requiresCustomerAcceptance:
-                type: boolean
-                description: Whether we require customer acceptance. Whether this value is true or false is dependent on the currency and the nature of the confirmation.
-                example: true
-              fieldsChecked:
-                type: array
-                description: Fields we used to confirm the account.
-                items:
-                  type: string
-                example:
-                - name/fullName
-                - details/accountNumber
-              providedName:
-                type: string
-                description: The name that the customer provided when creating the recipient account. Only populated for NAME_MATCHING and NAME_RESOLUTION types for certain outcomes.
-                example: John Doe
-              resolvedName:
-                type: string
-                description: The name that we resolved during name matching or name resolution.
-                example: Joe Doe
-              message:
-                type: string
-                description: Customer facing message about the outcome of the check.
-                example: The name entered is slightly different to the name on the account.
-              recommendedUpdates:
-                type: array
-                description: Shows what are the correct values for some of the fields we've checked.
-                items:
-                  type: object
-                  properties:
-                    path:
-                      type: string
-                      description: The field path to update.
-                      example: name/fullName
-                    value:
-                      type: string
-                      description: The recommended value for the field.
-                      example: Joe Doe
     account-requirements-response:
       type: array
       description: 'Dynamic account-requirements response used to build recipient forms. The structure and the fields returned vary by currency, recipient type, route, and sometimes previously provided inputs. Treat this as a schema for a dynamically generated form definition rather than a fixed set of recipient fields.
@@ -1574,75 +1629,6 @@ components:
             validationRegexp: null
             validationAsync: null
             valuesAllowed: null
-    recipient-create-request:
-      type: object
-      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
-
-        '
-      properties:
-        currency:
-          type: string
-          description: 3 character currency code.
-          example: GBP
-        type:
-          type: string
-          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
-          example: sort_code
-        profile:
-          type: integer
-          format: int64
-          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
-          example: 30000000
-        accountHolderName:
-          type: string
-          description: Recipient full name.
-          example: John Doe
-        ownedByCustomer:
-          type: boolean
-          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
-
-            '
-          example: true
-        details:
-          type: object
-          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
-
-            '
-          properties:
-            legalType:
-              type: string
-              description: Recipient legal type (when applicable).
-              enum:
-              - PRIVATE
-              - BUSINESS
-              example: PRIVATE
-            sortCode:
-              type: string
-              description: Sort code (GBP example).
-              example: '040075'
-            accountNumber:
-              type: string
-              description: Account number (GBP example).
-              example: '37778842'
-            dateOfBirth:
-              type: string
-              description: Date of birth in ISO 8601 date format (Optional for GBP example).
-              example: '1961-01-01'
-          additionalProperties: true
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -1681,6 +1667,20 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http
