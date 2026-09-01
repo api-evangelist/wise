@@ -50,7 +50,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - 3ds
+  - 3DS
   tags_raw:
   - 3ds
   properties:
@@ -131,7 +131,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - address
+  - Address
   tags_raw:
   - address
   properties:
@@ -425,7 +425,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - card
+  - Card
   tags_raw:
   - card
   properties:
@@ -587,7 +587,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - card-order
+  - Card - Order
   tags_raw:
   - card-order
   properties:
@@ -1034,7 +1034,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - card-transaction
+  - Card Transaction
   tags_raw:
   - card-transaction
   properties:
@@ -1115,7 +1115,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - case
+  - Case
   tags_raw:
   - case
   properties:
@@ -1279,7 +1279,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - comparison
+  - Comparison
   tags_raw:
   - comparison
   properties:
@@ -1449,7 +1449,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - digital-wallet
+  - Digital Wallet
   tags_raw:
   - digital-wallet
   properties:
@@ -1831,7 +1831,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - oauth-token
+  - OAuth Token
   tags_raw:
   - oauth-token
   properties:
@@ -1915,7 +1915,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - payins
+  - Payins
   tags_raw:
   - payins
   properties:
@@ -2049,7 +2049,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - rate
+  - Rate
   tags_raw:
   - rate
   properties:
@@ -2099,7 +2099,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - recipient
+  - Recipient
   tags_raw:
   - recipient
   properties:
@@ -2414,7 +2414,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - simulation
+  - Simulation
   tags_raw:
   - simulation
   properties:
@@ -2467,7 +2467,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - spend-controls
+  - Spend Controls
   tags_raw:
   - spend-controls
   properties:
@@ -2510,7 +2510,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - spend-limits
+  - Spend Limits
   tags_raw:
   - spend-limits
   properties:
