@@ -44,46 +44,6 @@ created: '2026-05-08'
 modified: '2026-05-30'
 specificationVersion: '0.23'
 apis:
-- aid: wise:wise-3ds-api
-  name: Wise 3ds API
-  description: >-
-    To manage certain aspects of the 3D Secure (3DS) authentication, you will need to integrate with the
-    following APIs.
-  humanURL: https://docs.wise.com/api-docs/api-reference/profile
-  baseURL: https://api.wise.com/v2
-  tags:
-  - 3DS
-  tags_raw:
-  - 3ds
-  properties:
-  - type: OpenAPI
-    url: openapi/wise-3ds-api-openapi.yml
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/profile
-  - type: Sandbox
-    url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/recipient
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/quote
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/transfer
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/balance
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/balance-statement
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/card
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/subscription
-  - type: AsyncAPI
-    url: asyncapi/wise-webhooks-asyncapi.yml
-  - type: Documentation
-    url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-activity-api
   name: Wise activity API
   description: Activity represents a snapshot of a performed action for a profile.
@@ -2821,6 +2781,44 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/wise-webhook-event-api-openapi.yml
+- aid: wise:wise-3-ds-api
+  name: Wise 3 DS API
+  description: >-
+    To manage certain aspects of the 3D Secure (3DS) authentication, you will need to integrate with the
+    following APIs.
+  humanURL: https://docs.wise.com/api-docs/api-reference/profile
+  baseURL: https://api.wise.com/v2
+  tags:
+  - 3 DS
+  properties:
+  - type: OpenAPI
+    url: openapi/wise-3-ds-api-openapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/profile
+  - type: Sandbox
+    url: https://api.sandbox.transferwise.tech
+  - type: GraphQL
+    url: graphql/wise-graphql.md
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/recipient
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/quote
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/transfer
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/multi-currency-account
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/balance-statement
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/card
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/subscription
+  - type: AsyncAPI
+    url: asyncapi/wise-webhooks-asyncapi.yml
+  - type: Documentation
+    url: https://docs.wise.com/api-docs/api-reference/simulation
 common:
 - type: CapabilityMap
   url: capabilities/wise-capability-edges.yml
