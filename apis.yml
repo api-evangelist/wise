@@ -230,7 +230,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - bank-account-details
+  - Bank Account Details
   tags_raw:
   - bank-account-details
   properties:
@@ -387,7 +387,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - Card
+  - Cards
   tags_raw:
   - card
   properties:
@@ -1877,7 +1877,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - Payins
+  - Pay-In
   tags_raw:
   - payins
   properties:
@@ -1918,7 +1918,7 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - Profile
+  - Profiles
   tags_raw:
   - profile
   properties:
@@ -2789,6 +2789,8 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
+  - 3D
+  tags_raw:
   - 3 DS
   properties:
   - type: OpenAPI
