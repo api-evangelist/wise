@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 16
+edge_count: 18
 edges:
 - tag: kyc-review
   spec_file: wise-kyc-review-api-openapi.yml
@@ -32,6 +32,17 @@ edges:
   evidence: POST /v3/spend/profiles/{profileId}/card-orders  cardOrderCreate  Create a card order
   reason: Ordering cards, card programme availability, order requirements, status updates and PIN presetting
     are card issuance activities.
+- tag: webhook
+  spec_file: wise-webhook-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.88
+  evidence: 'POST /v3/applications/{clientKey}/subscriptions  Create Application Webhook Subscription;
+    POST .../test-notifications  Test Application Webhook Subscription; schemas: subscription, test-notification'
+  reason: Full lifecycle of outbound webhook subscriptions (create, list, delete, test delivery) for platform
+    events — exactly Webhook & Event Subscription Management within the developer/API ecosystem capability.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: card-kiosk-collection
   spec_file: wise-card-kiosk-collection-api-openapi.yml
   capability_id: BC-1340.60
@@ -148,6 +159,17 @@ edges:
   reason: Creation and application of card authorisation rules governing whether card transactions are
     approved — card transaction authorisation control. Slight ambiguity with product parameter/limit configuration,
     hence moderate confidence.
+- tag: user-security
+  spec_file: wise-user-security-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.72
+  evidence: POST /v1/user/pin  Create PIN; POST /v1/user/facemap/enrol  Enrol FaceMap; POST /v1/user/partner-device-fingerprints  Create
+    Device Fingerprint
+  reason: Manages a user's authentication factors — PIN, biometric FaceMap enrolment, trusted device fingerprints,
+    phone numbers. This is squarely identity and access management for end users.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: bank-account-details
   spec_file: wise-bank-account-details-api-openapi.yml
   capability_id: BC-1330.10
