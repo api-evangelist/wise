@@ -127,7 +127,8 @@ edges:
     — customer due diligence. The sibling simulation tag confirms these feed 'kyc-reviews', supporting
     the KYC/CDD reading.
 - tag: 3ds
-  spec_file: wise-3ds-api-openapi.yml
+  spec_file: wise-3-ds-api-openapi.yml
+  reanchored_from: wise-3ds-api-openapi.yml
   capability_id: BC-1340.70
   capability_id_l1: BC-1340
   capability_name: Card Transaction Processing Management
