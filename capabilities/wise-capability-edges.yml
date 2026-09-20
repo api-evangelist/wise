@@ -1,0 +1,183 @@
+slug: wise
+provider: Wise
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Banking & Capital Markets
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 16
+edges:
+- tag: kyc-review
+  spec_file: wise-kyc-review-api-openapi.yml
+  capability_id: BC-1300.20
+  capability_id_l1: BC-1300
+  capability_name: KYC & Customer Due Diligence Management
+  confidence: 0.95
+  evidence: POST /v1/profiles/{profileId}/kyc-reviews 'Create a KYC Review'; 'Submit a KYC Requirement';
+    schemas kyc-requirement, kyc-review
+  reason: Operations explicitly create, list and progress KYC reviews and submit KYC requirements against
+    a customer profile — textbook customer due diligence.
+- tag: card-order
+  spec_file: wise-card-order-api-openapi.yml
+  capability_id: BC-1340.60
+  capability_id_l1: BC-1340
+  capability_name: Card Issuance Management
+  confidence: 0.9
+  evidence: POST /v3/spend/profiles/{profileId}/card-orders  cardOrderCreate  Create a card order
+  reason: Ordering cards, card programme availability, order requirements, status updates and PIN presetting
+    are card issuance activities.
+- tag: card-kiosk-collection
+  spec_file: wise-card-kiosk-collection-api-openapi.yml
+  capability_id: BC-1340.60
+  capability_id_l1: BC-1340
+  capability_name: Card Issuance Management
+  confidence: 0.85
+  evidence: PUT /v3/spend/profiles/{profileId}/cards/{cardToken}/production  cardKioskCollectionProduce  Produce
+    a card
+  reason: Card production and production status retrieval is explicitly card production/personalisation
+    under Card Issuance Management.
+- tag: card-transaction
+  spec_file: wise-card-transaction-api-openapi.yml
+  capability_id: BC-1340.70
+  capability_id_l1: BC-1340
+  capability_name: Card Transaction Processing Management
+  confidence: 0.85
+  evidence: GET /v4/spend/profiles/{profileId}/cards/{cardToken}/transactions  cardTransactionList  List
+    card transactions
+  reason: Retrieval of card transactions (authorisations/settlements) for issued cards maps to card transaction
+    processing.
+- tag: transfer
+  spec_file: wise-transfer-api-openapi.yml
+  capability_id: BC-1340.10
+  capability_id_l1: BC-1340
+  capability_name: Payment Initiation Management
+  confidence: 0.82
+  evidence: POST /v1/transfers transferCreate Create a transfer; POST /v3/profiles/{profileId}/transfers/{transferId}/payments
+    transferFund Fund a transfer; POST /v1/transfer-requirements Validate transfer requirements
+  reason: Capture, validation, funding and cancellation of payment instructions — payment initiation.
+    Wise's transfers are typically cross-border (BC-1340.40), but the operations themselves are generic
+    initiation/validation, so the initiation sub-capability is the safer specific choice.
+- tag: balance
+  spec_file: wise-balance-api-openapi.yml
+  capability_id: BC-1330.10
+  capability_id_l1: BC-1330
+  capability_name: Deposit Account Management
+  confidence: 0.8
+  evidence: POST /v4/profiles/{profileId}/balances  balanceCreate  Create a Balance Account
+  reason: Creates, lists and closes multi-currency balance (deposit-like) accounts, moves money between
+    them, retrieves deposit limits and total funds. This is deposit account management; some ambiguity
+    between deposit account vs account lifecycle sub-capability.
+- tag: batch-group
+  spec_file: wise-batch-group-api-openapi.yml
+  capability_id: BC-1340.10
+  capability_id_l1: BC-1340
+  capability_name: Payment Initiation Management
+  confidence: 0.8
+  evidence: POST /v3/profiles/{profileId}/batch-groups/{batchGroupId}/transfers  batchGroupTransferCreate  Create
+    a batch group transfer / POST .../payment-initiations  Fund a batch group via direct debit
+  reason: 'Despite the ''batch'' framing this is business payment functionality: creating batched transfers
+    and funding them via payment initiation/direct debit. Maps to payment initiation rather than being
+    technical plumbing.'
+- tag: card
+  spec_file: wise-card-api-openapi.yml
+  capability_id: BC-1340.60
+  capability_id_l1: BC-1340
+  capability_name: Card Issuance Management
+  confidence: 0.8
+  evidence: PUT /v3/spend/profiles/{profileId}/cards/{cardToken}/status  cardStatusUpdate  Update card
+    status
+  reason: Card servicing operations — listing cards, updating status (freeze/activate), PIN count reset,
+    spending permissions. Sits in card issuance/management; boundary with card transaction processing
+    keeps it at 0.8.
+- tag: digital-wallet
+  spec_file: wise-digital-wallet-api-openapi.yml
+  capability_id: BC-1340.60
+  capability_id_l1: BC-1340
+  capability_name: Card Issuance Management
+  confidence: 0.75
+  evidence: '''Push provisioning for Google Pay'', ''Push Provisioning for Apple Pay'', ''Manual provisioning
+    payment token activation'''
+  reason: Provisioning and activating payment tokens for an issued card into mobile wallets is card personalisation/activation,
+    i.e. card issuance operations, not transaction switching.
+- tag: disputes
+  spec_file: wise-disputes-api-openapi.yml
+  capability_id: BC-1340.70
+  capability_id_l1: BC-1340
+  capability_name: Card Transaction Processing Management
+  confidence: 0.75
+  evidence: '''Retrieve dispute reasons'', ''Submit dispute'', ''Withdraw dispute'' under /v3/spend/profiles/{profileId}/disputes'
+  reason: Card spend disputes with scheme and reason codes are the chargeback/dispute leg of card transaction
+    processing; the 'scheme' path parameter grounds this as card-scheme dispute handling rather than generic
+    complaints.
+- tag: verification
+  spec_file: wise-verification-api-openapi.yml
+  capability_id: BC-1300.20
+  capability_id_l1: BC-1300
+  capability_name: KYC & Customer Due Diligence Management
+  confidence: 0.75
+  evidence: POST /v5/profiles/{profileId}/additional-verification/upload-evidences Upload Evidences; GET
+    /v3/profiles/{profileId}/verification-status/required-evidences Required Evidences
+  reason: Collection of required identity/verification evidence and documents against a customer profile
+    — customer due diligence. The sibling simulation tag confirms these feed 'kyc-reviews', supporting
+    the KYC/CDD reading.
+- tag: 3ds
+  spec_file: wise-3ds-api-openapi.yml
+  capability_id: BC-1340.70
+  capability_id_l1: BC-1340
+  capability_name: Card Transaction Processing Management
+  confidence: 0.72
+  evidence: POST /v3/spend/profiles/{profileId}/3dsecure/challenge-result  3dsChallengeResultPost  Inform
+    challenge result; schema ChallengeResultRequest
+  reason: 3-D Secure challenge result reporting for card spend is part of card transaction authorisation
+    and fraud screening in card transaction processing.
+- tag: spend-controls
+  spec_file: wise-spend-controls-api-openapi.yml
+  capability_id: BC-1340.70
+  capability_id_l1: BC-1340
+  capability_name: Card Transaction Processing Management
+  confidence: 0.72
+  evidence: POST /v3/spend/applications/{clientId}/spend-controls/rules spendControlsRuleCreate Add a
+    new authorisation rule; spendControlsRuleApply Apply an authorisation rule
+  reason: Creation and application of card authorisation rules governing whether card transactions are
+    approved — card transaction authorisation control. Slight ambiguity with product parameter/limit configuration,
+    hence moderate confidence.
+- tag: bank-account-details
+  spec_file: wise-bank-account-details-api-openapi.yml
+  capability_id: BC-1330.10
+  capability_id_l1: BC-1330
+  capability_name: Deposit Account Management
+  confidence: 0.7
+  evidence: POST /v3/profiles/{profileId}/bank-details  bankAccountDetailsBankDetailsCreate  Create multiple
+    bank account details
+  reason: Orders and retrieves local bank account details (account/routing numbers, IBANs) for a customer's
+    account — provisioning of deposit account identifiers. Includes a payment-return endpoint, adding
+    some ambiguity.
+- tag: payins
+  spec_file: wise-payins-api-openapi.yml
+  capability_id: BC-1340
+  capability_id_l1: BC-1340
+  capability_name: Payments & Card Management
+  confidence: 0.7
+  evidence: POST /v1/profiles/{profileId}/payin-sessions/{payinSessionId}/paynow  paynowCreate  Create
+    PayNow payment details
+  reason: Creates pay-in details on the PayNow rail within a pay-in session — clearly payment funding/processing
+    for this payments vendor. Only one operation, so the L1 is asserted but not a specific sub-capability
+    (initiation vs real-time rail).
+- tag: profile
+  spec_file: wise-profile-api-openapi.yml
+  capability_id: BC-1300.10
+  capability_id_l1: BC-1300
+  capability_name: Customer Onboarding Management
+  confidence: 0.7
+  evidence: 'POST /v2/profiles/business-profile  profileBusinessCreate  Create a business profile ...
+    profileVerificationDocumentCreate  Create an identification document; schemas: ubo, director'
+  reason: Creates and maintains personal and business customer profiles, business representatives, UBO/director
+    data and identification documents — customer onboarding with identity verification for a regulated
+    payments provider. Sub-capability could arguably be KYC/CDD or customer information management, hence
+    0.7.
