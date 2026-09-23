@@ -2,32 +2,21 @@ openapi: 3.2.0
 info:
   title: Wise Platform Balance API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: balance
+- name: Balance
   x-displayName: Balances
-  description: 'Create and manage balance accounts within a multi-currency account.
-
-
-    Each profile can hold multiple balance accounts in different currencies. A `STANDARD` balance is limited to one per currency, while `SAVINGS` balances (Jars) allow multiple in the same currency. Creating the first balance for a profile automatically creates the multi-currency account.
-
-
-    Balances include an `investmentState` field. Only balances with `NOT_INVESTED` can be operated on via the API. Invested balances should be shown but not actionable.
-
-
-    For a complete guide on multi-currency accounts, see [Multi-Currency Accounts](/guides/product/accounts).
-
-    '
+  description: Create and manage balance accounts within a multi-currency account.
 paths:
   /v4/profiles/{profileId}/balances:
     post:
       tags:
-      - balance
+      - Balance
       summary: Create a Balance Account
       operationId: balanceCreate
       description: 'Opens a balance within the specified profile, in the currency and type specified in the request.
@@ -36,9 +25,7 @@ paths:
         For `STANDARD` balances, only one can be created per currency. For `SAVINGS` balances, multiple in the same currency can be opened.
 
 
-        When creating a `SAVINGS` type balance, a `name` is required.
-
-        '
+        When creating a `SAVINGS` type balance, a `name` is required.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -97,15 +84,13 @@ paths:
           $ref: '#/components/responses/429'
     get:
       tags:
-      - balance
+      - Balance
       summary: List Balances for a Profile
       operationId: balanceList
       description: 'Retrieves the user''s multi-currency account balance accounts. Returns all balance accounts the profile has in the types specified.
 
 
-        The `types` parameter must include at least one type. To return more than one type, comma-separate the values.
-
-        '
+        The `types` parameter must include at least one type. To return more than one type, comma-separate the values.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -144,7 +129,7 @@ paths:
   /v4/profiles/{profileId}/balances/{balanceId}:
     get:
       tags:
-      - balance
+      - Balance
       summary: Retrieve a Balance by ID
       operationId: balanceGet
       description: Returns a balance based on the specified balance ID.
@@ -183,15 +168,13 @@ paths:
           $ref: '#/components/responses/429'
     delete:
       tags:
-      - balance
+      - Balance
       summary: Remove a Balance Account
       operationId: balanceDelete
       description: 'Closes a balance account for the user''s profile.
 
 
-        Balance accounts must have a zero balance to be closed. Bank account details for the balance will also be deactivated and may not be restored.
-
-        '
+        Balance accounts must have a zero balance to be closed. Bank account details for the balance will also be deactivated and may not be restored.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -224,7 +207,7 @@ paths:
   /v2/profiles/{profileId}/balance-movements:
     post:
       tags:
-      - balance
+      - Balance
       summary: Convert or Move Money Between Balances
       operationId: balanceMovement
       description: 'This endpoint allows conversion and movement of funds between balance accounts.
@@ -244,9 +227,7 @@ paths:
         - Withdraw money from a jar (move from `SAVINGS` to `STANDARD` without conversion)
 
 
-        Either `amount` or `quoteId` is required. Use `quoteId` for cross-currency movements.
-
-        '
+        Either `amount` or `quoteId` is required. Use `quoteId` for cross-currency movements.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -472,15 +453,13 @@ paths:
   /v1/profiles/{profileId}/balance-capacity:
     get:
       tags:
-      - balance
+      - Balance
       summary: Retrieve Deposit Limits
       operationId: balanceCapacity
       description: 'Returns the deposit limit for a profile based on regulatory requirements.
 
 
-        Useful for personal profiles located in countries that have hold limits. We advise calling this API before depositing money into an account if the profile is located in Singapore or Malaysia.
-
-        '
+        Useful for personal profiles located in countries that have hold limits. We advise calling this API before depositing money into an account if the profile is located in Singapore or Malaysia.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -535,7 +514,7 @@ paths:
   /v1/profiles/{profileId}/excess-money-account:
     post:
       tags:
-      - balance
+      - Balance
       summary: Add an Excess Money Account
       operationId: excessMoneyAccount
       description: 'If a balance goes over the regulatory hold limit, excess funds are automatically moved to another account at the end of the day.
@@ -544,9 +523,7 @@ paths:
         Use this endpoint to specify a recipient where excess money will be transferred.
 
 
-        Primarily used for Singapore and Malaysia customers.
-
-        '
+        Primarily used for Singapore and Malaysia customers.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -603,7 +580,7 @@ paths:
   /v1/profiles/{profileId}/total-funds/{currency}:
     get:
       tags:
-      - balance
+      - Balance
       summary: Get Total Funds
       operationId: totalFunds
       description: 'Provides an overview of your account''s total valuation and available liquidity across all balances.
@@ -615,17 +592,15 @@ paths:
         #### Example (Assuming GBP and USD has 1:1 exchange rate)
 
 
-        | Scenario                                 | GBP balance | USD balance | Total Worth | Total Available | Overdraft Usage | Overdraft Limit |
+        | Scenario | GBP balance | USD balance | Total Worth | Total Available | Overdraft Usage | Overdraft Limit |
 
         | ---------------------------------------- | ----------- | ----------- | ----------- | --------------- | --------------- | --------------- |
 
-        | Positive account value with no overdraft | 2000        | 0           | 2000        | 2000            | 0               | 0               |
+        | Positive account value with no overdraft | 2000 | 0 | 2000 | 2000 | 0 | 0 |
 
-        | Positive account value with overdraft    | 2000        | -100        | 1900        | 2400            | 100             | 500             |
+        | Positive account value with overdraft | 2000 | -100 | 1900 | 2400 | 100 | 500 |
 
-        | Negative account value with overdraft    | 0           | -100        | -100        | 400             | 100             | 500             |
-
-        '
+        | Negative account value with overdraft | 0 | -100 | -100 | 400 | 100 | 500 |'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -758,16 +733,14 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Use the [v4 Balances endpoint](/api-reference/balance/balanceget) instead.
+        This endpoint is deprecated. Use the v4 Balances endpoint instead.
 
         {% /admonition %}
 
 
-        Get available balances for all activated currencies in your multi-currency account.
-
-        '
+        Get available balances for all activated currencies in your multi-currency account.'
       tags:
-      - balance
+      - Balance
       security:
       - UserToken: []
       parameters:
@@ -933,7 +906,7 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Use the [balance movements endpoint](/api-reference/balance/balancemovement) to move and convert between balances instead.
+        This endpoint is deprecated. Use the balance movements endpoint to move and convert between balances instead.
 
         {% /admonition %}
 
@@ -943,11 +916,9 @@ paths:
         Quote which is used in this call must be created with `"payOut": "BALANCE"`.
 
 
-        Note that this call needs an extra field in header called `X-idempotence-uuid`.
-
-        '
+        Note that this call needs an extra field in header called `X-idempotence-uuid`.'
       tags:
-      - balance
+      - Balance
       security:
       - UserToken: []
       parameters:
@@ -1041,15 +1012,13 @@ paths:
   /v1/profiles/{profileId}/balances/hold-limit-breach:
     post:
       tags:
-      - balance
+      - Balance
       summary: List hold limit breaches
       operationId: holdLimitBreachList
       description: 'Returns a list of hold limit breaches for a profile. A hold limit breach occurs when a balance exceeds the regulatory hold limit for that profile''s country (e.g. Singapore, Malaysia).
 
 
-        You can optionally filter by `state` and `closing_reason`.
-
-        '
+        You can optionally filter by `state` and `closing_reason`.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1193,15 +1162,13 @@ paths:
   /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}:
     post:
       tags:
-      - balance
+      - Balance
       summary: Close a hold limit breach
       operationId: holdLimitBreachClose
       description: 'Closes an open hold limit breach by performing a one-time refund to a specified recipient. The recipient will receive the excess amount that caused the breach.
 
 
-        Only breaches with `state: OPEN` can be closed via this endpoint.
-
-        '
+        Only breaches with `state: OPEN` can be closed via this endpoint.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1392,12 +1359,12 @@ webhooks:
       summary: Hold limit breach update
       description: 'Triggered whenever a hold limit breach is opened or closed for a profile. A hold limit breach occurs when a balance exceeds the regulatory hold limit (applicable in countries such as Singapore and Malaysia).
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
 
-        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+        See the Event Ordering guide for details.
 
 
         Use `data.state` to determine whether the breach has been opened or closed, and `data.closing_reason` to understand how it was resolved.
@@ -1407,11 +1374,9 @@ webhooks:
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - balance
+      - Balance
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -1473,60 +1438,6 @@ webhooks:
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
-    HoldLimitBreach:
-      type: object
-      x-tags:
-      - balance
-      description: Represents a hold limit breach.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Hold limit breach ID.
-          example: 200001
-        profileId:
-          type: integer
-          format: int64
-          description: ID of the profile that owns the hold limit breach
-          example: 123456
-        amount:
-          type: number
-          description: Amount value.
-          example: 310.86
-        currency:
-          type: string
-          description: Currency code (ISO 4217 Alphabetic Code).
-          example: EUR
-        state:
-          type: string
-          description: Current state of the hold limit breach.
-          enum:
-          - OPEN
-          - CLOSED
-          x-enumDescriptions:
-            OPEN: Hold limit breach is open and needs to be resolved.
-            CLOSED: Hold limit breach is closed and resolved.
-          example: OPEN
-        closingReason:
-          type: string
-          description: Reason the breach was closed, null if state is `OPEN`.
-          enum:
-          - AUTOMATICALLY_RESOLVED
-          - MANUALLY_RESOLVED
-          x-enumDescriptions:
-            AUTOMATICALLY_RESOLVED: The breach was resolved automatically after the customer withdrew funds and the balance dropped below the hold limit.
-            MANUALLY_RESOLVED: The breach was closed by calling the [Close Hold Limit Breach](/api-reference/balance/holdlimitbreachclose) endpoint with a specified recipient.
-          example: AUTOMATICALLY_RESOLVED
-        createdAt:
-          type: string
-          format: date-time
-          description: Date when the hold limit breach was created.
-          example: '2020-05-20T14:43:16.658Z'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Date when the hold limit breach was last modified.
-          example: '2020-05-20T14:43:16.658Z'
     Balance:
       type: object
       x-tags:
@@ -1734,6 +1645,60 @@ components:
               format: date-time
               description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
               example: '2024-06-01T08:00:00Z'
+    HoldLimitBreach:
+      type: object
+      x-tags:
+      - balance
+      description: Represents a hold limit breach.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Hold limit breach ID.
+          example: 200001
+        profileId:
+          type: integer
+          format: int64
+          description: ID of the profile that owns the hold limit breach
+          example: 123456
+        amount:
+          type: number
+          description: Amount value.
+          example: 310.86
+        currency:
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code).
+          example: EUR
+        state:
+          type: string
+          description: Current state of the hold limit breach.
+          enum:
+          - OPEN
+          - CLOSED
+          x-enumDescriptions:
+            OPEN: Hold limit breach is open and needs to be resolved.
+            CLOSED: Hold limit breach is closed and resolved.
+          example: OPEN
+        closingReason:
+          type: string
+          description: Reason the breach was closed, null if state is `OPEN`.
+          enum:
+          - AUTOMATICALLY_RESOLVED
+          - MANUALLY_RESOLVED
+          x-enumDescriptions:
+            AUTOMATICALLY_RESOLVED: The breach was resolved automatically after the customer withdrew funds and the balance dropped below the hold limit.
+            MANUALLY_RESOLVED: The breach was closed by calling the [Close Hold Limit Breach](/api-reference/balance/holdlimitbreachclose) endpoint with a specified recipient.
+          example: AUTOMATICALLY_RESOLVED
+        createdAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was created.
+          example: '2020-05-20T14:43:16.658Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was last modified.
+          example: '2020-05-20T14:43:16.658Z'
     BalanceType:
       type: string
       description: 'Type of balance account.
@@ -1747,64 +1712,6 @@ components:
       - STANDARD
       - SAVINGS
       example: STANDARD
-  parameters:
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
-      schema:
-        type: boolean
-      example: true
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
-      schema:
-        type: string
-      example: t7FMhk3OARMgwqz0LJXO...
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
-      schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -1828,6 +1735,64 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

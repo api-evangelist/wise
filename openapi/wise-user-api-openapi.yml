@@ -2,39 +2,35 @@ openapi: 3.2.0
 info:
   title: Wise Platform User API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: user
+- name: User
   x-displayName: Users
   description: 'A User serves as the primary entity and can possess multiple Profiles to represent different contexts or settings.
 
     A User can have one personal Profile and multiple business Profiles.
 
-    Each [Profile](/api-reference/profile) — whether personal or business — can have its own [multi-currency account](/api-reference/multi-currency-account),
+    Each Profile — whether personal or business — can have its own multi-currency account,
 
     enabling transactions across various currencies. This hierarchical structure allows for flexible management of user settings and financial operations,
 
     accommodating both personal and business needs.
 
 
-    ![User profile structure](/images/diagrams/user-profile-structure.svg)
-
-    '
+    !User profile structure'
 paths:
   /v1/me:
     get:
       tags:
-      - user
+      - User
       summary: Retrieve current user by token
       operationId: userGetByToken
-      description: 'Get authenticated user details for the user''s token submitted in the Authorization header.
-
-        '
+      description: Get authenticated user details for the user's token submitted in the Authorization header.
       security:
       - UserToken: []
       - PersonalToken: []
@@ -57,12 +53,10 @@ paths:
   /v1/users/{userId}:
     get:
       tags:
-      - user
+      - User
       summary: Retrieve a user by ID
       operationId: userGetById
-      description: 'Get authenticated user details by user ID.
-
-        '
+      description: Get authenticated user details by user ID.
       security:
       - UserToken: []
       - PersonalToken: []
@@ -93,15 +87,13 @@ paths:
   /v1/user/signup/registration_code:
     post:
       tags:
-      - user
+      - User
       summary: Create a user with a registration code
       operationId: userCreate
       description: 'Wise uses email address as unique identifier for users. If email is new (there is no active user already) then a new user will be created.
 
 
-        When you are submitting an email which already exists amongst our users then you will get a warning that "You''re already a member. Please login". If user already exists then you need to redirect to "Get user authorization" webpage.
-
-        '
+        When you are submitting an email which already exists amongst our users then you will get a warning that "You''re already a member. Please login". If user already exists then you need to redirect to "Get user authorization" webpage.'
       security:
       - ClientCredentialsToken: []
       requestBody:
@@ -201,15 +193,13 @@ paths:
   /v1/users/exists:
     post:
       tags:
-      - user
+      - User
       summary: Check if user exists
       operationId: userCheckExists
       description: 'Check if a user already exists by email. Wise uses email address as unique identifier for users. If email has already been used by a user, it cannot be reused to create a new user.
 
 
-        Note that this uses a `client-credentials-token` and not a `user access_token` for authentication.
-
-        '
+        Note that this uses a `client-credentials-token` and not a `user access_token` for authentication.'
       security:
       - ClientCredentialsToken: []
       requestBody:
@@ -251,12 +241,10 @@ paths:
   /v1/users/{userId}/contact-email:
     put:
       tags:
-      - user
+      - User
       summary: Set a contact email address
       operationId: userContactEmailSet
-      description: 'Sets a contact email address. The contact email address is used to send notifications to users who have been registered with a dummy email address.
-
-        '
+      description: Sets a contact email address. The contact email address is used to send notifications to users who have been registered with a dummy email address.
       security:
       - UserToken: []
       parameters:
@@ -304,7 +292,7 @@ paths:
           $ref: '#/components/responses/429'
     get:
       tags:
-      - user
+      - User
       summary: Retrieve a contact email address
       operationId: userContactEmailGet
       description: Retrieves a contact email address.
@@ -342,6 +330,44 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     user:
       title: User
@@ -433,44 +459,6 @@ components:
                   type: string
                   description: User occupation. Required for US, CA, JP.
                   example: ''
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

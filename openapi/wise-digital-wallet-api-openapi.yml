@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Digital Wallet API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -11,9 +11,7 @@ servers:
 tags:
 - name: digital-wallet
   x-displayName: Digital Wallet
-  description: 'These APIs provide encrypted cardholder information needed to implement push provisioning (Apple Pay, Google Pay) in your own mobile app.
-
-    '
+  description: These APIs provide encrypted cardholder information needed to implement push provisioning (Apple Pay, Google Pay) in your own mobile app.
 paths:
   /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens:
     post:
@@ -23,9 +21,7 @@ paths:
 
         Note that the payment token status associated with the card may not be accurate (for example, after a phone factory reset).
 
-        Therefore, it''s advisable to consistently check the wallet instance for the most up-to-date token status.
-
-        '
+        Therefore, it''s advisable to consistently check the wallet instance for the most up-to-date token status.'
       tags:
       - digital-wallet
       security:
@@ -170,15 +166,13 @@ paths:
     post:
       operationId: digitalWalletActivatePaymentToken
       summary: Manual provisioning payment token activation
-      description: 'This endpoint activates the payment token for a card that has been manually added to a wallet provider. Please read this [guide](/guides/product/issue-cards/card-digital-wallet.md) before implementing this API.
+      description: 'This endpoint activates the payment token for a card that has been manually added to a wallet provider. Please read this guide before implementing this API.
 
         {% admonition type="warning" %}
 
         This API is not available for sandbox testing.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - digital-wallet
       security:
@@ -423,9 +417,7 @@ paths:
 
         This API is not available for sandbox testing.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - digital-wallet
       servers:
@@ -551,9 +543,7 @@ paths:
 
         This API is not available for sandbox testing.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - digital-wallet
       servers:
@@ -628,6 +618,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -651,21 +656,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

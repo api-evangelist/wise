@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Card Sensitive Details API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -11,21 +11,7 @@ servers:
 tags:
 - name: card-sensitive-details
   x-displayName: Sensitive Card Details
-  description: 'Wise is a PCI DSS compliant provider and stores all card data securely. The scope for PCI compliance depends on your use case and will impact how you integrate. For all sensitive card details endpoints, follow the [detailed guide](/guides/product/issue-cards/sensitive-card-details).
-
-
-    **Key capabilities:**
-
-    - Access sensitive card data (PAN, CVV, PIN) via encrypted JWE payloads
-
-
-    **Related operations:**
-
-    - For card management (list, status, permissions), see the [Cards API](/api-reference/card)
-
-    - For ordering new cards, see the [Card Orders API](/api-reference/card-order)
-
-    - For transaction history, see the [Card Transaction API](/api-reference/card-transaction)'
+  description: Wise is a PCI DSS compliant provider and stores all card data securely.
 paths:
   /twcard-data/v1/clientSideEncryption/fetchEncryptingKey:
     get:
@@ -34,9 +20,7 @@ paths:
       description: 'Fetches Wise''s RSA public key required for encrypting sensitive card data requests.
 
 
-        This key is used in the [sensitive card details flow](/guides/product/issue-cards/sensitive-card-details) to create JWE (JSON Web Encryption) payloads.
-
-        '
+        This key is used in the sensitive card details flow to create JWE (JSON Web Encryption) payloads.'
       tags:
       - card-sensitive-details
       servers:
@@ -79,7 +63,7 @@ paths:
       description: 'Fetches the card''s Primary Account Number (PAN), security code (CVV2), expiry date, and cardholder name.
 
 
-        Requires an encrypted JWE payload for security. See the [sensitive card details guide](/guides/product/issue-cards/sensitive-card-details) for implementation details.
+        Requires an encrypted JWE payload for security. See the sensitive card details guide for implementation details.
 
 
         To retrieve sensitive card details, the card must be in either `ACTIVE` or `FROZEN` status. A 403 response will be returned for cards in any other status.
@@ -87,11 +71,9 @@ paths:
 
         {% admonition type="warning" %}
 
-        This endpoint is SCA protected when applicable. If your profile is registered within the UK and/or EEA, SCA most likely applies. For more information, see [implementing SCA](/guides/developer/auth-and-security/sca-and-2fa).
+        This endpoint is SCA protected when applicable. If your profile is registered within the UK and/or EEA, SCA most likely applies. For more information, see implementing SCA.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - card-sensitive-details
       servers:
@@ -173,16 +155,14 @@ paths:
       description: 'Fetches the card''s PIN.
 
 
-        Requires an encrypted JWE payload for security. See the [sensitive card details guide](/guides/product/issue-cards/sensitive-card-details) for implementation details.
+        Requires an encrypted JWE payload for security. See the sensitive card details guide for implementation details.
 
 
         {% admonition type="warning" %}
 
-        This endpoint is SCA protected when applicable. If your profile is registered within the UK and/or EEA, SCA most likely applies. For more information, see [implementing SCA](/guides/developer/auth-and-security/sca-and-2fa).
+        This endpoint is SCA protected when applicable. If your profile is registered within the UK and/or EEA, SCA most likely applies. For more information, see implementing SCA.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - card-sensitive-details
       servers:
@@ -246,6 +226,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -269,21 +264,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

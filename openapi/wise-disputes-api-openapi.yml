@@ -2,16 +2,16 @@ openapi: 3.2.0
 info:
   title: Wise Platform Disputes API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: disputes
+- name: Disputes
   x-displayName: Disputes
-  description: "Raise and manage card transaction disputes, including submission via Dynamic Flow or direct API, file uploads, and dispute lifecycle tracking.\n\nFor implementation details, see:\n- [Disputes via Dynamic Flow](/guides/product/issue-cards/card-disputes-dynamic-flow) — build a dispute UI using the Dynamic Flow framework\n- [Disputes via API](/guides/product/issue-cards/card-disputes-api) — submit disputes directly, with per-reason request body details\n- [Dispute management](/guides/product/issue-cards/card-disputes-management) — track and withdraw disputes\n\nDispute sub-statuses {% #dispute-sub-status .title-3 .m-t-5 %}\n\nThe possible `subStatus` values are:\n- `SUBMITTED` — Initial status\n- `IN_REVIEW` — The dispute is under review or requires additional information\n- `REFUNDED` — The refund has been processed\n- `REJECTED` — The dispute is invalid\n- `WITHDRAWN` — The customer has withdrawn the dispute\n- `CONFIRMED` — The dispute has been reviewed but a refund is not applicable\n- `REFUND_IN_PROGRESS` — A refund is being processed\n- `ATTEMPTING_RECOVERY` — A chargeback request has been submitted\n- `RECOVERY_UNSUCCESSFUL` — The chargeback attempt was unsuccessful\n\n{% admonition type=\"warning\" %}\nThe status transition diagram may undergo modifications in the future and only covers regular pathways.\n{% /admonition %}\n\n{% img\n  src=\"/images/diagrams/dispute-status-flow.png\"\n  alt=\"Dispute statuses transition diagram\"\n/%}\n"
+  description: Raise and manage card transaction disputes, including submission via Dynamic Flow or direct API, file uploads, and dispute lifecycle tracking.
 paths:
   /v3/spend/profiles/{profileId}/dispute-form/flows/step/{scheme}/{reason}:
     post:
@@ -19,7 +19,7 @@ paths:
       summary: Dispute dynamic flow entry point
       description: 'Retrieves the JSON for initiating the dispute flow. Use this endpoint with Wise''s
 
-        [Dynamic Flow framework](https://www.npmjs.com/package/@transferwise/dynamic-flows).
+        Dynamic Flow framework.
 
 
         The JSON response must be passed into the Dynamic Flow framework, which handles the multi-step dispute submission including the generation of subsequent pages and the creation of the dispute.
@@ -41,11 +41,9 @@ paths:
         This is required as the dynamic flow returned by Wise will automatically be configured to call your GET API. Use `baseUrl` or `fetcher` as part of the dynamic flow setup to redirect the Dynamic Flow JavaScript library to your domain.
 
 
-        For a full integration guide, including example backend implementation and styling, see [Disputes via Dynamic Flow](/guides/product/issue-cards/card-disputes-dynamic-flow).
-
-        '
+        For a full integration guide, including example backend implementation and styling, see Disputes via Dynamic Flow.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -143,11 +141,9 @@ paths:
       description: 'Retrieves the list of possible reasons for submitting a dispute.
 
 
-        If a reason code has `subOptions`, those should be used as the reason code when submitting disputes.
-
-        '
+        If a reason code has `subOptions`, those should be used as the reason code when submitting disputes.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -234,11 +230,9 @@ paths:
         The request body structure varies per dispute reason code. All reasons share a common structure with `transaction`, `form`, `disclaimer`, and `files` objects, but the fields within `form` and `files` differ per reason.
 
 
-        For per-reason request body details, see the [disputes via API guide](/guides/product/issue-cards/card-disputes-api#reason-examples).
-
-        '
+        For per-reason request body details, see the disputes via API guide.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -380,11 +374,9 @@ paths:
       description: 'Upload a file for use in a dispute submission. Use the returned file ID in the `files` object when submitting a dispute.
 
 
-        A dispute referencing the returned file ID must be submitted no later than **two hours** after the file upload, otherwise the file will expire and must be re-uploaded.
-
-        '
+        A dispute referencing the returned file ID must be submitted no later than **two hours** after the file upload, otherwise the file will expire and must be re-uploaded.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -431,11 +423,9 @@ paths:
     get:
       operationId: disputeList
       summary: List disputes
-      description: 'List disputes for a profile with optional filters.
-
-        '
+      description: List disputes for a profile with optional filters.
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -539,11 +529,9 @@ paths:
     get:
       operationId: disputeGet
       summary: Get dispute
-      description: 'Retrieve a dispute by its ID.
-
-        '
+      description: Retrieve a dispute by its ID.
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -584,11 +572,9 @@ paths:
       description: 'Withdraw a dispute by setting its status to `CLOSED`.
 
 
-        You can only withdraw a dispute if `canWithdraw` is `true` on the dispute resource.
-
-        '
+        You can only withdraw a dispute if `canWithdraw` is `true` on the dispute resource.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -658,7 +644,7 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Use the [v4 upload dispute file endpoint](/api-reference/disputes/disputefileupload) instead.
+        This endpoint is deprecated. Use the v4 upload dispute file endpoint instead.
 
         {% /admonition %}
 
@@ -672,11 +658,9 @@ paths:
         Use the `fileId` in the response for the dispute submission.
 
 
-        **NB:** A dispute referencing the returned `fileId` must be submitted no later than **two hours** after the file submission, otherwise the file will expire and must be re-submitted.
-
-        '
+        **NB:** A dispute referencing the returned `fileId` must be submitted no later than **two hours** after the file submission, otherwise the file will expire and must be re-submitted.'
       tags:
-      - disputes
+      - Disputes
       security:
       - UserToken: []
       parameters:
@@ -720,41 +704,45 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
-    DisputeReason:
-      title: DisputeReason
-      type: object
-      properties:
-        code:
-          type: string
-          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
-
-
-            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
-
-            '
-          example: UNAUTHORIZED
-        description:
-          type: string
-          description: The description of the dispute reason.
-          example: I did not make, authorize, or participate in this transaction
-        isFraud:
-          type: boolean
-          description: Flag indicating that the dispute reason is fraud-related.
-          example: false
-        tooltip:
-          type: string
-          description: Text to display when showing the dispute form to your users.
-          example: Choose this if you don't know the merchant or have never purchased anything from them
-        supportsMultipleTransactions:
-          type: boolean
-          description: Whether the dispute supports multiple transactions.
-          example: false
-        subOptions:
-          type: array
-          description: Optional list of sub-reasons that should be used as the dispute reason.
-          items:
-            $ref: '#/components/schemas/DisputeReason'
     Dispute:
       title: Dispute
       type: object
@@ -820,44 +808,40 @@ components:
           type: boolean
           description: Whether the dispute can be withdrawn.
           example: false
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
+    DisputeReason:
+      title: DisputeReason
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
+
+
+            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
+
+            '
+          example: UNAUTHORIZED
+        description:
+          type: string
+          description: The description of the dispute reason.
+          example: I did not make, authorize, or participate in this transaction
+        isFraud:
+          type: boolean
+          description: Flag indicating that the dispute reason is fraud-related.
+          example: false
+        tooltip:
+          type: string
+          description: Text to display when showing the dispute form to your users.
+          example: Choose this if you don't know the merchant or have never purchased anything from them
+        supportsMultipleTransactions:
+          type: boolean
+          description: Whether the dispute supports multiple transactions.
+          example: false
+        subOptions:
+          type: array
+          description: Optional list of sub-reasons that should be used as the dispute reason.
+          items:
+            $ref: '#/components/schemas/DisputeReason'
   parameters:
     X-External-Correlation-Id:
       x-global: true

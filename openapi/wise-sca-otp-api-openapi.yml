@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Sca Otp API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -11,12 +11,7 @@ servers:
 tags:
 - name: sca-otp
   x-displayName: OTP
-  description: 'For phone-based OTP (one-time password) authentication — where an OTP is a single-use 6-digit code sent to verify the identity of a user — Wise supports multiple delivery methods, including SMS, WhatsApp, and voice. Use Wise''s secure endpoint to [create](/api-reference/sca-otp/usersecurityphonenumbercreate) and register the end user''s phone number. Then, call the trigger endpoints ([SMS](/api-reference/sca-otp/ottsmstrigger), [WhatsApp](/api-reference/sca-otp/ottwhatsapptrigger), [Voice](/api-reference/sca-otp/ottvoicetrigger)) to send an OTP to the registered number. Finally, submit the OTP via the verify endpoints ([SMS](/api-reference/sca-otp/ottsmsverify), [WhatsApp](/api-reference/sca-otp/ottwhatsappverify), [Voice](/api-reference/sca-otp/ottvoiceverify)) to complete the authentication challenge.
-
-
-    Please read the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how SCA integration works.
-
-    '
+  description: For phone-based OTP (one-time password) authentication — where an OTP is a single-use 6-digit code sent to verify the identity of a user — Wise supports multiple delivery methods, including SMS, WhatsApp, and voice.
 paths:
   /v1/application/users/{userId}/phone-numbers:
     post:
@@ -29,9 +24,7 @@ paths:
 
         This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - sca-otp
       security:
@@ -98,12 +91,10 @@ paths:
     post:
       operationId: ottSmsTrigger
       summary: Trigger SMS Challenge
-      description: 'To trigger a SMS challenge by sending SMS to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).
+      description: 'To trigger a SMS challenge by sending SMS to user verified phone number containing a 6 digit one time password (**OTP**).
 
 
-        This **OTP** code can be used to clear a SMS challenge by using the [Verify SMS endpoint](/api-reference/sca-otp/ottsmsverify).
-
-        '
+        This **OTP** code can be used to clear a SMS challenge by using the Verify SMS endpoint.'
       tags:
       - sca-otp
       security:
@@ -144,13 +135,11 @@ paths:
 
         Notes:
 
-        1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.
+        1. User is required to have a verified phone number. See create phone number for more information.
 
-        2. [Trigger SMS Challenge](/api-reference/sca-otp/ottsmstrigger) is required to be called first.
+        2. Trigger SMS Challenge is required to be called first.
 
-        3. Since we won''t be sending real SMS on sandbox, the **OTP Code** will always be **111111**.
-
-        '
+        3. Since we won''t be sending real SMS on sandbox, the **OTP Code** will always be **111111**.'
       tags:
       - sca-otp
       security:
@@ -197,12 +186,10 @@ paths:
     post:
       operationId: ottWhatsappTrigger
       summary: Trigger WhatsApp Challenge
-      description: 'To trigger a WhatsApp challenge by sending WhatsApp message to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).
+      description: 'To trigger a WhatsApp challenge by sending WhatsApp message to user verified phone number containing a 6 digit one time password (**OTP**).
 
 
-        This **OTP** code can be used to clear a WHATSAPP challenge by using the [Verify WhatsApp endpoint](/api-reference/sca-otp/ottwhatsappverify).
-
-        '
+        This **OTP** code can be used to clear a WHATSAPP challenge by using the Verify WhatsApp endpoint.'
       tags:
       - sca-otp
       security:
@@ -243,13 +230,11 @@ paths:
 
         Notes:
 
-        1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.
+        1. User is required to have a verified phone number. See create phone number for more information.
 
-        2. [Trigger WhatsApp Challenge](/api-reference/sca-otp/ottwhatsapptrigger) is required to be called first.
+        2. Trigger WhatsApp Challenge is required to be called first.
 
-        3. Since we won''t be sending real WhatsApp message on sandbox, the **OTP Code** will always be **111111**.
-
-        '
+        3. Since we won''t be sending real WhatsApp message on sandbox, the **OTP Code** will always be **111111**.'
       tags:
       - sca-otp
       security:
@@ -296,12 +281,10 @@ paths:
     post:
       operationId: ottVoiceTrigger
       summary: Trigger Voice Challenge
-      description: 'To trigger a Voice challenge by sending voice message to user verified [phone number](/api-reference/user-security/usersecurityphonenumberlist) containing a 6 digit one time password (**OTP**).
+      description: 'To trigger a Voice challenge by sending voice message to user verified phone number containing a 6 digit one time password (**OTP**).
 
 
-        This **OTP** code can be used to clear a VOICE challenge by using the [Verify Voice endpoint](/api-reference/sca-otp/ottvoiceverify).
-
-        '
+        This **OTP** code can be used to clear a VOICE challenge by using the Verify Voice endpoint.'
       tags:
       - sca-otp
       security:
@@ -342,13 +325,11 @@ paths:
 
         Notes:
 
-        1. User is required to have a verified phone number. See [create phone number](/api-reference/sca-otp/usersecurityphonenumbercreate) for more information.
+        1. User is required to have a verified phone number. See create phone number for more information.
 
-        2. [Trigger Voice Challenge](/api-reference/sca-otp/ottvoicetrigger) is required to be called first.
+        2. Trigger Voice Challenge is required to be called first.
 
-        3. Since we won''t be sending real voice message on sandbox, the **OTP Code** will always be **111111**.
-
-        '
+        3. Since we won''t be sending real voice message on sandbox, the **OTP Code** will always be **111111**.'
       tags:
       - sca-otp
       security:
@@ -402,9 +383,7 @@ paths:
 
         This endpoint is restricted and requires both a client credentials token and additional access to use. Please speak with your implementation manager if you would like to use this API.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - sca-otp
       security:
@@ -436,7 +415,75 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    phone-number:
+      title: Phone Number
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the phone number.
+          example: 1230944
+        phoneNumber:
+          type: string
+          description: A text representation of phone number.
+          example: '+6588888888'
+        type:
+          type: string
+          description: 'Type of phone number when used in authentication.
+
+
+            Only **PRIMARY** is supported at the moment.
+
+            '
+          example: PRIMARY
+        verified:
+          type: boolean
+          description: Indicator if phone number is verified.
+          example: true
+        clientId:
+          type: string
+          description: Client ID of which this phone number belongs to.
+          example: clientId
     ott-response:
       type: object
       properties:
@@ -486,74 +533,6 @@ components:
               type: integer
               format: int64
               description: Creator of this one time token.
-    phone-number:
-      title: Phone Number
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the phone number.
-          example: 1230944
-        phoneNumber:
-          type: string
-          description: A text representation of phone number.
-          example: '+6588888888'
-        type:
-          type: string
-          description: 'Type of phone number when used in authentication.
-
-
-            Only **PRIMARY** is supported at the moment.
-
-            '
-          example: PRIMARY
-        verified:
-          type: boolean
-          description: Indicator if phone number is verified.
-          example: true
-        clientId:
-          type: string
-          description: Client ID of which this phone number belongs to.
-          example: clientId
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

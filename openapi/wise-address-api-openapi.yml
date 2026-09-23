@@ -2,43 +2,39 @@ openapi: 3.2.0
 info:
   title: Wise Platform Address API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: address
+- name: Address
   x-displayName: Addresses
   description: 'Manage physical addresses associated with user profiles.
 
 
-    Address requirements vary by country — use the address requirements endpoints to dynamically discover which fields are needed before creating an address.
-
-    '
+    Address requirements vary by country — use the address requirements endpoints to dynamically discover which fields are needed before creating an address.'
 paths:
   /v1/addresses:
     post:
       tags:
-      - address
+      - Address
       summary: Create or Update an Address
       operationId: addressCreate
       description: 'Adds address info to user profile.
 
 
-        List of required fields are different for different countries. Use the [address requirements endpoint](#operation/addressRequirementsGet) to dynamically discover required fields.
+        List of required fields are different for different countries. Use the address requirements endpoint to dynamically discover required fields.
 
 
-        For updating personal profiles, consider using [the personal profile update endpoint](/api-reference/profile/profilepersonalupdate) instead. It allows submitting the address information alongside other profile data.
+        For updating personal profiles, consider using the personal profile update endpoint instead. It allows submitting the address information alongside other profile data.
 
 
         **State field** is required for US, CA, BR, and AU addresses.
 
 
-        **Occupations** is required for CA, IN, JP, ID, IL, MX, and within the US for the state NM.
-
-        '
+        **Occupations** is required for CA, IN, JP, ID, IL, MX, and within the US for the state NM.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -78,7 +74,7 @@ paths:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
     get:
       tags:
-      - address
+      - Address
       summary: List Addresses for a Profile
       operationId: addressList
       description: List of addresses belonging to user profile.
@@ -125,7 +121,7 @@ paths:
   /v1/addresses/{addressId}:
     get:
       tags:
-      - address
+      - Address
       summary: Retrieve an Address by ID
       operationId: addressGet
       description: Get address info by ID.
@@ -170,7 +166,7 @@ paths:
   /v1/address-requirements:
     get:
       tags:
-      - address
+      - Address
       summary: Get Address Requirements
       operationId: addressRequirementsGet
       description: 'Returns the list of fields required to create a valid address. Use this as a starting point to discover required fields.
@@ -190,9 +186,7 @@ paths:
         If a field has `refreshRequirementsOnChange: true`, call the POST endpoint with that field''s value to discover additional required fields.
 
 
-        For a step-by-step walkthrough, see the [Address Requirements guide](/guides/developer/api-guides/address-requirements).
-
-        '
+        For a step-by-step walkthrough, see the Address Requirements guide.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -214,7 +208,7 @@ paths:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
     post:
       tags:
-      - address
+      - Address
       summary: Get Address Requirements (with context)
       operationId: addressRequirementsPost
       description: 'Returns the list of fields required to create a valid address, based on the provided context.
@@ -230,9 +224,7 @@ paths:
         Continue calling this endpoint with field values until all fields with `refreshRequirementsOnChange: true` have been populated.
 
 
-        For a step-by-step walkthrough, see the [Address Requirements guide](/guides/developer/api-guides/address-requirements).
-
-        '
+        For a step-by-step walkthrough, see the Address Requirements guide.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -263,6 +255,64 @@ paths:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
 components:
   schemas:
+    AddressRequest:
+      type: object
+      description: Request payload for creating or updating an address.
+      required:
+      - profile
+      - details
+      properties:
+        profile:
+          type: integer
+          format: int64
+          description: User profile ID.
+          example: 12345678
+        details:
+          type: object
+          description: Address details.
+          required:
+          - country
+          - firstLine
+          - postCode
+          - city
+          properties:
+            country:
+              type: string
+              description: Country code (ISO 3166-1 alpha-2).
+              example: US
+            firstLine:
+              type: string
+              description: 'Address line: street, house, apartment.'
+              example: 50 Sunflower Ave
+            postCode:
+              type: string
+              description: Postal / zip code (max 30 characters).
+              maxLength: 30
+              example: '10025'
+            city:
+              type: string
+              description: City name.
+              example: Phoenix
+            state:
+              type: string
+              description: State code. Required if country is US, CA, BR, or AU.
+              example: AZ
+            occupations:
+              type: array
+              description: User occupations. Required for CA, IN, JP, ID, IL, MX, and within the US for state NM.
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: User occupation - any value permitted.
+                    example: Software Engineer
+                  format:
+                    type: string
+                    description: Occupation type - always `FREE_FORM`.
+                    enum:
+                    - FREE_FORM
+                    example: FREE_FORM
     AddressRequirementsRequest:
       type: object
       description: Request body for retrieving address requirements based on context.
@@ -322,64 +372,6 @@ components:
             postCode:
               type: string
               description: Postal or zip code (max 30 characters).
-              maxLength: 30
-              example: '10025'
-            city:
-              type: string
-              description: City name.
-              example: Phoenix
-            state:
-              type: string
-              description: State code. Required if country is US, CA, BR, or AU.
-              example: AZ
-            occupations:
-              type: array
-              description: User occupations. Required for CA, IN, JP, ID, IL, MX, and within the US for state NM.
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    description: User occupation - any value permitted.
-                    example: Software Engineer
-                  format:
-                    type: string
-                    description: Occupation type - always `FREE_FORM`.
-                    enum:
-                    - FREE_FORM
-                    example: FREE_FORM
-    AddressRequest:
-      type: object
-      description: Request payload for creating or updating an address.
-      required:
-      - profile
-      - details
-      properties:
-        profile:
-          type: integer
-          format: int64
-          description: User profile ID.
-          example: 12345678
-        details:
-          type: object
-          description: Address details.
-          required:
-          - country
-          - firstLine
-          - postCode
-          - city
-          properties:
-            country:
-              type: string
-              description: Country code (ISO 3166-1 alpha-2).
-              example: US
-            firstLine:
-              type: string
-              description: 'Address line: street, house, apartment.'
-              example: 50 Sunflower Ave
-            postCode:
-              type: string
-              description: Postal / zip code (max 30 characters).
               maxLength: 30
               example: '10025'
             city:
@@ -503,21 +495,6 @@ components:
                             name:
                               type: string
                               description: Display name for the value.
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -541,6 +518,21 @@ components:
         application/json:
           schema:
             type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

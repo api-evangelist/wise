@@ -2,31 +2,27 @@ openapi: 3.2.0
 info:
   title: Wise Platform Spend Limits API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: spend-limits
+- name: Spend Limits
   x-displayName: Spend Limits
   description: 'Manage spending limits applied to profiles and cards. Profile limits are shared across all cards under the same profile, while card limits apply to individual cards.
 
 
-    For more details on how profile and card limits interact, see the [card management guide](/guides/product/issue-cards/card-management#spend-limits).
-
-    '
+    For more details on how profile and card limits interact, see the card management guide.'
 paths:
   /v4/spend/profiles/{profileId}/spend-limits:
     get:
       operationId: spendLimitsProfileGet
       summary: Retrieve profile limits
-      description: 'Retrieves the spend limits that are configured for a profile.
-
-        '
+      description: Retrieves the spend limits that are configured for a profile.
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -110,11 +106,9 @@ paths:
     patch:
       operationId: spendLimitsProfileUpdate
       summary: Update profile limits
-      description: 'Update profile daily and monthly spend limits for `PURCHASE` or `ATM_WITHDRAWAL`. Both daily and monthly must be set.
-
-        '
+      description: Update profile daily and monthly spend limits for `PURCHASE` or `ATM_WITHDRAWAL`. Both daily and monthly must be set.
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -189,11 +183,9 @@ paths:
     get:
       operationId: spendLimitsCardGet
       summary: Retrieve card limits
-      description: 'Retrieves the spend limits that are configured for a card.
-
-        '
+      description: Retrieves the spend limits that are configured for a card.
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -228,11 +220,9 @@ paths:
     patch:
       operationId: spendLimitsCardUpdate
       summary: Create or update card limits
-      description: 'Create or update card transaction, daily, monthly or lifetime spend limits.
-
-        '
+      description: Create or update card transaction, daily, monthly or lifetime spend limits.
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -324,11 +314,9 @@ paths:
     delete:
       operationId: spendLimitsCardDelete
       summary: Delete card limits
-      description: 'Delete card spend limits for a specific granularity.
-
-        '
+      description: Delete card spend limits for a specific granularity.
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -377,13 +365,11 @@ paths:
 
         {% admonition type="warning" %}
 
-        This endpoint has been deprecated. Use [Retrieve profile limits](/api-reference/spend-limits/spendlimitsprofileget) instead.
+        This endpoint has been deprecated. Use Retrieve profile limits instead.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - spend-limits
+      - Spend Limits
       security:
       - UserToken: []
       parameters:
@@ -707,21 +693,6 @@ components:
                   format: date-time
                   description: The time when the limit gets reset. ISO-8601 timestamp with timezone.
                   example: '2023-07-31T22:59:59.999999999Z'
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -745,6 +716,21 @@ components:
         application/json:
           schema:
             type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

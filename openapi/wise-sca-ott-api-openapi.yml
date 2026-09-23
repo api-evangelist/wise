@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Sca Ott API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -14,17 +14,13 @@ tags:
   description: 'One-time tokens are temporary authentication sessions used to track SCA challenges. When an SCA-protected endpoint is called, a one-time token is returned containing the challenges that must be completed.
 
 
-    Please read the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how SCA integration works.
-
-    '
+    Please read the SCA over API guide to understand how SCA integration works.'
 paths:
   /v1/one-time-token/status:
     get:
       operationId: ottStatusGet
       summary: Get status of a one time token
-      description: 'Retrieve necessary information to clear a OTT.
-
-        '
+      description: Retrieve necessary information to clear a OTT.
       tags:
       - sca-ott
       security:
@@ -73,14 +69,12 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Use the [new endpoint](/api-reference/sca-ott/ottstatusget) to get status of a one time token instead.
+        This endpoint is deprecated. Use the new endpoint to get status of a one time token instead.
 
         {% /admonition %}
 
 
-        Retrieve necessary information to clear a OTT.
-
-        '
+        Retrieve necessary information to clear a OTT.'
       tags:
       - sca-ott
       security:
@@ -123,6 +117,44 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     ott-response:
       type: object
@@ -173,44 +205,6 @@ components:
               type: integer
               format: int64
               description: Creator of this one time token.
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

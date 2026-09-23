@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Card Kiosk Collection API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -11,49 +11,7 @@ servers:
 tags:
 - name: card-kiosk-collection
   x-displayName: Card Kiosk Collection
-  description: 'These APIs are designed to allow you to print and encrypt your card directly from a kiosk machine. The card information will be sent to our card manufacturer to configure and print the card on-site on a kiosk machine.
-
-
-    The card printing process will automatically begin once the request is received by our card manufacturer.
-
-
-    During the printing process, you will be notified via webhook about any [card production status change](/guides/developer/webhooks/event-types#cards-card-production-status-change).
-
-
-    Before using these APIs, make sure to read the guide on [kiosk collection](/guides/product/issue-cards/card-kiosk-collection#card-kiosk-collection).
-
-
-    {% admonition type="warning" %}
-
-    Please reach out to your Implementation Manager for more information on these APIs.
-
-    {% /admonition %}
-
-
-    **Testing**: In the sandbox environment, use the [card production simulation API](/api-reference/simulation/simulationcardproduction) to test your integration with various production statuses and error scenarios.
-
-
-    Production status flow {% .title-2 .m-t-5 %}
-
-
-    These statuses represent the lifecycle of a card production:
-
-
-    - `READY` - Card is ready for production. The [produce card endpoint](/api-reference/card-kiosk-collection/cardkioskcollectionproduce) can be called.
-
-    - `IN_PROGRESS` - Card is being produced at the kiosk machine (chip encryption and printing in progress).
-
-    - `PRODUCED` - Card has been successfully produced and collected from the kiosk. This is a final state.
-
-    - `PRODUCTION_ERROR` - Card production failed. Check the errorCode to identify the issue, resolve it, then retry using the [produce card endpoint](/api-reference/card-kiosk-collection/cardkioskcollectionproduce).
-
-
-    A card with production status `PRODUCED` will trigger an asynchronous call to update the associated card order to `PRODUCED` status.
-
-
-    ![Card production status flow](/images/diagrams/card-production-status-flow.png)
-
-    '
+  description: These APIs are designed to allow you to print and encrypt your card directly from a kiosk machine.
 paths:
   /v3/spend/profiles/{profileId}/cards/{cardToken}/production:
     put:
@@ -61,16 +19,14 @@ paths:
       - card-kiosk-collection
       summary: Produce a card
       operationId: cardKioskCollectionProduce
-      description: 'Sends the card production request to a kiosk machine. To confirm that card information has been successfully created, listen to the [card-production-status-change](/guides/developer/webhooks/event-types#cards-card-production-status-change) webhook with status `READY`.
+      description: 'Sends the card production request to a kiosk machine. To confirm that card information has been successfully created, listen to the card-production-status-change webhook with status `READY`.
 
 
         {% admonition type="warning" %}
 
         Cards that were created over 60 days ago will result in a 422 error code and cannot be retried. This is due to the data being obfuscated on our side. In this case, a new card order has to be created.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       security:
       - UserToken: []
       parameters:
@@ -147,9 +103,7 @@ paths:
       description: 'Retrieves the current production status of a card at a kiosk machine.
 
 
-        **Best practice**: Subscribe to the [card production status change](/guides/developer/webhooks/event-types#cards-card-production-status-change) webhook for real-time notifications. Use this endpoint only when you need to synchronously check the status.
-
-        '
+        **Best practice**: Subscribe to the card production status change webhook for real-time notifications. Use this endpoint only when you need to synchronously check the status.'
       security:
       - UserToken: []
       parameters:
@@ -364,21 +318,6 @@ components:
           - 'null'
           description: Detailed description of the error code.
           example: The PIN cannot be verified because the server is unreachable
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -402,6 +341,21 @@ components:
         application/json:
           schema:
             type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

@@ -2,57 +2,24 @@ openapi: 3.2.0
 info:
   title: Wise Platform Card Order API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: card-order
+- name: Card - Order
   x-displayName: Card Orders
-  description: 'With this set of APIs, you will be able to create cards for your customers. You can also retrieve and view the status of your current card orders, as well as the list of available card programs for the user.
-
-
-    {% admonition type="info" %}
-
-    On production, each personal profile can order at most 1 physical card and 3 virtual cards. On sandbox, we allow up to 10 physical cards and 30 virtual cards for testing purpose. However, no more than 3 virtual cards can be ordered per day. This limit includes cards and card orders.
-
-    {% /admonition %}
-
-
-    Card order status flow {% #card-order-status-flow .title-3 .m-t-5 %}
-
-
-    The card order response will contain the `status` field. The initial status is `PLACED` or `REQUIREMENTS_FULFILLED` depending on the requirement fulfillment state:
-
-
-    - `PLACED` - The card order is created. The card will be generated once it has fulfilled all the requirements
-
-    - `REQUIREMENTS_FULFILLED` - The card order has fulfilled all the requirements and the card should be generated in a short while
-
-    - `CARD_DETAILS_CREATED` - The card has been generated
-
-    - `PRODUCED` - The physical card has been produced and waiting to be picked up by delivery vendor (physical card only)
-
-    - `COMPLETED` - The card has been activated and is ready to use. The card order is completed
-
-    - `CANCELLED` - The card order has been cancelled. This can happen if you reach out to Wise Support to cancel a card order
-
-    - `RETURNED` - Delivery failed, the physical card has been returned and will be blocked (physical card only)
-
-
-    ![Card order status state machine](/images/diagrams/card-order-status-flow.png)
-
-    '
+  description: With this set of APIs, you will be able to create cards for your customers.
 paths:
   /v3/spend/profiles/{profileId}/card-orders:
     post:
       tags:
-      - card-order
+      - Card - Order
       summary: Create a card order
       operationId: cardOrderCreate
-      description: 'Creates a new card order. The `program` field value is retrieved from the [retrieve all card programs](/api-reference/card-order/cardorderprogramsget) endpoint.
+      description: 'Creates a new card order. The `program` field value is retrieved from the retrieve all card programs endpoint.
 
 
         {% admonition type="warning" %}
@@ -62,15 +29,13 @@ paths:
         {% /admonition %}
 
 
-        When you issue a card under a business profile, the cardholder will automatically default to the [business representative](/api-reference/profile/profilebusinesscreate).
+        When you issue a card under a business profile, the cardholder will automatically default to the business representative.
 
 
-        If the cardholder is not the business representative, create a cardholder [personal profile](/api-reference/profile/profilepersonalcreate) and add the profileId of the cardholder profile to the `cardHolderProfileId` field on the card order request.
+        If the cardholder is not the business representative, create a cardholder personal profile and add the profileId of the cardholder profile to the `cardHolderProfileId` field on the card order request.
 
 
-        For country-specific address fields and validation rules, see the [card address validation guide](/guides/developer/api-guides/card-address-validation).
-
-        '
+        For country-specific address fields and validation rules, see the card address validation guide.'
       security:
       - UserToken: []
       parameters:
@@ -221,7 +186,7 @@ paths:
           $ref: '#/components/responses/429'
     get:
       tags:
-      - card-order
+      - Card - Order
       summary: Retrieve all card orders
       operationId: cardOrderList
       description: Retrieves a list of card orders created for the specified `profileId`.
@@ -277,7 +242,7 @@ paths:
   /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}:
     get:
       tags:
-      - card-order
+      - Card - Order
       summary: Retrieve a card order
       operationId: cardOrderGet
       description: Retrieves a card order based on the `cardOrderId`.
@@ -318,7 +283,7 @@ paths:
   /v3/spend/profiles/{profileId}/card-orders/availability:
     get:
       tags:
-      - card-order
+      - Card - Order
       summary: Retrieve available card programs
       operationId: cardOrderProgramsGet
       description: Retrieves the list of available card programs for each `profileId`.
@@ -392,7 +357,7 @@ paths:
   /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}/requirements:
     get:
       tags:
-      - card-order
+      - Card - Order
       summary: Retrieve card order requirements
       operationId: cardOrderRequirementsGet
       description: 'Retrieves all card requirements for a `cardOrderId`. A valid card order needs all its requirements status to be `COMPLETED`.
@@ -400,11 +365,11 @@ paths:
 
         The type of requirements are:
 
-        - `PIN (optional)`: [Set a PIN](/api-reference/card-order/cardorderpresetpin) on a virtual or physical card order. Contact the team if you need this feature.
+        - `PIN (optional)`: Set a PIN on a virtual or physical card order. Contact the team if you need this feature.
 
-        - `VERIFICATION`: Verify your customer by providing KYC evidences. Refer to the [KYC guide](/guides/product/kyc).
+        - `VERIFICATION`: Verify your customer by providing KYC evidences. Refer to the KYC guide.
 
-        - `ADDRESS`: Provide a valid address for your card order. Refer to [address validation](/api-reference/card-order/cardordervalidateaddress).
+        - `ADDRESS`: Provide a valid address for your card order. Refer to address validation.
 
 
         A requirement **status** has the following values:
@@ -417,9 +382,7 @@ paths:
 
         - `COMPLETED`
 
-        - `FAILED`
-
-        '
+        - `FAILED`'
       security:
       - UserToken: []
       parameters:
@@ -509,7 +472,7 @@ paths:
   /v3/spend/profiles/{profileId}/card-orders/{cardOrderId}/status:
     put:
       tags:
-      - card-order
+      - Card - Order
       summary: Update card order status
       operationId: cardOrderStatusUpdate
       description: 'Updates the status of a card order based on its `cardOrderId`. The status can be updated to one of the following:
@@ -532,9 +495,7 @@ paths:
 
         Updating a card order status to `COMPLETED` is deprecated. Check with our team whether this is supported in your integration.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       security:
       - UserToken: []
       parameters:
@@ -590,10 +551,10 @@ paths:
   /v3/spend/address/validate:
     post:
       tags:
-      - card-order
+      - Card - Order
       summary: Validate an address
       operationId: cardOrderValidateAddress
-      description: 'Validates the format of an address for a card order. Make sure to follow country-specific address fields and validation as described in the [card address validation guide](/guides/developer/api-guides/card-address-validation).
+      description: 'Validates the format of an address for a card order. Make sure to follow country-specific address fields and validation as described in the card address validation guide.
 
 
         For virtual cards, the address field will be used as a billing address. It will be used for AVS checks in countries where it is required.
@@ -606,9 +567,7 @@ paths:
 
         We do not support PO BOX addresses.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       security:
       - UserToken: []
       requestBody:
@@ -696,18 +655,16 @@ paths:
   /twcard-data/v1/sensitive-card-data/preset-pin:
     post:
       tags:
-      - card-order
+      - Card - Order
       summary: Set card PIN
       operationId: cardOrderPresetPin
       description: 'Sets a PIN during the card order flow. This endpoint will be accessible for partners that require to set a PIN during the card order flow.
 
 
-        Please follow [this guide](/guides/product/issue-cards/sensitive-card-details) to use this endpoint.
+        Please follow this guide to use this endpoint.
 
 
-        To use this endpoint, make sure to set the `api token` and the `card order id` in the headers.
-
-        '
+        To use this endpoint, make sure to set the `api token` and the `card order id` in the headers.'
       servers:
       - url: https://twcard.wise.com
         description: Production Environment
@@ -763,58 +720,6 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     CardOrder:
       type: object
@@ -1005,6 +910,58 @@ components:
               - 'null'
               description: The tracking number of the card delivery.
               example: '1999473803'
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

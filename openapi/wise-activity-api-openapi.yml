@@ -2,31 +2,27 @@ openapi: 3.2.0
 info:
   title: Wise Platform Activity API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: activity
+- name: Activity
   x-displayName: Activity
-  description: 'Activity represents a snapshot of a performed action for a profile.
-
-    '
+  description: Activity represents a snapshot of a performed action for a profile.
 paths:
   /v1/profiles/{profileId}/activities:
     get:
       tags:
-      - activity
+      - Activity
       summary: List Activities for a Profile
       operationId: activityList
       description: 'List of activities belonging to user profile.
 
 
-        Activities represent snapshots of performed actions and can be filtered by various parameters to narrow down the results.
-
-        '
+        Activities represent snapshots of performed actions and can be filtered by various parameters to narrow down the results.'
       security:
       - UserToken: []
       - PersonalToken: []
@@ -128,37 +124,28 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    ActivityType:
+    ActivityStatus:
       type: string
-      description: Type of Activity.
-      example: CARD_PAYMENT
+      description: 'Status of the Activity.
+
+        - `REQUIRES_ATTENTION` - Requires an end user attention.
+
+        - `IN_PROGRESS` - Indicates that this activity has yet to be completed. (Example: In progress Top Up)
+
+        - `UPCOMING` - Indicates that this activity is scheduled to happen in the future. By default these activities will only be shown 2 days before the date. (Example: A scheduled transfer)
+
+        - `COMPLETED` - Indicates that this activity is at its end state. (Example: A completed Top Up)
+
+        - `CANCELLED` - Indicates that this activity is cancelled. (Example: A Top Up is cancelled)
+
+        '
+      example: IN_PROGRESS
       enum:
-      - ACQUIRING_PAYMENT
-      - AUTO_CONVERSION
-      - BALANCE_ADJUSTMENT
-      - BALANCE_ASSET_FEE
-      - BALANCE_CASHBACK
-      - BALANCE_DEPOSIT
-      - BALANCE_HOLD_FEE
-      - BALANCE_INTEREST
-      - BANK_DETAILS_ORDER
-      - BATCH_TRANSFER
-      - CARD_CASHBACK
-      - CARD_CHECK
-      - CARD_ORDER
-      - CARD_PAYMENT
-      - CASH_WITHDRAWAL
-      - CLAIMABLE_SEND_ORDER
-      - DIRECT_DEBIT_TRANSACTION
-      - EXCESS_REFUND
-      - FEE_REFUND
-      - INCORPORATION_ORDER
-      - INTERBALANCE
-      - PAYMENT_REQUEST
-      - PREFUNDING_TRANSFER
-      - REWARD
-      - SCHEDULED_SEND_ORDER
-      - TRANSFER
+      - REQUIRES_ATTENTION
+      - IN_PROGRESS
+      - UPCOMING
+      - COMPLETED
+      - CANCELLED
     Activity:
       type: object
       description: Activity represents a snapshot of a performed action for a profile.
@@ -240,28 +227,6 @@ components:
           format: date-time
           description: Timestamp when the activity was last modified.
           example: '2023-01-01T00:00:00.000Z'
-    ActivityStatus:
-      type: string
-      description: 'Status of the Activity.
-
-        - `REQUIRES_ATTENTION` - Requires an end user attention.
-
-        - `IN_PROGRESS` - Indicates that this activity has yet to be completed. (Example: In progress Top Up)
-
-        - `UPCOMING` - Indicates that this activity is scheduled to happen in the future. By default these activities will only be shown 2 days before the date. (Example: A scheduled transfer)
-
-        - `COMPLETED` - Indicates that this activity is at its end state. (Example: A completed Top Up)
-
-        - `CANCELLED` - Indicates that this activity is cancelled. (Example: A Top Up is cancelled)
-
-        '
-      example: IN_PROGRESS
-      enum:
-      - REQUIRES_ATTENTION
-      - IN_PROGRESS
-      - UPCOMING
-      - COMPLETED
-      - CANCELLED
     ActivityResourceType:
       type: string
       description: Type of Activity Monetary Resource.
@@ -290,21 +255,37 @@ components:
       - SEND_ORDER
       - SEND_ORDER_EXECUTION
       - TRANSFER
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
+    ActivityType:
+      type: string
+      description: Type of Activity.
+      example: CARD_PAYMENT
+      enum:
+      - ACQUIRING_PAYMENT
+      - AUTO_CONVERSION
+      - BALANCE_ADJUSTMENT
+      - BALANCE_ASSET_FEE
+      - BALANCE_CASHBACK
+      - BALANCE_DEPOSIT
+      - BALANCE_HOLD_FEE
+      - BALANCE_INTEREST
+      - BANK_DETAILS_ORDER
+      - BATCH_TRANSFER
+      - CARD_CASHBACK
+      - CARD_CHECK
+      - CARD_ORDER
+      - CARD_PAYMENT
+      - CASH_WITHDRAWAL
+      - CLAIMABLE_SEND_ORDER
+      - DIRECT_DEBIT_TRANSACTION
+      - EXCESS_REFUND
+      - FEE_REFUND
+      - INCORPORATION_ORDER
+      - INTERBALANCE
+      - PAYMENT_REQUEST
+      - PREFUNDING_TRANSFER
+      - REWARD
+      - SCHEDULED_SEND_ORDER
+      - TRANSFER
   responses:
     '429':
       x-global: true
@@ -328,6 +309,21 @@ components:
         application/json:
           schema:
             type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

@@ -2,28 +2,26 @@ openapi: 3.2.0
 info:
   title: Wise Platform Webhook Event API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: webhook-event
+- name: Webhook Event
   x-displayName: Events
-  description: 'Webhook events are notifications sent by Wise to your server when specific actions occur. Subscribe to events using the [Webhook](/api-reference/webhook) endpoints at the application or profile level.
+  description: 'Webhook events are notifications sent by Wise to your server when specific actions occur. Subscribe to events using the Webhook endpoints at the application or profile level.
 
 
-    See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+    See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
     {% admonition type="info" %}
 
-    We''re migrating event type documentation to this section. For a complete list of available event types, see the [Event Types](/guides/developer/webhooks/event-types) guide.
+    We''re migrating event type documentation to this section. For a complete list of available event types, see the Event Types guide.
 
-    {% /admonition %}
-
-    '
+    {% /admonition %}'
 paths: {}
 webhooks:
   transfers#state-change:
@@ -32,12 +30,12 @@ webhooks:
       summary: Transfer state change
       description: 'Triggered every time a transfer''s status is updated.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
 
-        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+        See the Event Ordering guide for details.
 
 
         {% admonition type="warning" %}
@@ -53,11 +51,9 @@ webhooks:
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - webhook-event
+      - Webhook Event
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -94,18 +90,16 @@ webhooks:
 
         Active cases indicate potential problems with transfer processing.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         * Event type: `transfers#active-cases`
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - webhook-event
+      - Webhook Event
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -140,23 +134,21 @@ webhooks:
       summary: Account details payment state change
       description: 'Triggered every time a pay-in is made into the specified account details.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
 
-        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+        See the Event Ordering guide for details.
 
 
         * Event type: `account-details-payment#state-change`
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - webhook-event
+      - Webhook Event
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -191,18 +183,16 @@ webhooks:
       summary: Cards manual provisioning verification
       description: 'Triggered when a card is manually added to a wallet provider, and the verification methods required to complete the wallet provisioning are returned.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         * Event type: `cards#manual-provisioning-verification`
 
         * Profile level subscriptions: Not Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - webhook-event
+      - Webhook Event
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -229,12 +219,12 @@ webhooks:
       summary: Hold limit breach update
       description: 'Triggered whenever a hold limit breach is opened or closed for a profile. A hold limit breach occurs when a balance exceeds the regulatory hold limit (applicable in countries such as Singapore and Malaysia).
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
 
-        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+        See the Event Ordering guide for details.
 
 
         Use `data.state` to determine whether the breach has been opened or closed, and `data.closing_reason` to understand how it was resolved.
@@ -244,11 +234,9 @@ webhooks:
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - webhook-event
+      - Webhook Event
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -481,223 +469,6 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
-    v4.0.0:
-      title: Schema version 4.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 4.0.0
-          example: 4.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: transfers#state-change
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2020-01-01T12:34:56.123Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type
-                  example: transfer
-                id:
-                  type: integer
-                  format: int64
-                  description: Transfer ID
-                  example: 111
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: Profile ID of the transfer owner
-                  example: 222
-                account_id:
-                  type: integer
-                  format: int64
-                  description: Recipient account ID
-                  example: 333
-            current_state:
-              type: string
-              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
-
-                '
-              example: processing
-            previous_state:
-              type:
-              - string
-              - 'null'
-              description: Previous transfer status. Note that this will be null for newly created transfers.
-              example: incoming_payment_waiting
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the state change occurred
-              example: '2020-01-01T12:34:56.789Z'
-    v4.0.0-4:
-      title: Schema version 4.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 4.0.0
-          example: 4.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: hold-limit-breach#update
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2024-06-01T08:00:00Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type. Always `hold-limit-breach`
-                  example: hold-limit-breach
-                hold_limit_breach_id:
-                  type: integer
-                  format: int64
-                  description: ID of the hold limit breach
-                  example: 1001
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: ID of the profile that owns the breach
-                  example: 12321323
-            amount:
-              type: number
-              format: decimal
-              description: Amount that exceeded the hold limit
-              example: 500.5
-            currency:
-              type: string
-              description: Currency code (ISO 4217) of the breach amount
-              example: SGD
-            state:
-              type: string
-              description: Current state of the breach
-              enum:
-              - OPEN
-              - CLOSED
-              example: CLOSED
-            closing_reason:
-              type:
-              - string
-              - 'null'
-              description: Reason the breach was closed. Null if state is `OPEN`
-              enum:
-              - AUTOMATICALLY_RESOLVED
-              - MANUALLY_RESOLVED
-              - null
-              example: MANUALLY_RESOLVED
-            created_at:
-              type: string
-              format: date-time
-              description: Timestamp when the breach was created (ISO 8601)
-              example: '2024-06-01T08:00:00Z'
-            updated_at:
-              type: string
-              format: date-time
-              description: Timestamp when the breach was last updated (ISO 8601)
-              example: '2024-06-01T08:00:00Z'
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
-              example: '2024-06-01T08:00:00Z'
-    v2.0.0:
-      title: Schema version 2.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 2.0.0
-          example: 2.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: transfers#state-change
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2020-01-01T12:34:56Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type
-                  example: transfer
-                id:
-                  type: integer
-                  format: int64
-                  description: Transfer ID
-                  example: 111
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: Profile ID of the transfer owner
-                  example: 222
-                account_id:
-                  type: integer
-                  format: int64
-                  description: Recipient account ID
-                  example: 333
-            current_state:
-              type: string
-              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
-
-                '
-              example: processing
-            previous_state:
-              type:
-              - string
-              - 'null'
-              description: Previous transfer status. Note that this will be null for newly created transfers.
-              example: incoming_payment_waiting
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the state change occurred
-              example: '2020-01-01T12:34:56Z'
     v2.0.0-3:
       title: Schema version 2.0.0
       type: object
@@ -869,6 +640,223 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
+    v2.0.0:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56Z'
+    v4.0.0-4:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: hold-limit-breach#update
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2024-06-01T08:00:00Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type. Always `hold-limit-breach`
+                  example: hold-limit-breach
+                hold_limit_breach_id:
+                  type: integer
+                  format: int64
+                  description: ID of the hold limit breach
+                  example: 1001
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the breach
+                  example: 12321323
+            amount:
+              type: number
+              format: decimal
+              description: Amount that exceeded the hold limit
+              example: 500.5
+            currency:
+              type: string
+              description: Currency code (ISO 4217) of the breach amount
+              example: SGD
+            state:
+              type: string
+              description: Current state of the breach
+              enum:
+              - OPEN
+              - CLOSED
+              example: CLOSED
+            closing_reason:
+              type:
+              - string
+              - 'null'
+              description: Reason the breach was closed. Null if state is `OPEN`
+              enum:
+              - AUTOMATICALLY_RESOLVED
+              - MANUALLY_RESOLVED
+              - null
+              example: MANUALLY_RESOLVED
+            created_at:
+              type: string
+              format: date-time
+              description: Timestamp when the breach was created (ISO 8601)
+              example: '2024-06-01T08:00:00Z'
+            updated_at:
+              type: string
+              format: date-time
+              description: Timestamp when the breach was last updated (ISO 8601)
+              example: '2024-06-01T08:00:00Z'
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
+              example: '2024-06-01T08:00:00Z'
+    v4.0.0:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56.123Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56.789Z'
     v2.0.0-4:
       title: Schema version 2.0.0
       type: object
@@ -934,16 +922,15 @@ components:
               description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
               example: Google Pay
   parameters:
-    x-test-notification:
-      name: X-Test-Notification
+    x-delivery-id:
+      name: X-Delivery-Id
       in: header
       required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
+      description: Unique identifier for this webhook delivery attempt.
       schema:
-        type: boolean
-      example: true
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
     x-signature-sha256:
       name: X-Signature-SHA256
       in: header
@@ -954,15 +941,16 @@ components:
       schema:
         type: string
       example: t7FMhk3OARMgwqz0LJXO...
-    x-delivery-id:
-      name: X-Delivery-Id
+    x-test-notification:
+      name: X-Test-Notification
       in: header
       required: false
-      description: Unique identifier for this webhook delivery attempt.
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
       schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        type: boolean
+      example: true
   securitySchemes:
     UserToken:
       type: http

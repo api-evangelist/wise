@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Jose API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -11,18 +11,32 @@ servers:
 tags:
 - name: jose
   x-displayName: JOSE
-  description: 'Wise uses the [JOSE framework](https://jose.readthedocs.io/en/latest/) to accept and respond with signed and encrypted payloads. These endpoints allow you to manage keys and test your signing and encryption implementation.
+  description: 'Wise uses the JOSE framework to accept and respond with signed and encrypted payloads. These endpoints allow you to manage keys and test your signing and encryption implementation.
 
 
-    For more information, please speak with your Implementation team.
-
-    '
+    For more information, please speak with your Implementation team.'
 paths:
   /v1/auth/jose/response/public-keys:
     get:
       operationId: joseResponsePublicKeysGet
       summary: Get Wise JOSE public key
-      description: "Returns a public key issued by Wise.\n\nDepending on the scope requested, the key will be used for verifying HTTP responses signed by Wise or for for encrypting the payload prior to sending it to Wise.\n\nFor both signature verification and payload encryption, the process involves storing this public key after retrieval. In both cases, the stored public key should be used without calling this endpoint.\n\nIf verification of the signed request fails or Wise is unable to decrypt your request payload, call this API to issue a fresh key from Wise and reattempt the operation again.\n\n{% admonition type=\"warning\" %}\n  This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid [client credentials token](/api-reference/oauth-token/oauthtokencreate) before performing this call.\n{% /admonition %}\n"
+      description: 'Returns a public key issued by Wise.
+
+
+        Depending on the scope requested, the key will be used for verifying HTTP responses signed by Wise or for for encrypting the payload prior to sending it to Wise.
+
+
+        For both signature verification and payload encryption, the process involves storing this public key after retrieval. In both cases, the stored public key should be used without calling this endpoint.
+
+
+        If verification of the signed request fails or Wise is unable to decrypt your request payload, call this API to issue a fresh key from Wise and reattempt the operation again.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid client credentials token before performing this call.
+
+        {% /admonition %}'
       tags:
       - jose
       security:
@@ -124,7 +138,14 @@ paths:
     post:
       operationId: joseRequestPublicKeysCreate
       summary: Add a new client public key
-      description: "Upload a client public key for request payload signing or response payload encryption.\n\n{% admonition type=\"warning\" %}\n  This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid [client credentials token](/api-reference/oauth-token/oauthtokencreate) before performing this call.\n{% /admonition %}\n"
+      description: 'Upload a client public key for request payload signing or response payload encryption.
+
+
+        {% admonition type="warning" %}
+
+        This endpoint requires a client credentials token, not a user level access token. Make sure you use your client details to fetch a valid client credentials token before performing this call.
+
+        {% /admonition %}'
       tags:
       - jose
       security:
@@ -249,9 +270,7 @@ paths:
     post:
       operationId: josePlaygroundJws
       summary: Playground JWS
-      description: 'Send test signed HTTP requests and receive signed responses. Signing is mandatory for this endpoint — any message that is not a JSON Web Signature (JWS) will be rejected.
-
-        '
+      description: Send test signed HTTP requests and receive signed responses. Signing is mandatory for this endpoint — any message that is not a JSON Web Signature (JWS) will be rejected.
       tags:
       - jose
       parameters:
@@ -327,9 +346,7 @@ paths:
     get:
       operationId: josePlaygroundJweGet
       summary: Playground JWE for GET requests
-      description: 'Send test HTTP GET requests and receive encrypted responses.
-
-        '
+      description: Send test HTTP GET requests and receive encrypted responses.
       tags:
       - jose
       parameters:
@@ -372,9 +389,7 @@ paths:
     post:
       operationId: josePlaygroundJwePost
       summary: Playground JWE for POST requests
-      description: 'Send test encrypted HTTP requests and receive encrypted responses. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
-
-        '
+      description: Send test encrypted HTTP requests and receive encrypted responses. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
       tags:
       - jose
       parameters:
@@ -450,9 +465,7 @@ paths:
     post:
       operationId: josePlaygroundJweDirectEncryption
       summary: Playground JWE for direct encryption
-      description: 'Send encrypted HTTP requests for testing purposes and receive responses encrypted with the original content encryption key. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
-
-        '
+      description: Send encrypted HTTP requests for testing purposes and receive responses encrypted with the original content encryption key. Encryption is mandatory for this endpoint — any message that is not in JSON Web Encryption (JWE) format will be rejected.
       tags:
       - jose
       parameters:
@@ -545,9 +558,7 @@ paths:
 
         Our team is currently planning improvements for these types of error messages to make them more specific and clear. Thank you for your patience.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - jose
       parameters:
@@ -650,6 +661,21 @@ paths:
             x-trace-id:
               $ref: '#/components/headers/x-trace-id'
 components:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -673,21 +699,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

@@ -2,52 +2,16 @@ openapi: 3.2.0
 info:
   title: Wise Platform Case API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: case
+- name: Case
   x-displayName: Partner Cases
-  description: 'Partner Cases are part of the Partner Support API, allowing partners to open, retrieve and respond to support and operations queries.
-
-
-    The endpoints described here allow partners to directly integrate their back end tooling with Wise''s, allowing faster responses, better structure to data, and operational efficiencies.
-
-
-    {% admonition type="warning" %}
-
-    The Partner Support APIs are currently in a closed Beta and subject to change. Please speak with your implementation manager if you would like to integrate with these APIs.
-
-    {% /admonition %}
-
-
-    Case Statuses {% #case-statuses .title-3 .m-t-5 %}
-
-
-    Partner cases can move through different statuses.
-
-
-    | Status | Transitions to | Description |
-
-    |--------|---------------|-------------|
-
-    | `CREATING` | OPEN | Cases being created by Wise from a Partner call. Once created, cases move into the open status. |
-
-    | `OPEN` | PENDING, SOLVED, CLOSED | Cases being actioned by Wise. Partners do not need to action these cases. Note that we may update a case in this status and not change it. |
-
-    | `PENDING` | OPEN, SOLVED, CLOSED | Cases that require additional information from the partner. You should action these cases by reviewing the newest comment and updating the case. |
-
-    | `SOLVED` | OPEN, PENDING, CLOSED | Cases that have been solved and scheduled for closure. These can be re-opened by the partner or Wise if needed before closing. |
-
-    | `CLOSED` | — | Cases that have been solved and closed. Once closed, they cannot be reopened and a new case should be created if needed. |
-
-
-    {% img src="/images/diagrams/case-flow.png" /%}
-
-    '
+  description: Partner Cases are part of the Partner Support API, allowing partners to open, retrieve and respond to support and operations queries.
 paths:
   /v1/cases:
     post:
@@ -60,11 +24,9 @@ paths:
 
         Please do not include PII in the `subject` of a case. Any specific details regarding the case that need to be communicated should be included in the `description`.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - case
+      - Case
       security:
       - ClientCredentialsToken: []
       requestBody:
@@ -133,11 +95,9 @@ paths:
     get:
       operationId: caseGet
       summary: Retrieve a partner case by ID
-      description: 'This endpoint returns a partner case based on the specified case ID.
-
-        '
+      description: This endpoint returns a partner case based on the specified case ID.
       tags:
-      - case
+      - Case
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -167,11 +127,9 @@ paths:
     get:
       operationId: caseCommentsGet
       summary: Retrieve partner case comments
-      description: 'This endpoint returns a comments list object, which is an array of comments that have been associated with the case. Comments are ordered newest to oldest and are not paginated (all comments returned at once).
-
-        '
+      description: This endpoint returns a comments list object, which is an array of comments that have been associated with the case. Comments are ordered newest to oldest and are not paginated (all comments returned at once).
       tags:
-      - case
+      - Case
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -235,11 +193,9 @@ paths:
     put:
       operationId: caseCommentCreate
       summary: Add a partner case comment
-      description: 'This endpoint allows for a comment to be placed on a partner case.
-
-        '
+      description: This endpoint allows for a comment to be placed on a partner case.
       tags:
-      - case
+      - Case
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -276,6 +232,44 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     case:
       type: object
@@ -315,44 +309,6 @@ components:
           format: date-time
           description: When the partner case was last updated.
           example: '2023-06-28T15:21:24.901'
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

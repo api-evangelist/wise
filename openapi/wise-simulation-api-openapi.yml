@@ -2,14 +2,14 @@ openapi: 3.2.0
 info:
   title: Wise Platform Simulation API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: simulation
+- name: Simulation
   x-displayName: Simulations
   description: 'Use these endpoints to simulate key actions in the sandbox environment, including transfer state changes, balance top-ups, card transactions, KYC reviews, and incoming payments.
 
@@ -18,9 +18,7 @@ tags:
 
     These features are limited to sandbox only.
 
-    {% /admonition %}
-
-    '
+    {% /admonition %}'
 paths:
   /v1/simulation/transfers/{transferId}/{status}:
     get:
@@ -58,11 +56,9 @@ paths:
 
         While transfer state simulation calls will respond with 200 in real time, the process internally is asynchronous. Please ensure you give at least 5 seconds in between simulation calls.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -127,11 +123,9 @@ paths:
         This is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).
 
 
-        Accepts both user and application API tokens.
-
-        '
+        Accepts both user and application API tokens.'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -163,11 +157,9 @@ paths:
         This is useful for testing the `profiles#verification-state-change` webhook and is a prerequisite for setting up a Multi-Currency Account (MCA).
 
 
-        Accepts user API tokens only. The profiles are identified via the token.
-
-        '
+        Accepts user API tokens only. The profiles are identified via the token.'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       responses:
@@ -186,11 +178,9 @@ paths:
     post:
       operationId: simulationBalanceTopup
       summary: Simulate a balance top-up
-      description: 'Simulates a top-up so that a balance can be used to fund transfers and/or card spend.
-
-        '
+      description: Simulates a top-up so that a balance can be used to fund transfers and/or card spend.
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       requestBody:
@@ -284,24 +274,22 @@ paths:
       description: 'Simulates a card transaction authorisation request in the sandbox environment. It can simulate ATM withdrawals, POS purchases, e-commerce transactions, and refunds. This is an authorisation hold, where funds are held, but not yet captured by the acquirer.
 
 
-        The `cardNumber` represents the 16-digit Primary Account Number (PAN) of the card, and must be a valid PAN retrieved from sensitive card details. Please follow the [detailed guide](/guides/product/issue-cards/sensitive-card-details) on retrieving sensitive card details.
+        The `cardNumber` represents the 16-digit Primary Account Number (PAN) of the card, and must be a valid PAN retrieved from sensitive card details. Please follow the detailed guide on retrieving sensitive card details.
 
 
         #### Refund
 
 
-        A refund is a 2-step process: first authorise with `transactionType` set to `REFUND`, then clear using the [clearing endpoint](/api-reference/simulation/simulationcardtransactionclearing) with the same transaction type.
+        A refund is a 2-step process: first authorise with `transactionType` set to `REFUND`, then clear using the clearing endpoint with the same transaction type.
 
 
         {% admonition type="warning" %}
 
         Refund simulation doesn''t work with Mastercard.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -494,11 +482,9 @@ paths:
         #### Refund
 
 
-        A refund is a 2-step process: first [authorise](/api-reference/simulation/simulationcardtransactionauthorisation) with `transactionType` set to `REFUND`, then clear using this endpoint with the same transaction type.
-
-        '
+        A refund is a 2-step process: first authorise with `transactionType` set to `REFUND`, then clear using this endpoint with the same transaction type.'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -658,11 +644,9 @@ paths:
       description: 'Simulates a transaction reversal request in the sandbox environment. The `amount.value` field can be set to 0 for a full reversal, or a positive value that represents the intended final value of the transaction after a partial reversal.
 
 
-        For example, if a transaction value was originally 10 SGD, and the intended final value is 3 SGD, `amount.value` should be set to 3. This means there is a partial refund of 7 SGD.
-
-        '
+        For example, if a transaction value was originally 10 SGD, and the intended final value is 3 SGD, `amount.value` should be set to 3. This means there is a partial refund of 7 SGD.'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -822,11 +806,9 @@ paths:
       description: 'Returns a list of simulated card transactions, in descending order of creation time.
 
 
-        To retrieve more details of a transaction, use the [get card transaction by ID](/api-reference/card-transaction/cardtransactionget) endpoint.
-
-        '
+        To retrieve more details of a transaction, use the get card transaction by ID endpoint.'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -899,11 +881,9 @@ paths:
 
         Please ensure that you have created a physical card order with KIOSK_COLLECTION delivery method and that you produce the card before calling this endpoint to simulate various card production statuses.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -955,11 +935,9 @@ paths:
     get:
       operationId: simulationKycReviewRequirementsList
       summary: List KYC review requirements
-      description: 'Lists all blocking requirements for a KYC (Know Your Customer) review. These outstanding KYC requirements typically act as "blocking requirements", preventing actions like creating transfers.
-
-        '
+      description: Lists all blocking requirements for a KYC (Know Your Customer) review. These outstanding KYC requirements typically act as "blocking requirements", preventing actions like creating transfers.
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1044,11 +1022,9 @@ paths:
 
         This can only be used for business profiles. It creates a static `BUSINESS_USE_CASE` requirement only.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1118,11 +1094,9 @@ paths:
 
         This functionality only works for the following requirements: `TRANSFER_PURPOSE`, `ID_DOCUMENT_WITH_LIVENESS`, `SOURCE_OF_FUNDS`, and any other that has the `___` delimiter in them.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1181,11 +1155,9 @@ paths:
     post:
       operationId: simulationKycReviewVerify
       summary: Simulate verifying a KYC review
-      description: 'Verifies requirement(s) on an existing KYC (Know Your Customer) review. Can be used after a user has provided input for a requirement through the hosted journey or simulated the requirement submission.
-
-        '
+      description: Verifies requirement(s) on an existing KYC (Know Your Customer) review. Can be used after a user has provided input for a requirement through the hosted journey or simulated the requirement submission.
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1257,18 +1229,16 @@ paths:
       description: 'Simulates a bank transfer into a profile''s account details. This will create a payment into the user''s account details and balance for the specified amount and currency.
 
 
-        Please refer to the [Bank Account Details API reference](/api-reference/bank-account-details) for more information on setting up bank details to receive money.
+        Please refer to the Bank Account Details API reference for more information on setting up bank details to receive money.
 
 
         {% admonition type="info" %}
 
         This functionality only works for the following currencies: `USD`, `EUR`, `GBP`. Returns a 400 error when account details for the specified currency do not exist.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1325,18 +1295,16 @@ paths:
       description: 'Simulates an incoming Swift transfer into a profile''s account details. This will create a payment into the user''s account details and balance for the specified amount and currency. Using sandbox, you can test the initial tech build for webhook subscriptions, balance statements, and sweeping funds.
 
 
-        If the request is successful the transfer is logged in our back office, which triggers a [swift-in#credit](/guides/developer/webhooks/event-types#swift-in-credit) event and results in a balance update.
+        If the request is successful the transfer is logged in our back office, which triggers a swift-in#credit event and results in a balance update.
 
 
         {% admonition type="info" %}
 
         While most fields are optional, default values will be provided as needed.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - simulation
+      - Simulation
       security:
       - UserToken: []
       parameters:
@@ -1521,6 +1489,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -1544,21 +1527,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

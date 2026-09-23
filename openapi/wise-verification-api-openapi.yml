@@ -2,30 +2,28 @@ openapi: 3.2.0
 info:
   title: Wise Platform Verification API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: verification
+- name: Verification
   x-displayName: Additional Verification
-  description: "In certain situations, additional evidence is required to verify customers and ensure we’re compliant with the KYC regulations.\n\nAdditional Verification APIs support a list of evidences that can be found in the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences).\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and your customers are primarily based in the EU,\nrefer to this [Onboarding EU customers](/guides/product/kyc/partner-kyc/additional-verification#onboarding-eu-customers) guide\nfor instructions on how to use these APIs.\n\nIf you use the [Customer Account with Partner KYC](/guides/product/kyc/partner-kyc) model and you are onboarding high risk business customers\nbased primarily based in the US, refer to\nthis [Onboarding High Risk US Businesses](/guides/product/kyc/partner-kyc/additional-verification#onboarding-high-risk-us-businesses) guide for \ninstructions on how to use these APIs.\n"
+  description: In certain situations, additional evidence is required to verify customers and ensure we’re compliant with the KYC regulations.
 paths:
   /v3/profiles/{profileId}/additional-verification/upload-evidences:
     post:
       deprecated: true
       tags:
-      - verification
+      - Verification
       summary: Upload Evidences (v3)
       operationId: verificationUploadEvidencesV3
       description: 'Uploads verification evidence for a specific profile.
 
 
-        The request body varies significantly between **Personal** and **Business** profiles.
-
-        '
+        The request body varies significantly between **Personal** and **Business** profiles.'
       security:
       - UserToken: []
       parameters:
@@ -222,7 +220,7 @@ paths:
   /v5/profiles/{profileId}/additional-verification/upload-evidences:
     post:
       tags:
-      - verification
+      - Verification
       summary: Upload Evidences
       operationId: verificationUploadEvidences
       description: 'Uploads verification evidence for a specific profile.
@@ -231,9 +229,7 @@ paths:
         The request body varies significantly between **Personal** and **Business** profiles.
 
 
-        Submitting an evidence that was already uploaded will result in an attempt to update the evidence.
-
-        '
+        Submitting an evidence that was already uploaded will result in an attempt to update the evidence.'
       security:
       - UserToken: []
       parameters:
@@ -485,7 +481,7 @@ paths:
   /v3/profiles/{profileId}/verification-status/upload-document:
     post:
       tags:
-      - verification
+      - Verification
       summary: Upload Document
       operationId: verificationUploadDocument
       description: 'Uploads verification documents for review. You can upload multiple files at once.
@@ -496,9 +492,7 @@ paths:
 
         - The document must be clear.
 
-        - The document needs to be a .jpg, .png., or .pdf file type up to 10MB in size.
-
-        '
+        - The document needs to be a .jpg, .png., or .pdf file type up to 10MB in size.'
       security:
       - UserToken: []
       parameters:
@@ -598,7 +592,7 @@ paths:
   /v3/profiles/{profileId}/verification-status/required-evidences:
     get:
       tags:
-      - verification
+      - Verification
       summary: Required Evidences
       operationId: verificationGetRequiredEvidences
       description: 'Fetches the required evidences for a profile to complete additional customer verification.
@@ -607,9 +601,7 @@ paths:
         If one or more evidences are returned, the customer should submit those evidences using the upload-evidences endpoint.
 
 
-        See the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences) for the list of possible evidence types and how to submit them.
-
-        '
+        See the Supported Evidences guide for the list of possible evidence types and how to submit them.'
       security:
       - UserToken: []
       parameters:
@@ -655,6 +647,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -678,21 +685,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

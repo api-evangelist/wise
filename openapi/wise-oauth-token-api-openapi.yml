@@ -2,49 +2,16 @@ openapi: 3.2.0
 info:
   title: Wise Platform OAUTH Token API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: oauth-token
+- name: OAuth Token
   x-displayName: OAuth Token
-  description: 'Exchange client credentials or authorisation grants for OAuth 2.0 access tokens. All grant types use `POST /oauth/token` with basic authentication (your `client_id` and `client_secret`).
-
-
-    Depending on the grant type, this endpoint issues either a **client credentials token** or a **user token**.
-
-
-    Client credentials token {% .title-3 .m-t-5 %}
-
-
-    An application-level token for requests that aren''t tied to a specific Wise user, such as generating un-authenticated quotes and subscribing to application webhooks. Valid for 12 hours.
-
-
-    - `client_credentials` — the only grant type for this token.
-
-
-    User token {% .title-3 .m-t-5 %}
-
-
-    A token for making API calls on behalf of a specific Wise user, such as creating transfers and managing balances. Access tokens are valid for 12 hours and can be refreshed using a refresh token. Grant types:
-
-
-    - `registration_code` — for partners that create Wise users via API. Exchanges a registration code for a user access token and refresh token.
-
-    - `authorization_code` — for partners using the OAuth redirect flow. Exchanges an authorisation code for a user access token and refresh token.
-
-    - `refresh_token` — obtain a new user access token without requiring the user to re-authorise.
-
-
-    Managing token expiration {% #managing-token-expiration .title-3 .m-t-5 %}
-
-
-    Access tokens are valid for 12 hours. You can request a new access token whenever it''s close to expiring — there is no need to wait for the actual expiration to happen first. Depending on how your application uses the Wise Platform API, requesting a new access token before attempting a series of API calls on behalf of an individual user will avoid issues with expired access tokens.
-
-    '
+  description: Exchange client credentials or authorisation grants for OAuth 2.0 access tokens.
 paths:
   /oauth/token:
     post:
@@ -56,11 +23,9 @@ paths:
         The `grant_type` field determines which parameters are required and which response fields are returned.
 
 
-        See [managing token expiration](/api-reference/oauth-token#managing-token-expiration) for guidance on refreshing tokens before they expire.
-
-        '
+        See managing token expiration for guidance on refreshing tokens before they expire.'
       tags:
-      - oauth-token
+      - OAuth Token
       security:
       - BasicAuth: []
       requestBody:
@@ -133,31 +98,54 @@ paths:
       parameters:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   schemas:
-    registration-code-grant:
+    authorization-code-grant:
       type: object
       required:
       - grant_type
       - client_id
-      - email
-      - registration_code
+      - code
+      - redirect_uri
       properties:
         grant_type:
           type: string
           description: OAuth 2.0 grant type.
           enum:
-          - registration_code
-          example: registration_code
+          - authorization_code
+          example: authorization_code
         client_id:
           type: string
           description: Your API client ID.
-        email:
+        code:
           type: string
-          format: email
-          description: The email address of the user being registered.
-        registration_code:
+          description: Authorisation code provided upon redirect back from the authorisation flow.
+        redirect_uri:
           type: string
-          description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
+          description: Registered redirect URL coordinated with Wise during onboarding.
+          example: https://www.yourapp.com
     token-response:
       type: object
       properties:
@@ -219,41 +207,6 @@ components:
 
             '
           example: '2020-01-01T12:33:33.12345Z'
-    client-credentials-grant:
-      type: object
-      required:
-      - grant_type
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - client_credentials
-          example: client_credentials
-    authorization-code-grant:
-      type: object
-      required:
-      - grant_type
-      - client_id
-      - code
-      - redirect_uri
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - authorization_code
-          example: authorization_code
-        client_id:
-          type: string
-          description: Your API client ID.
-        code:
-          type: string
-          description: Authorisation code provided upon redirect back from the authorisation flow.
-        redirect_uri:
-          type: string
-          description: Registered redirect URL coordinated with Wise during onboarding.
-          example: https://www.yourapp.com
     refresh-token-grant:
       type: object
       required:
@@ -269,7 +222,48 @@ components:
         refresh_token:
           type: string
           description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
+    registration-code-grant:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - email
+      - registration_code
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - registration_code
+          example: registration_code
+        client_id:
+          type: string
+          description: Your API client ID.
+        email:
+          type: string
+          format: email
+          description: The email address of the user being registered.
+        registration_code:
+          type: string
+          description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
+    client-credentials-grant:
+      type: object
+      required:
+      - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - client_credentials
+          example: client_credentials
   headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
     X-External-Correlation-Id:
       x-global: true
       description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
@@ -278,35 +272,6 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

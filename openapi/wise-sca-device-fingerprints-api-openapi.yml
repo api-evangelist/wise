@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Sca Device Fingerprints API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -14,14 +14,14 @@ tags:
   description: 'Device fingerprints are possession-based SCA challenge factors. They allow you to verify that a user is accessing the API from a recognized device.
 
 
-    A profile can have up to 3 device fingerprints registered simultaneously. All device fingerprint operations use JOSE (JWE) encryption. See the [SCA over API guide](/guides/developer/auth-and-security/sca-and-2fa) for encryption details.'
+    A profile can have up to 3 device fingerprints registered simultaneously. All device fingerprint operations use JOSE (JWE) encryption. See the SCA over API guide for encryption details.'
 paths:
   /v1/one-time-token/partner-device-fingerprint/verify:
     post:
       deprecated: true
       operationId: ottDeviceFingerprintVerify
       summary: Verify Device Fingerprint
-      description: '[{% img src="https://img.shields.io/badge/jose-direct_encryption-blue" /%}](/guides/developer/auth-and-security/jose-jwe){% .d-inline-block %}
+      description: '{% img src="https://img.shields.io/badge/jose-direct_encryption-blue" /%}{% .d-inline-block %}
 
 
         To clear a **Device Fingerprint** challenge listed in an OTT.
@@ -29,11 +29,9 @@ paths:
 
         Notes:
 
-        1. User is required to [create a device fingerprint](/api-reference/user-security/usersecuritydevicefingerprintcreate) before the verification can be successful.
+        1. User is required to create a device fingerprint before the verification can be successful.
 
-        2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.
-
-        '
+        2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.'
       tags:
       - sca-device-fingerprints
       security:
@@ -123,9 +121,7 @@ paths:
       description: 'Creates a new device fingerprint factor used to resolve a SCA possession challenge type.
 
 
-        The request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.
-
-        '
+        The request and response are encrypted using the JOSE framework. Please refer to the SCA over API guide to understand how encryption and decryption work.'
       tags:
       - sca-device-fingerprints
       security:
@@ -232,12 +228,10 @@ paths:
     post:
       operationId: scaDeviceFingerprintVerify
       summary: Verify a device fingerprint
-      description: 'Verifies a device fingerprint challenge when calling a SCA-secured endpoint. Make sure to [create a device fingerprint](/api-reference/sca-device-fingerprints/scadevicefingerprintcreate) before using this endpoint.
+      description: 'Verifies a device fingerprint challenge when calling a SCA-secured endpoint. Make sure to create a device fingerprint before using this endpoint.
 
 
-        The request and response are encrypted using the JOSE framework. Please refer to the [SCA over API guide](/guides/developer/auth-and-security/sca-over-api) to understand how encryption and decryption work.
-
-        '
+        The request and response are encrypted using the JOSE framework. Please refer to the SCA over API guide to understand how encryption and decryption work.'
       tags:
       - sca-device-fingerprints
       security:
@@ -346,9 +340,7 @@ paths:
 
         This operation is irreversible.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - sca-device-fingerprints
       security:
@@ -387,21 +379,6 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -425,15 +402,16 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
     X-External-Correlation-Id:
       x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
       schema:
         type: string
         format: uuid
@@ -478,6 +456,20 @@ components:
           type: integer
           description: The One-Time Token expiration in seconds.
           example: 3600
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

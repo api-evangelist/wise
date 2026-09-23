@@ -2,26 +2,24 @@ openapi: 3.2.0
 info:
   title: Wise Platform Bank Account Details API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: bank-account-details
+- name: Bank Account Details
   x-displayName: Bank Account Details
   description: 'Bank account details allow users to receive money into their Wise Multi-Currency Account. Each currency balance can have local bank details (for domestic payments) and international bank details (for SWIFT payments) where available.
 
 
-    Bank account details can be retrieved for existing balances, or new details can be ordered for currencies where they''re available but not yet issued.
-
-    '
+    Bank account details can be retrieved for existing balances, or new details can be ordered for currencies where they''re available but not yet issued.'
 paths:
   /v1/profiles/{profileId}/account-details-orders:
     post:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: Create bank account details order
       operationId: bankAccountDetailsOrderCreate
       security:
@@ -43,9 +41,7 @@ paths:
 
         - `VERIFICATION`: The user needs to be fully verified before completing this requirement.
 
-        - `TOP_UP`: A fee will be charged and must be paid through wise.com before completing this requirement.
-
-        '
+        - `TOP_UP`: A fee will be charged and must be paid through wise.com before completing this requirement.'
       parameters:
       - name: profileId
         in: path
@@ -119,7 +115,7 @@ paths:
           $ref: '#/components/responses/429'
     get:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: List bank account detail orders (v1)
       operationId: bankAccountDetailsOrdersListV1
       deprecated: true
@@ -131,11 +127,9 @@ paths:
 
         {% admonition type="warning" %}
 
-        This endpoint is deprecated. Please use the [v3 endpoint](/api-reference/bank-account-details/bankaccountdetailsorderslist) instead.
+        This endpoint is deprecated. Please use the v3 endpoint instead.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       parameters:
       - name: profileId
         in: path
@@ -199,7 +193,7 @@ paths:
   /v3/profiles/{profileId}/bank-details:
     post:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: Create multiple bank account details
       operationId: bankAccountDetailsBankDetailsCreate
       security:
@@ -211,9 +205,7 @@ paths:
 
         Please reach out to our Support Team for access to this endpoint.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       parameters:
       - name: profileId
         in: path
@@ -318,7 +310,7 @@ paths:
   /v1/profiles/{profileId}/account-details:
     get:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: Retrieve bank account details
       operationId: bankAccountDetailsGet
       security:
@@ -327,9 +319,7 @@ paths:
       description: 'Returns a list with all the `AVAILABLE` and `ACTIVE` account details for the given profile, including examples. Account receive options can also include local and international details to receive money on the currency balance.
 
 
-        Example bank account details are returned for any currency where bank account details have not been requested and issued. Examples will always include an `id` of `null`.
-
-        '
+        Example bank account details are returned for any currency where bank account details have not been requested and issued. Examples will always include an `id` of `null`.'
       parameters:
       - name: profileId
         in: path
@@ -359,7 +349,7 @@ paths:
   /v3/profiles/{profileId}/account-details-orders:
     get:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: List bank account detail orders
       operationId: bankAccountDetailsOrdersList
       security:
@@ -368,9 +358,7 @@ paths:
       description: 'Returns the bank account assignment requests for a profile and multi-currency account.
 
 
-        The response includes bank-details orders in the following statuses: `PENDING_USER`, `PENDING_TW`, `REQUIREMENTS_FULFILLED`, `DONE`.
-
-        '
+        The response includes bank-details orders in the following statuses: `PENDING_USER`, `PENDING_TW`, `REQUIREMENTS_FULFILLED`, `DONE`.'
       parameters:
       - name: profileId
         in: path
@@ -442,7 +430,7 @@ paths:
   /v1/profiles/{profileId}/account-details/payments/{paymentId}/returns:
     post:
       tags:
-      - bank-account-details
+      - Bank Account Details
       summary: Create payment return
       operationId: bankAccountDetailsReturnsCreate
       security:
@@ -450,9 +438,7 @@ paths:
       description: 'Creates a return for a payment received to bank account details.
 
 
-        When you create a return, you must provide the ID of the payment you wish to return as well as the ID of the profile that received the payment. In addition, you can provide a `reason` for the return in the request body. When returning SWIFT payments, `reason` is a required field.
-
-        '
+        When you create a return, you must provide the ID of the payment you wish to return as well as the ID of the profile that received the payment. In addition, you can provide a `reason` for the return in the request body. When returning SWIFT payments, `reason` is a required field.'
       parameters:
       - name: profileId
         in: path
@@ -584,23 +570,21 @@ webhooks:
       summary: Account details payment state change
       description: 'Triggered every time a pay-in is made into the specified account details.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         Events may not be delivered in the order they occurred. Use `data.occurred_at` to reconcile the order.
 
-        See the [Event Ordering](/guides/developer/webhooks/event-ordering) guide for details.
+        See the Event Ordering guide for details.
 
 
         * Event type: `account-details-payment#state-change`
 
         * Profile level subscriptions: Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - bank-account-details
+      - Bank Account Details
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -1035,64 +1019,6 @@ components:
                 type: boolean
                 description: Whether the feature is supported.
                 example: true
-  parameters:
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
-      schema:
-        type: boolean
-      example: true
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
-      schema:
-        type: string
-      example: t7FMhk3OARMgwqz0LJXO...
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
-      schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -1116,6 +1042,64 @@ components:
         application/json:
           schema:
             type: object
+  parameters:
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

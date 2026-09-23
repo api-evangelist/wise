@@ -2,46 +2,24 @@ openapi: 3.2.0
 info:
   title: Wise Platform Card API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: card
+- name: Card
   x-displayName: Cards
-  description: 'Manage your customers'' cards programmatically. These APIs allow you to list cards, retrieve card details, control card status, and manage spending permissions.
-
-
-    **Key capabilities:**
-
-    - List and retrieve card details for a profile
-
-    - Update card status (active, frozen, blocked)
-
-    - Control spending permissions (e-commerce, ATM, contactless, magnetic stripe, etc.)
-
-    - Reset PIN attempt counter after incorrect PIN entries
-
-    - Update card phone number for verification purposes
-
-
-    {% admonition type="info" %}
-
-    For accessing sensitive card data (PAN, CVV, PIN), see the [Sensitive Card Details API](/api-reference/card-sensitive-details). For ordering new cards, see the [Card Orders API](/api-reference/card-order). For transaction history, see the [Card Transactions API](/api-reference/card-transaction).
-
-    {% /admonition %}'
+  description: Manage your customers' cards programmatically.
 paths:
   /v3/spend/profiles/{profileId}/cards:
     get:
       operationId: cardList
       summary: List cards for a profile
-      description: 'Returns a paginated list of cards that belong to a specific profile.
-
-        '
+      description: Returns a paginated list of cards that belong to a specific profile.
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -104,11 +82,9 @@ paths:
     get:
       operationId: cardGet
       summary: Get card details
-      description: 'Retrieves details for a specific card by its token.
-
-        '
+      description: Retrieves details for a specific card by its token.
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -156,11 +132,9 @@ paths:
 
         - `FROZEN` - The card is temporarily frozen; all authorization requests will be declined
 
-        - `BLOCKED` - The card is **irreversibly** blocked and is no longer usable
-
-        '
+        - `BLOCKED` - The card is **irreversibly** blocked and is no longer usable'
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -228,11 +202,9 @@ paths:
 
         In some cases, you may also need to reset the PIN count directly at the ATM.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -267,11 +239,9 @@ paths:
     get:
       operationId: cardPermissionsGet
       summary: Get card spending permissions
-      description: 'Retrieves the current spending permissions configured for a card.
-
-        '
+      description: Retrieves the current spending permissions configured for a card.
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -341,13 +311,11 @@ paths:
 
         {% admonition type="warning" %}
 
-        This endpoint is deprecated. Please use the [v4 endpoint](/api-reference/card/cardpermissionsbulkupdate) instead.
+        This endpoint is deprecated. Please use the v4 endpoint instead.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -410,11 +378,9 @@ paths:
       description: 'Enable or disable multiple spending permissions on a card in a single request.
 
 
-        This is the recommended endpoint for updating card permissions as it allows updating multiple permissions atomically.
-
-        '
+        This is the recommended endpoint for updating card permissions as it allows updating multiple permissions atomically.'
       tags:
-      - card
+      - Card
       parameters:
       - name: profileId
         in: path
@@ -489,16 +455,14 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated for partners onboarded after 1/3/2025. For new and existing partners, your clientId will need to be approved by our support team to make the `phoneNumber` optional in the [create card order endpoint](/api-reference/card-order/cardordercreate). See [3DS for more information](/guides/product/issue-cards/3ds).
+        This endpoint is deprecated for partners onboarded after 1/3/2025. For new and existing partners, your clientId will need to be approved by our support team to make the `phoneNumber` optional in the create card order endpoint. See 3DS for more information.
 
         {% /admonition %}
 
 
-        Updates the phone number of a card. The new phone number must be a valid phone number.
-
-        '
+        Updates the phone number of a card. The new phone number must be a valid phone number.'
       tags:
-      - card
+      - Card
       security:
       - UserToken: []
       parameters:
@@ -565,18 +529,16 @@ webhooks:
       summary: Cards manual provisioning verification
       description: 'Triggered when a card is manually added to a wallet provider, and the verification methods required to complete the wallet provisioning are returned.
 
-        See the [Webhooks guide](/guides/developer/webhooks) for setup instructions, signature verification, and best practices.
+        See the Webhooks guide for setup instructions, signature verification, and best practices.
 
 
         * Event type: `cards#manual-provisioning-verification`
 
         * Profile level subscriptions: Not Supported
 
-        * Application level subscriptions: Supported
-
-        '
+        * Application level subscriptions: Supported'
       tags:
-      - card
+      - Card
       parameters:
       - $ref: '#/components/parameters/x-signature-sha256'
       - $ref: '#/components/parameters/x-delivery-id'
@@ -598,6 +560,29 @@ webhooks:
                     example: ok
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   schemas:
     Permission:
       type: object
@@ -824,16 +809,15 @@ components:
           description: Time when the card was last modified.
           example: '2022-05-31T01:43:24.596321825Z'
   parameters:
-    x-test-notification:
-      name: X-Test-Notification
+    x-delivery-id:
+      name: X-Delivery-Id
       in: header
       required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
+      description: Unique identifier for this webhook delivery attempt.
       schema:
-        type: boolean
-      example: true
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
     x-signature-sha256:
       name: X-Signature-SHA256
       in: header
@@ -844,6 +828,16 @@ components:
       schema:
         type: string
       example: t7FMhk3OARMgwqz0LJXO...
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
     X-External-Correlation-Id:
       x-global: true
       name: X-External-Correlation-Id
@@ -857,16 +851,13 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
       schema:
         type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-  headers:
+      example: fba501b6d453b96789f52338f019341f
     X-External-Correlation-Id:
       x-global: true
       description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
@@ -875,35 +866,6 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   securitySchemes:
     UserToken:
       type: http

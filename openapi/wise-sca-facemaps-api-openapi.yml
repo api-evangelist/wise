@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Wise Platform Sca Facemaps API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
@@ -14,7 +14,7 @@ tags:
   description: 'Facemaps are inherence-based (biometric) SCA challenge factors that use FaceTec''s 3D face recognition technology.
 
 
-    Facemaps should be exported from your FaceTec server using their SDK''s export API. Use Wise''s [FaceTec public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during export.'
+    Facemaps should be exported from your FaceTec server using their SDK''s export API. Use Wise''s FaceTec public key to encrypt the facemap during export.'
 paths:
   /v1/one-time-token/facemap/verify:
     post:
@@ -26,11 +26,9 @@ paths:
 
         Notes:
 
-        1. User is required to [enrol facemap](/api-reference/user-security/usersecurityfacemapenrol) before the verification can be successful.
+        1. User is required to enrol facemap before the verification can be successful.
 
-        2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.
-
-        '
+        2. Rate limit may be applied if there are 5 continuous unsuccessful attempts and OTT creation will be blocked for 15 minutes.'
       tags:
       - sca-facemaps
       security:
@@ -88,9 +86,7 @@ paths:
       description: 'Creates a new facemap factor used to resolve a SCA inherence challenge type.
 
 
-        A facemap should be exported from your FaceTec server using the SDK''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise''s FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt the facemap during the export process.
-
-        '
+        A facemap should be exported from your FaceTec server using the SDK''s export API. Please use Wise''s FaceTec public key to encrypt the facemap during the export process.'
       tags:
       - sca-facemaps
       security:
@@ -139,16 +135,14 @@ paths:
       description: 'Deletes a facemap associated to a profile.
 
 
-        To update a facemap for a profile, use this endpoint followed by [Create a facemap](/api-reference/sca-facemaps/scafacemapcreate).
+        To update a facemap for a profile, use this endpoint followed by Create a facemap.
 
 
         {% admonition type="warning" %}
 
         This operation is irreversible.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
       - sca-facemaps
       security:
@@ -183,12 +177,10 @@ paths:
     post:
       operationId: scaFacemapVerify
       summary: Verify a facemap
-      description: 'Verifies a facemap challenge when calling a SCA-secured endpoint. Make sure to [create a facemap](/api-reference/sca-facemaps/scafacemapcreate) before using this endpoint.
+      description: 'Verifies a facemap challenge when calling a SCA-secured endpoint. Make sure to create a facemap before using this endpoint.
 
 
-        A facemap should be exported from your FaceTec server using the SDK''s [export API](https://dev.facetec.com/api-guide#export-3d-facemap). Please use Wise''s FaceTec [public key](/api-reference/facetec/facetecpublickeyget) to encrypt a facemap during the export process.
-
-        '
+        A facemap should be exported from your FaceTec server using the SDK''s export API. Please use Wise''s FaceTec public key to encrypt a facemap during the export process.'
       tags:
       - sca-facemaps
       security:
@@ -243,7 +235,83 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    one-time-token:
+      title: One-Time Token
+      x-tags:
+      - sca-ott
+      type: object
+      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
+
+
+        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
+
+        '
+      properties:
+        oneTimeToken:
+          type: string
+          format: uuid
+          description: A one-time token unique identifier.
+          example: 5932d5b5-ec13-452f-8688-308feade7834
+        challenges:
+          type: array
+          description: An array of challenges.
+          items:
+            type: object
+            properties:
+              primaryChallenge:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: A type of challenge.
+                    example: PIN
+              passed:
+                type: boolean
+                description: The status of a challenge.
+                example: false
+        validity:
+          type: integer
+          description: The One-Time Token expiration in seconds.
+          example: 3600
     ott-response:
       type: object
       properties:
@@ -293,82 +361,6 @@ components:
               type: integer
               format: int64
               description: Creator of this one time token.
-    one-time-token:
-      title: One-Time Token
-      x-tags:
-      - sca-ott
-      type: object
-      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
-
-
-        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
-
-        '
-      properties:
-        oneTimeToken:
-          type: string
-          format: uuid
-          description: A one-time token unique identifier.
-          example: 5932d5b5-ec13-452f-8688-308feade7834
-        challenges:
-          type: array
-          description: An array of challenges.
-          items:
-            type: object
-            properties:
-              primaryChallenge:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: A type of challenge.
-                    example: PIN
-              passed:
-                type: boolean
-                description: The status of a challenge.
-                example: false
-        validity:
-          type: integer
-          description: The One-Time Token expiration in seconds.
-          example: 3600
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

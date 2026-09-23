@@ -2,44 +2,31 @@ openapi: 3.2.0
 info:
   title: Wise Platform Spend Controls API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: spend-controls
+- name: Spend Controls
   x-displayName: Spend Controls
-  description: 'Control which card transactions are permitted by creating rules based on merchant category code (MCC) or transaction currency.
-
-
-    An authorisation rule dictates whether transactions should be declined or approved based on a pre-determined set of rules. A transaction can only pass if it satisfies all the applied rules.
-
-
-    Creating a rule has no practical implication until it is [applied](/api-reference/spend-controls/spendcontrolsruleapply). Applying a rule results in the authorisation rule being evaluated against every incoming card authorisation request.
-
-
-    Rules are scoped at the application level. Use a [client credentials token](/api-reference/oauth-token/oauthtokencreate) to call these endpoints.
-
-    '
+  description: Control which card transactions are permitted by creating rules based on merchant category code (MCC) or transaction currency.
 paths:
   /v3/spend/applications/{clientId}/spend-controls/rules:
     post:
       operationId: spendControlsRuleCreate
       summary: Add a new authorisation rule
-      description: 'Creates an authorisation rule. It won''t be enabled unless it is [applied](/api-reference/spend-controls/spendcontrolsruleapply).
+      description: 'Creates an authorisation rule. It won''t be enabled unless it is applied.
 
 
         {% admonition type="warning" %}
 
         An `ALLOW` rule permits only the transactions that match the specified criteria and blocks all others. For instance, a rule allowing `SGD` transactions will block all transactions that are not in `SGD`.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -101,11 +88,9 @@ paths:
     get:
       operationId: spendControlsRulesList
       summary: List all authorisation rules
-      description: 'Retrieves all the existing authorisation rules, regardless of whether or not they are applied.
-
-        '
+      description: Retrieves all the existing authorisation rules, regardless of whether or not they are applied.
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -146,11 +131,9 @@ paths:
     post:
       operationId: spendControlsRuleApply
       summary: Apply an authorisation rule
-      description: 'Apply an authorisation rule. This will result in the rule being evaluated against every incoming card authorisation request.
-
-        '
+      description: Apply an authorisation rule. This will result in the rule being evaluated against every incoming card authorisation request.
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -190,11 +173,9 @@ paths:
       description: 'Deactivates an authorisation rule. This will result in all card transactions **not** being evaluated against this rule.
 
 
-        The rule still [exists](/api-reference/spend-controls/spendcontrolsruleslist) and can be [applied](/api-reference/spend-controls/spendcontrolsruleapply) again.
-
-        '
+        The rule still exists and can be applied again.'
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -231,11 +212,9 @@ paths:
     get:
       operationId: spendControlsAppliedRulesList
       summary: List applied authorisation rules
-      description: 'Returns the list of all the active authorisation rules that have been applied.
-
-        '
+      description: Returns the list of all the active authorisation rules that have been applied.
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -276,11 +255,9 @@ paths:
       summary: Delete an authorisation rule
       description: 'Deletes an authorisation rule that is **currently not applied**.
 
-        If a rule is applied, you should [unapply](/api-reference/spend-controls/spendcontrolsruleunapply) the rule before deleting it.
-
-        '
+        If a rule is applied, you should unapply the rule before deleting it.'
       tags:
-      - spend-controls
+      - Spend Controls
       security:
       - ClientCredentialsToken: []
       parameters:
@@ -309,6 +286,44 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     rule:
       title: Authorisation Rule
@@ -348,44 +363,6 @@ components:
         values:
         - '1234'
         - '5678'
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   parameters:
     X-External-Correlation-Id:
       x-global: true

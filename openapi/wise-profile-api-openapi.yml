@@ -2,19 +2,16 @@ openapi: 3.2.0
 info:
   title: Wise Platform Profile API
   version: ''
-  description: "The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure. All endpoints return JSON-formatted responses and use standard HTTP methods and status codes.\n{% admonition type=\"success\" name=\"New to wise?\" %}\n  We strongly recommend first reading our **[Getting Started Guide](/guides/developer/index.md)** to help you set up credentials and make your first call.\n{% /admonition %}\n\nBefore you begin {% .title-2 .m-t-5 %}\n\nTo use this API reference effectively, you should have:\n\n- Received Valid [API credentials from Wise](/guides/developer/auth-and-security/index.md) (Client ID and Client Secret)\n- Understand OAuth 2.0 authentication\n- Be familiar with RESTful API concepts\n\nCore API resources {% .title-2 .m-t-5 .m-b-0 %}\n\n| Resource | Purpose |\n|----------|---------|\n| **[Quote](/api-reference/quote)** | Exchange rate and fee calculations |\n| **[Recipient](/api-reference/recipient)** | Beneficiary account management |\n| **[Transfer](/api-reference/transfer)** | Payment creation and execution |\n| **[Balance](/api-reference/balance)** | Multi-currency account operations |\n| **[Profile](/api-reference/profile)** | Account ownership details |\n| **[Rate](/api-reference/rate)** | Current and historical exchange rates |\n\n**Not sure which workflow to build?**<br>\nStart with our [Integration Guides](/guides/product/send-money/use-cases/index.md) for step-by-step implementation examples.{% .m-t-3 .m-b-5 %}\n"
+  description: The Wise Platform API is a REST-based interface that enables programmatic access to Wise's payment infrastructure.
 servers:
 - url: https://api.wise.com
   description: Production Environment
 - url: https://api.wise-sandbox.com
   description: Sandbox Environment
 tags:
-- name: profile
+- name: Profile
   x-displayName: Profiles
-  description: 'A profile represents an identity that can send and receive money through Wise — either a personal profile (an individual) or a business profile (a company). Most API endpoints require a `profileId` parameter, which is the ID of either profile type.
-
-
-    '
+  description: A profile represents an identity that can send and receive money through Wise — either a personal profile (an individual) or a business profile (a company). Most API endpoints require a `profileId` parameter, which is the ID of either profile type.
 paths:
   /v1/profiles:
     post:
@@ -22,7 +19,7 @@ paths:
       summary: Create a profile (V1)
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please see the [Create Personal Profile](/api-reference/profile/profilepersonalcreate) and [Create Business Profile](/api-reference/profile/profilebusinesscreate) v2 endpoints.
+        This endpoint is deprecated. Please see the Create Personal Profile and Create Business Profile v2 endpoints.
 
         {% /admonition %}
 
@@ -30,12 +27,12 @@ paths:
         Create personal or business user profile. Set `type` to `"personal"` or `"business"`.
 
 
-        One person cannot have multiple active duplicate user profiles, creating multiple profiles with the same details will fail. When this happens, you should show an error message to the user informing them that they may have an existing Wise account. The customer should then be allowed to [link to an existing Wise account](/guides/product/kyc/partner-kyc/accessing-accounts#link-account).
+        One person cannot have multiple active duplicate user profiles, creating multiple profiles with the same details will fail. When this happens, you should show an error message to the user informing them that they may have an existing Wise account. The customer should then be allowed to link to an existing Wise account.
 
 
         {% admonition type="info" %}
 
-        For personal profiles, you must submit the profile''s address using [POST /v1/addresses](/api-reference/address/addresscreate). Failure to do so will result in an incomplete registration and delayed transactions.
+        For personal profiles, you must submit the profile''s address using POST /v1/addresses. Failure to do so will result in an incomplete registration and delayed transactions.
 
         {% /admonition %}
 
@@ -43,12 +40,10 @@ paths:
         For business profiles, you must always create a personal profile first. Business profiles cannot be created without a personal profile.
 
 
-        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid category and sub-category values for business profiles.
-
-        '
+        See Business Category for the list of valid category and sub-category values for business profiles.'
       deprecated: true
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -339,7 +334,7 @@ paths:
       summary: Update a profile (V1)
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please see the [Update Personal Profile](/api-reference/profile/profilepersonalupdate) and [Update Business Profile](/api-reference/profile/profilebusinessupdate) v2 endpoints.
+        This endpoint is deprecated. Please see the Update Personal Profile and Update Business Profile v2 endpoints.
 
         {% /admonition %}
 
@@ -351,12 +346,10 @@ paths:
 
         If user profile has been verified then there are restrictions on what information is allowed to change, where permitted, use the update window functionality to submit updated data.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       deprecated: true
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -658,11 +651,9 @@ paths:
     get:
       operationId: profileList
       summary: List profiles for a user account
-      description: 'List of all profiles belonging to user.
-
-        '
+      description: List of all profiles belonging to user.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -756,7 +747,7 @@ paths:
 
         {% admonition type="info" %}
 
-        Use the `X-idempotence-uuid` header to safely retry requests. If omitted and a profile already exists, the API returns `409 Conflict`. You can then retrieve existing profiles via [List profiles](/api-reference/profile/profilelist).
+        Use the `X-idempotence-uuid` header to safely retry requests. If omitted and a profile already exists, the API returns `409 Conflict`. You can then retrieve existing profiles via List profiles.
 
         {% /admonition %}
 
@@ -768,11 +759,9 @@ paths:
 
         - **`occupations`** is required for CA, IN, JP, ID, IL, MX, and within the US for the state NM.
 
-        - **`contactDetails`** are used for mandatory customer notifications and to help identify your customer when contacting Wise support.
-
-        '
+        - **`contactDetails`** are used for mandatory customer notifications and to help identify your customer when contacting Wise support.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1014,11 +1003,9 @@ paths:
         {% /admonition %}
 
 
-        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
-
-        '
+        See Business Category for the list of valid `firstLevelCategory` and `secondLevelCategory` values.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1206,11 +1193,9 @@ paths:
         {% /admonition %}
 
 
-        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
-
-        '
+        See Business Category for the list of valid `firstLevelCategory` and `secondLevelCategory` values.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -1515,11 +1500,9 @@ paths:
     get:
       operationId: profileGet
       summary: Retrieve a profile by ID
-      description: 'Get profile info by ID.
-
-        '
+      description: Get profile info by ID.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1555,13 +1538,11 @@ paths:
 
         {% admonition type="warning" %}
 
-        If user profile has been verified then there are restrictions on what information is allowed to change. Where permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).
+        If user profile has been verified then there are restrictions on what information is allowed to change. Where permitted, use the update window functionality by opening the update window, submitting the updated information using this endpoint, and finally closing the update window.
 
-        {% /admonition %}
-
-        '
+        {% /admonition %}'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1691,14 +1672,12 @@ paths:
         {% /admonition %}
 
 
-        Where permitted, use the update window functionality by [opening the update window](/api-reference/profile/profileupdatewindowopen), submitting the updated information using this endpoint, and finally [closing the update window](/api-reference/profile/profileupdatewindowclose).
+        Where permitted, use the update window functionality by opening the update window, submitting the updated information using this endpoint, and finally closing the update window.
 
 
-        See [Business Category](/guides/developer/api-guides/business-categories) for the list of valid `firstLevelCategory` and `secondLevelCategory` values.
-
-        '
+        See Business Category for the list of valid `firstLevelCategory` and `secondLevelCategory` values.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       - PersonalToken: []
@@ -1871,11 +1850,9 @@ paths:
     get:
       operationId: profileBusinessRepresentativeGet
       summary: Retrieve business representative
-      description: 'Get Business Representative info by Business Profile ID.
-
-        '
+      description: Get Business Representative info by Business Profile ID.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -1920,11 +1897,9 @@ paths:
         {% /admonition %}
 
 
-        When using `TRANSFER_OF_AUTHORISATION`, this will overwrite the existing Business Representative. The new Business Representative will need to be verified for KYC purposes.
-
-        '
+        When using `TRANSFER_OF_AUTHORISATION`, this will overwrite the existing Business Representative. The new Business Representative will need to be verified for KYC purposes.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2045,11 +2020,9 @@ paths:
       description: 'Add an identification document to a personal profile. Not applicable to business profiles.
 
 
-        For SSN submissions, only `type` and `uniqueIdentifier` (9 digits, no letters or symbols) are required.
-
-        '
+        For SSN submissions, only `type` and `uniqueIdentifier` (9 digits, no letters or symbols) are required.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2178,9 +2151,23 @@ paths:
     put:
       operationId: profileVerificationDocumentUpdate
       summary: Update an identification document
-      description: "Update an existing identification document on a personal profile. Not\napplicable to business profiles.\n\nThis endpoint performs a full replacement of the document details. Any\nfields not provided in the request body will be set to null on the stored\ndocument. Partners must provide all fields they wish to retain. \n\nOnly partners with a KYC partner onboarding model\nare permitted to use this endpoint. Non-KYC partners will receive a 400 error.\n"
+      description: 'Update an existing identification document on a personal profile. Not
+
+        applicable to business profiles.
+
+
+        This endpoint performs a full replacement of the document details. Any
+
+        fields not provided in the request body will be set to null on the stored
+
+        document. Partners must provide all fields they wish to retain.
+
+
+        Only partners with a KYC partner onboarding model
+
+        are permitted to use this endpoint. Non-KYC partners will receive a 400 error.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2345,11 +2332,9 @@ paths:
       description: 'Adds new directors to the business profile.
 
 
-        Returns the list of all directors associated with the business profile.
-
-        '
+        Returns the list of all directors associated with the business profile.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2424,11 +2409,9 @@ paths:
     get:
       operationId: profileDirectorList
       summary: List business directors
-      description: 'Returns the list of director objects associated with the business profile.
-
-        '
+      description: Returns the list of director objects associated with the business profile.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2473,11 +2456,9 @@ paths:
       description: 'Overrides directors in the business profile.
 
 
-        Returns the list of all directors associated with the business profile.
-
-        '
+        Returns the list of all directors associated with the business profile.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2562,11 +2543,9 @@ paths:
         All the shareholders that have at least 25% ownership should be submitted via this API.
 
 
-        Note that in some cases, we do not require the `ownershipPercentage`. In these cases, `null` should be passed as the value.
-
-        '
+        Note that in some cases, we do not require the `ownershipPercentage`. In these cases, `null` should be passed as the value.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2663,11 +2642,9 @@ paths:
     get:
       operationId: profileUboList
       summary: List business ultimate owners
-      description: 'Returns the list of all ultimate beneficial owners associated with the business profile.
-
-        '
+      description: Returns the list of all ultimate beneficial owners associated with the business profile.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2716,11 +2693,9 @@ paths:
       description: 'Overrides ultimate beneficial owners in the business profile.
 
 
-        Returns the list of all ultimate beneficial owners associated with the business profile.
-
-        '
+        Returns the list of all ultimate beneficial owners associated with the business profile.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2818,11 +2793,9 @@ paths:
     post:
       operationId: profileUpdateWindowOpen
       summary: Open an update window
-      description: 'Opens the update window for updating the profile information: details, addresses, directors, owners, others.
-
-        '
+      description: 'Opens the update window for updating the profile information: details, addresses, directors, owners, others.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2847,11 +2820,9 @@ paths:
     delete:
       operationId: profileUpdateWindowClose
       summary: Close an update window
-      description: 'Deletes the update window for updating the profile.
-
-        '
+      description: Deletes the update window for updating the profile.
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -2880,7 +2851,7 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+        This endpoint is deprecated. Please check the Additional Verification endpoints for providing additional verification details for a profile.
 
         {% /admonition %}
 
@@ -2907,13 +2878,13 @@ paths:
         The `POST` and `GET` profile extensions endpoints allow you to send the extra profile information and retrieve it, respectively.
 
 
-        **This format for dynamic forms is the same as the one used for recipient creation.** See [Recipient Requirements](/api-reference/recipient/recipientaccountrequirementsget).
+        **This format for dynamic forms is the same as the one used for recipient creation.** See Recipient Requirements.
 
 
         Using profile extension requirements {% .title-4 .m-t-3 %}
 
 
-        1. First create a profile. See [Create Personal Profile](/api-reference/profile/profilepersonalcreate) and [Create Business Profile](/api-reference/profile/profilebusinesscreate).
+        1. First create a profile. See Create Personal Profile and Create Business Profile.
 
         2. Call `GET /v1/profiles/{profileId}/extension-requirements` to get the list of fields you need to fill with values in the "details" section for adding information that will make a profile valid.
 
@@ -2928,24 +2899,22 @@ paths:
         When requesting the form data from the `extension-requirements` endpoint, the response defines different types of extensions that can be added. Each extension type then has multiple fields describing the form elements required to be shown to collect information from the user. Each field will have a type value, these tell you the field type that your front end needs to render to be able to collect the data. A number of field types are permitted, these are:
 
 
-        | type   | UI element                        |
+        | type | UI element |
 
         |--------|-----------------------------------|
 
-        | text   | A free text box                   |
+        | text | A free text box |
 
-        | select | A selection box/dialog            |
+        | select | A selection box/dialog |
 
-        | radio  | A radio button choice between options |
+        | radio | A radio button choice between options |
 
-        | date   | A text box with a date picker     |
+        | date | A text box with a date picker |
 
 
-        Example data is also included in each field which should be shown to the user, along with a regex or min and max length constraints that should be applied as field level validations. You can optionally implement the dynamic validation using the `validationAsync` field, however these checks will also be done when a completed profile extension is submitted to `POST /v1/profiles/{profileId}/extensions`.
-
-        '
+        Example data is also included in each field which should be shown to the user, along with a regex or min and max length constraints that should be applied as field level validations. You can optionally implement the dynamic validation using the `validationAsync` field, however these checks will also be done when a completed profile extension is submitted to `POST /v1/profiles/{profileId}/extensions`.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -3088,16 +3057,14 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+        This endpoint is deprecated. Please check the Additional Verification endpoints for providing additional verification details for a profile.
 
         {% /admonition %}
 
 
-        Post extension requirements to discover additional required fields based on selected values. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
-
-        '
+        Post extension requirements to discover additional required fields based on selected values. See the GET extension-requirements endpoint for full details on how to use these endpoints together.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -3131,16 +3098,14 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+        This endpoint is deprecated. Please check the Additional Verification endpoints for providing additional verification details for a profile.
 
         {% /admonition %}
 
 
-        Submit the extra profile information gathered from the extension requirements. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
-
-        '
+        Submit the extra profile information gathered from the extension requirements. See the GET extension-requirements endpoint for full details on how to use these endpoints together.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -3180,16 +3145,14 @@ paths:
       deprecated: true
       description: '{% admonition type="warning" %}
 
-        This endpoint is deprecated. Please check the [Additional Verification](/api-reference/verification) endpoints for providing additional verification details for a profile.
+        This endpoint is deprecated. Please check the Additional Verification endpoints for providing additional verification details for a profile.
 
         {% /admonition %}
 
 
-        Retrieve the extra profile information previously submitted via extensions. See the [GET extension-requirements](/api-reference/profile/profileextensionrequirementsget) endpoint for full details on how to use these endpoints together.
-
-        '
+        Retrieve the extra profile information previously submitted via extensions. See the GET extension-requirements endpoint for full details on how to use these endpoints together.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -3218,11 +3181,9 @@ paths:
       description: 'You can check the verification status of a profile using this API. This is a profile-specific API resource which should be accessed using an access token acquired for the profile.
 
 
-        We do not expose any finer details of customer verification.
-
-        '
+        We do not expose any finer details of customer verification.'
       tags:
-      - profile
+      - Profile
       security:
       - UserToken: []
       parameters:
@@ -3337,104 +3298,6 @@ components:
           format: int32
           description: Percentage of ownership.
           example: 30
-    personal-profile:
-      title: Personal Profile
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: Type of profile.
-          enum:
-          - PERSONAL
-          example: PERSONAL
-        id:
-          type: integer
-          format: int64
-          description: Unique identifier for the profile.
-          example: 14575282
-        publicId:
-          type: string
-          description: Publicly accessible identifier for the profile.
-          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
-        userId:
-          type: integer
-          format: int64
-          description: The ID of the user associated with this profile.
-          example: 9889627
-        address:
-          description: Main registered address of the profile.
-          $ref: '#/components/schemas/address'
-        email:
-          type: string
-          description: Primary email address for the profile.
-          example: sarah.jenkins@example.com
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was created (ISO 8601 format).
-          example: '2023-01-15T10:30:00'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was last updated (ISO 8601 format).
-          example: '2025-06-18T14:20:00'
-        avatar:
-          type:
-          - string
-          - 'null'
-          description: Link to person avatar image.
-          example: null
-        currentState:
-          type: string
-          description: Current status of this profile.
-          enum:
-          - HIDDEN
-          - VISIBLE
-          - DEACTIVATED
-          example: VISIBLE
-        contactDetails:
-          type: object
-          description: Contact information for the profile.
-          properties:
-            email:
-              type: string
-              description: Contact email address.
-              example: sarah.contact@example.com
-            phoneNumber:
-              type: string
-              description: Contact phone number.
-              example: '+447700900123'
-        firstName:
-          type: string
-          description: First name of the profile holder.
-          example: Sarah
-        lastName:
-          type: string
-          description: Last name of the profile holder.
-          example: Jenkins
-        preferredName:
-          type: string
-          description: Preferred name of the profile holder.
-          example: Sal
-        dateOfBirth:
-          type: string
-          description: Date of birth of the profile holder.
-          example: '1985-05-20'
-        phoneNumber:
-          type: string
-          description: Phone number of the profile holder.
-          example: '+447700900456'
-        secondaryAddresses:
-          type: array
-          description: An array of secondary addresses associated with the profile.
-          items:
-            $ref: '#/components/schemas/address'
-        fullName:
-          type: string
-          description: Full name of the profile holder.
-          example: Sarah Jenkins
     address:
       type: object
       description: Address associated with a profile.
@@ -3470,6 +3333,30 @@ components:
           - 'null'
           description: State code of the address (can be null for some countries).
           example: null
+    director:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the director. Automatically set.
+          example: 10
+        firstName:
+          type: string
+          description: Director first name.
+          example: John
+        lastName:
+          type: string
+          description: Director last name.
+          example: Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
     business-profile:
       title: Business Profile
       type: object
@@ -3582,30 +3469,6 @@ components:
           type: string
           description: Full legal name of the business.
           example: Innovate Solutions Ltd
-    director:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the director. Automatically set.
-          example: 10
-        firstName:
-          type: string
-          description: Director first name.
-          example: John
-        lastName:
-          type: string
-          description: Director last name.
-          example: Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
     profile:
       title: Profile
       x-tags:
@@ -3621,21 +3484,104 @@ components:
       oneOf:
       - $ref: '#/components/schemas/personal-profile'
       - $ref: '#/components/schemas/business-profile'
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
+    personal-profile:
+      title: Personal Profile
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Type of profile.
+          enum:
+          - PERSONAL
+          example: PERSONAL
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the profile.
+          example: 14575282
+        publicId:
+          type: string
+          description: Publicly accessible identifier for the profile.
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user associated with this profile.
+          example: 9889627
+        address:
+          description: Main registered address of the profile.
+          $ref: '#/components/schemas/address'
+        email:
+          type: string
+          description: Primary email address for the profile.
+          example: sarah.jenkins@example.com
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created (ISO 8601 format).
+          example: '2023-01-15T10:30:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated (ISO 8601 format).
+          example: '2025-06-18T14:20:00'
+        avatar:
+          type:
+          - string
+          - 'null'
+          description: Link to person avatar image.
+          example: null
+        currentState:
+          type: string
+          description: Current status of this profile.
+          enum:
+          - HIDDEN
+          - VISIBLE
+          - DEACTIVATED
+          example: VISIBLE
+        contactDetails:
+          type: object
+          description: Contact information for the profile.
+          properties:
+            email:
+              type: string
+              description: Contact email address.
+              example: sarah.contact@example.com
+            phoneNumber:
+              type: string
+              description: Contact phone number.
+              example: '+447700900123'
+        firstName:
+          type: string
+          description: First name of the profile holder.
+          example: Sarah
+        lastName:
+          type: string
+          description: Last name of the profile holder.
+          example: Jenkins
+        preferredName:
+          type: string
+          description: Preferred name of the profile holder.
+          example: Sal
+        dateOfBirth:
+          type: string
+          description: Date of birth of the profile holder.
+          example: '1985-05-20'
+        phoneNumber:
+          type: string
+          description: Phone number of the profile holder.
+          example: '+447700900456'
+        secondaryAddresses:
+          type: array
+          description: An array of secondary addresses associated with the profile.
+          items:
+            $ref: '#/components/schemas/address'
+        fullName:
+          type: string
+          description: Full name of the profile holder.
+          example: Sarah Jenkins
   responses:
     '429':
       x-global: true
@@ -3659,6 +3605,21 @@ components:
         application/json:
           schema:
             type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

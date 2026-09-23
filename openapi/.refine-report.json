@@ -53,17 +53,21 @@
     "wise-webhook-api-openapi.yml",
     "wise-webhook-event-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [
     "wise-platform-openapi.yml: info.version missing"
   ],
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
-    "wise-platform-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0"
+    "wise-platform-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "superseded outputs removed: wise-3-ds-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 48 total)"
   ],
   "skipped": [
-    "wise-3ds-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "wise-3-ds-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "wise-activity-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "wise-address-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "wise-balance-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -109,6 +113,7 @@
     "wise-user-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "wise-user-security-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "wise-verification-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "wise-webhook-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "wise-webhook-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "wise-webhook-event-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }
