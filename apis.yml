@@ -45,7 +45,7 @@ modified: '2026-05-30'
 specificationVersion: '0.23'
 apis:
 - aid: wise:wise-activity-api
-  name: Wise activity API
+  name: Wise Activity API
   description: Activity represents a snapshot of a performed action for a profile.
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
@@ -60,8 +60,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -83,7 +81,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-address-api
-  name: Wise address API
+  name: Wise Address API
   description: >-
     Manage physical addresses associated with user profiles.
 
@@ -103,8 +101,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -126,7 +122,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-balance-api
-  name: Wise balance API
+  name: Wise Balance API
   description: >-
     Create and manage balance accounts within a multi-currency account.
 
@@ -154,8 +150,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -177,7 +171,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-balance-statement-api
-  name: Wise balance-statement API
+  name: Wise Balance Statement API
   description: >-
     Balance statements contain transactional activities on a Wise Multi-Currency Account, including deposits,
     withdrawals, conversions, card transactions, and fees.
@@ -195,8 +189,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -218,7 +210,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-bank-account-details-api
-  name: Wise bank-account-details API
+  name: Wise Bank Account Details API
   description: >-
     Bank account details allow users to receive money into their Wise Multi-Currency Account. Each currency
     balance can have local bank details (for domestic payments) and international bank details (for SWIFT
@@ -240,8 +232,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -263,7 +253,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-batch-group-api
-  name: Wise batch-group API
+  name: Wise Batch Group API
   description: >-
     A batch group is a named collection of up to 1000 transfers that can be managed as a single unit.
     Batch groups are primarily used for funding multiple transfers with a single payment.
@@ -292,8 +282,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -315,7 +303,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-bulk-settlement-api
-  name: Wise bulk-settlement API
+  name: Wise Bulk Settlement API
   description: >-
     Bulk settlement allows partners to settle multiple transfers in a single bank transfer at the end
     of a settlement period. This model splits transfer creation/funding from final settlement, allowing
@@ -335,8 +323,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -358,7 +344,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-card-api
-  name: Wise card API
+  name: Wise Card API
   description: >-
     Manage your customers' cards programmatically. These APIs allow you to list cards, retrieve card details,
     control card status, and manage spending permissions.
@@ -397,8 +383,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -420,7 +404,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-card-kiosk-collection-api
-  name: Wise card-kiosk-collection API
+  name: Wise Card Kiosk Collection API
   description: >-
     These APIs are designed to allow you to print and encrypt your card directly from a kiosk machine.
     The card information will be sent to our card manufacturer to configure and print the card on-site
@@ -480,8 +464,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -503,7 +485,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-card-order-api
-  name: Wise card-order API
+  name: Wise Card Order API
   description: >-
     With this set of APIs, you will be able to create cards for your customers. You can also retrieve
     and view the status of your current card orders, as well as the list of available card programs for
@@ -559,8 +541,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -582,7 +562,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-card-sensitive-details-api
-  name: Wise card-sensitive-details API
+  name: Wise Card Sensitive Details API
   description: >-
     Wise is a PCI DSS compliant provider and stores all card data securely. The scope for PCI compliance
     depends on your use case and will impact how you integrate. For all sensitive card details endpoints,
@@ -612,8 +592,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -635,7 +613,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-card-transaction-api
-  name: Wise card-transaction API
+  name: Wise Card Transaction API
   description: >-
     Retrieve information on transactions made on your users' cards.
 
@@ -1006,8 +984,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1029,7 +1005,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-case-api
-  name: Wise case API
+  name: Wise Case API
   description: >-
     Partner Cases are part of the Partner Support API, allowing partners to open, retrieve and respond
     to support and operations queries.
@@ -1087,8 +1063,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1110,7 +1084,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-claim-account-api
-  name: Wise claim-account API
+  name: Wise Claim Account API
   description: >-
     Allow a customer to take ownership of an account [created on their behalf](/api-reference/user/usercreate).
     Generate a short-lived `claim_account_code` and use it when [redirecting the customer to Wise](/guides/product/kyc/wise-kyc/redirect-to-wise/claim-account)
@@ -1126,8 +1100,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1149,7 +1121,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-comparison-api
-  name: Wise comparison API
+  name: Wise Comparison API
   description: >-
     The comparison API can be used to request price and speed information about various money transfer
     providers. This includes not only Wise but other providers in the market.
@@ -1251,8 +1223,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1274,7 +1244,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-contact-api
-  name: Wise contact API
+  name: Wise Contact API
   description: >-
     Find discoverable Wise profiles and add them to your recipient list using an identifier — such as
     a Wisetag, email, or phone number — without needing bank details.
@@ -1304,8 +1274,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1327,7 +1295,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-currencies-api
-  name: Wise currencies API
+  name: Wise Currencies API
   description: >-
     Retrieve the list of currencies supported for transfers, including currency codes and display names.
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
@@ -1343,8 +1311,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1366,7 +1332,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-delivery-estimate-api
-  name: Wise delivery-estimate API
+  name: Wise Delivery Estimate API
   description: >-
     Get the estimated delivery time for a transfer, showing when funds are expected to arrive in the recipient's
     bank account.
@@ -1381,8 +1347,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1404,7 +1368,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-digital-wallet-api
-  name: Wise digital-wallet API
+  name: Wise Digital Wallet API
   description: >-
     These APIs provide encrypted cardholder information needed to implement push provisioning (Apple Pay,
     Google Pay) in your own mobile app.
@@ -1421,8 +1385,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1444,7 +1406,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-direct-debit-account-api
-  name: Wise direct-debit-account API
+  name: Wise Direct Debit Account API
   description: >-
     Register and retrieve external bank accounts used to fund batch transfers via ACH (USD) or EFT (CAD)
     direct debit.
@@ -1459,8 +1421,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1482,7 +1442,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-disputes-api
-  name: Wise disputes API
+  name: Wise Disputes API
   description: >-
     Raise and manage card transaction disputes, including submission via Dynamic Flow or direct API, file
     uploads, and dispute lifecycle tracking.
@@ -1548,8 +1508,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1571,7 +1529,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-facetec-api
-  name: Wise facetec API
+  name: Wise Facetec API
   description: >-
     Wise leverages [FaceTec's](https://www.facetec.com/) facial biometric technology for authentication.
     Use this endpoint to retrieve the public key needed for exporting 3D FaceMaps.
@@ -1586,8 +1544,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1609,7 +1565,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-jose-api
-  name: Wise jose API
+  name: Wise Jose API
   description: >-
     Wise uses the [JOSE framework](https://jose.readthedocs.io/en/latest/) to accept and respond with
     signed and encrypted payloads. These endpoints allow you to manage keys and test your signing and
@@ -1628,8 +1584,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1651,7 +1605,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-kyc-review-api
-  name: Wise kyc-review API
+  name: Wise Kyc Review API
   description: >-
     KYC Review API provides endpoints to view, update and submit information related to the KYC flow.
 
@@ -1678,8 +1632,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1701,7 +1653,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-multi-currency-account-api
-  name: Wise multi-currency-account API
+  name: Wise Multi Currency Account API
   description: >-
     The Wise multi-currency account (MCA) enables users to hold, convert, and fund transfers (single or
     batches) with balances in up to 56 currencies. Of the 50+ currency balances supported, 10+ come with
@@ -1724,8 +1676,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1747,7 +1697,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-oauth-token-api
-  name: Wise oauth-token API
+  name: Wise OAUTH Token API
   description: >-
     Exchange client credentials or authorisation grants for OAuth 2.0 access tokens. All grant types use
     `POST /oauth/token` with basic authentication (your `client_id` and `client_secret`).
@@ -1803,8 +1753,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1826,7 +1774,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-payin-deposit-detail-api
-  name: Wise payin-deposit-detail API
+  name: Wise Payin Deposit Detail API
   description: >-
     The payin deposit details API allows you to get the bank details for the account that the customer
     should send funds to when paying for a Wise transfer via a bank transfer.
@@ -1847,8 +1795,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1870,7 +1816,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-payins-api
-  name: Wise payins API
+  name: Wise Payins API
   description: "The payin APIs allow you to fund the MCA or transfers with local payment rails, by retrieving\
     \ or creating the relevant details to send to for funding a payment. \n\nThese details will be provided\
     \ in the local format for that currency, and also includes the name and address of the receiving bank."
@@ -1887,8 +1833,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1910,7 +1854,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-profile-api
-  name: Wise profile API
+  name: Wise Profile API
   description: >-
     A profile represents an identity that can send and receive money through Wise — either a personal
     profile (an individual) or a business profile (a company). Most API endpoints require a `profileId`
@@ -1928,8 +1872,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -1951,7 +1893,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-quote-api
-  name: Wise quote API
+  name: Wise Quote API
   description: >-
     The quote resource defines the basic information required for a Wise transfer - the currencies to
     send between, the amount to send and the profile who is sending the money. The profile _must_ be included
@@ -1983,8 +1925,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2006,7 +1946,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-rate-api
-  name: Wise rate API
+  name: Wise Rate API
   description: Current and historical exchange rates by currency routes.
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
@@ -2021,8 +1961,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2044,7 +1982,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-recipient-api
-  name: Wise recipient API
+  name: Wise Recipient API
   description: >-
     Recipient or beneficiary is the one who will receive the funds.
 
@@ -2071,8 +2009,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2094,7 +2030,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-device-fingerprints-api
-  name: Wise sca-device-fingerprints API
+  name: Wise Sca Device Fingerprints API
   description: >-
     Device fingerprints are possession-based SCA challenge factors. They allow you to verify that a user
     is accessing the API from a recognized device.
@@ -2114,8 +2050,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2137,7 +2071,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-facemaps-api
-  name: Wise sca-facemaps API
+  name: Wise Sca Facemaps API
   description: >-
     Facemaps are inherence-based (biometric) SCA challenge factors that use FaceTec's 3D face recognition
     technology.
@@ -2156,8 +2090,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2179,7 +2111,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-otp-api
-  name: Wise sca-otp API
+  name: Wise Sca Otp API
   description: >-
     For phone-based OTP (one-time password) authentication — where an OTP is a single-use 6-digit code
     sent to verify the identity of a user — Wise supports multiple delivery methods, including SMS, WhatsApp,
@@ -2204,8 +2136,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2227,7 +2157,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-ott-api
-  name: Wise sca-ott API
+  name: Wise Sca Ott API
   description: >-
     One-time tokens are temporary authentication sessions used to track SCA challenges. When an SCA-protected
     endpoint is called, a one-time token is returned containing the challenges that must be completed.
@@ -2246,8 +2176,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2269,7 +2197,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-pin-api
-  name: Wise sca-pin API
+  name: Wise Sca Pin API
   description: >-
     PIN (Personal Identification Number) is a knowledge-based SCA challenge factor. Users create a 4-digit
     PIN that can be used to verify their identity when accessing SCA-protected endpoints.
@@ -2289,8 +2217,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2312,7 +2238,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-sca-sessions-api
-  name: Wise sca-sessions API
+  name: Wise Sca Sessions API
   description: >-
     SCA sessions allow you to manually trigger Strong Customer Authentication, returning a one-time token
     along with a list of associated challenges. These challenges can be cleared using the verify endpoints
@@ -2339,8 +2265,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2362,7 +2286,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-simulation-api
-  name: Wise simulation API
+  name: Wise Simulation API
   description: >-
     Use these endpoints to simulate key actions in the sandbox environment, including transfer state changes,
     balance top-ups, card transactions, KYC reviews, and incoming payments.
@@ -2386,8 +2310,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2409,7 +2331,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-spend-controls-api
-  name: Wise spend-controls API
+  name: Wise Spend Controls API
   description: >-
     Control which card transactions are permitted by creating rules based on merchant category code (MCC)
     or transaction currency.
@@ -2439,8 +2361,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2462,7 +2382,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-spend-limits-api
-  name: Wise spend-limits API
+  name: Wise Spend Limits API
   description: >-
     Manage spending limits applied to profiles and cards. Profile limits are shared across all cards under
     the same profile, while card limits apply to individual cards.
@@ -2482,8 +2402,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2505,7 +2423,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-transfer-api
-  name: Wise transfer API
+  name: Wise Transfer API
   description: >-
     A transfer is a payment order to a [recipient account](/api-reference/recipient) based on a [quote](/api-reference/quote).
 
@@ -2545,8 +2463,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2568,7 +2484,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-user-api
-  name: Wise user API
+  name: Wise User API
   description: >-
     A User serves as the primary entity and can possess multiple Profiles to represent different contexts
     or settings.
@@ -2598,8 +2514,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2621,7 +2535,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-user-security-api
-  name: Wise user-security API
+  name: Wise User Security API
   description: >-
     {% admonition type="warning" %}
 
@@ -2643,8 +2557,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2666,7 +2578,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-verification-api
-  name: Wise verification API
+  name: Wise Verification API
   description: "In certain situations, additional evidence is required to verify customers and ensure\
     \ we’re compliant with the KYC regulations.\n\nAdditional Verification APIs support a list of evidences\
     \ that can be found in the [Supported Evidences guide](/guides/product/kyc/partner-kyc/supported-evidences).\n\
@@ -2689,8 +2601,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2712,7 +2622,7 @@ apis:
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/simulation
 - aid: wise:wise-webhook-api
-  name: Wise webhook API
+  name: Wise Webhook API
   description: >-
     Manage webhook subscriptions at both the application and profile level. Create, list, retrieve, and
     delete subscriptions, as well as test your webhook endpoints.
@@ -2733,8 +2643,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
@@ -2799,8 +2707,6 @@ apis:
     url: https://docs.wise.com/api-docs/api-reference/profile
   - type: Sandbox
     url: https://api.sandbox.transferwise.tech
-  - type: GraphQL
-    url: graphql/wise-graphql.md
   - type: Documentation
     url: https://docs.wise.com/api-docs/api-reference/recipient
   - type: Documentation
