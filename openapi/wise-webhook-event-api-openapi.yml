@@ -298,6 +298,70 @@ webhooks:
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
+    v2.0.0-4:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 5281e333-a4d9-4960-aec3-553267a9a8aa
+        event_type:
+          type: string
+          description: Event type identifier
+          example: cards#manual-provisioning-verification
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2026-03-09T05:52:37Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the card
+                  example: 9953556
+                client_id:
+                  type: string
+                  description: Your api_client_id
+                  example: tw-test-card-issuance
+                card_token:
+                  type: string
+                  description: Unique identifier of the card
+                  example: 72393ec3-0707-4bf1-00b7-744f7a380d2c
+                type:
+                  type: string
+                  description: Resource type (always `card`)
+                  example: card
+            payment_token_unique_reference:
+              type: string
+              description: The payment token unique reference associated to the card
+              example: DNITHE352605523102858206
+            last_four_digits:
+              type: string
+              description: The last four digits for the card Primary Account Number (PAN)
+              example: '8237'
+            creation_time:
+              type: string
+              format: date-time
+              description: The time when the card provisioning request was created
+              example: '2026-03-09T05:52:37.274962Z'
+            wallet_name:
+              type: string
+              description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
+              example: Google Pay
     v4.0.0-3:
       title: Schema version 4.0.0
       type: object
@@ -413,6 +477,72 @@ components:
               format: date-time
               description: Timestamp when the event occurred
               example: '2026-02-24T11:10:13.789Z'
+    v4.0.0:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56.123Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56.789Z'
     v4.0.0-2:
       title: Schema version 4.0.0
       type: object
@@ -469,6 +599,157 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
+    v4.0.0-4:
+      title: Schema version 4.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: hold-limit-breach#update
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2024-06-01T08:00:00Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type. Always `hold-limit-breach`
+                  example: hold-limit-breach
+                hold_limit_breach_id:
+                  type: integer
+                  format: int64
+                  description: ID of the hold limit breach
+                  example: 1001
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the breach
+                  example: 12321323
+            amount:
+              type: number
+              format: decimal
+              description: Amount that exceeded the hold limit
+              example: 500.5
+            currency:
+              type: string
+              description: Currency code (ISO 4217) of the breach amount
+              example: SGD
+            state:
+              type: string
+              description: Current state of the breach
+              enum:
+              - OPEN
+              - CLOSED
+              example: CLOSED
+            closing_reason:
+              type:
+              - string
+              - 'null'
+              description: Reason the breach was closed. Null if state is `OPEN`
+              enum:
+              - AUTOMATICALLY_RESOLVED
+              - MANUALLY_RESOLVED
+              - null
+              example: MANUALLY_RESOLVED
+            created_at:
+              type: string
+              format: date-time
+              description: Timestamp when the breach was created (ISO 8601)
+              example: '2024-06-01T08:00:00Z'
+            updated_at:
+              type: string
+              format: date-time
+              description: Timestamp when the breach was last updated (ISO 8601)
+              example: '2024-06-01T08:00:00Z'
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
+              example: '2024-06-01T08:00:00Z'
+    v2.0.0:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
+          type: string
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
+              type: string
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
+              type:
+              - string
+              - 'null'
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
+              type: string
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56Z'
     v2.0.0-3:
       title: Schema version 2.0.0
       type: object
@@ -640,287 +921,6 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
-    v2.0.0:
-      title: Schema version 2.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 2.0.0
-          example: 2.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: transfers#state-change
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2020-01-01T12:34:56Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type
-                  example: transfer
-                id:
-                  type: integer
-                  format: int64
-                  description: Transfer ID
-                  example: 111
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: Profile ID of the transfer owner
-                  example: 222
-                account_id:
-                  type: integer
-                  format: int64
-                  description: Recipient account ID
-                  example: 333
-            current_state:
-              type: string
-              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
-
-                '
-              example: processing
-            previous_state:
-              type:
-              - string
-              - 'null'
-              description: Previous transfer status. Note that this will be null for newly created transfers.
-              example: incoming_payment_waiting
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the state change occurred
-              example: '2020-01-01T12:34:56Z'
-    v4.0.0-4:
-      title: Schema version 4.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 4.0.0
-          example: 4.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: hold-limit-breach#update
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2024-06-01T08:00:00Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type. Always `hold-limit-breach`
-                  example: hold-limit-breach
-                hold_limit_breach_id:
-                  type: integer
-                  format: int64
-                  description: ID of the hold limit breach
-                  example: 1001
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: ID of the profile that owns the breach
-                  example: 12321323
-            amount:
-              type: number
-              format: decimal
-              description: Amount that exceeded the hold limit
-              example: 500.5
-            currency:
-              type: string
-              description: Currency code (ISO 4217) of the breach amount
-              example: SGD
-            state:
-              type: string
-              description: Current state of the breach
-              enum:
-              - OPEN
-              - CLOSED
-              example: CLOSED
-            closing_reason:
-              type:
-              - string
-              - 'null'
-              description: Reason the breach was closed. Null if state is `OPEN`
-              enum:
-              - AUTOMATICALLY_RESOLVED
-              - MANUALLY_RESOLVED
-              - null
-              example: MANUALLY_RESOLVED
-            created_at:
-              type: string
-              format: date-time
-              description: Timestamp when the breach was created (ISO 8601)
-              example: '2024-06-01T08:00:00Z'
-            updated_at:
-              type: string
-              format: date-time
-              description: Timestamp when the breach was last updated (ISO 8601)
-              example: '2024-06-01T08:00:00Z'
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
-              example: '2024-06-01T08:00:00Z'
-    v4.0.0:
-      title: Schema version 4.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 4.0.0
-          example: 4.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: transfers#state-change
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2020-01-01T12:34:56.123Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type
-                  example: transfer
-                id:
-                  type: integer
-                  format: int64
-                  description: Transfer ID
-                  example: 111
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: Profile ID of the transfer owner
-                  example: 222
-                account_id:
-                  type: integer
-                  format: int64
-                  description: Recipient account ID
-                  example: 333
-            current_state:
-              type: string
-              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
-
-                '
-              example: processing
-            previous_state:
-              type:
-              - string
-              - 'null'
-              description: Previous transfer status. Note that this will be null for newly created transfers.
-              example: incoming_payment_waiting
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the state change occurred
-              example: '2020-01-01T12:34:56.789Z'
-    v2.0.0-4:
-      title: Schema version 2.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 2.0.0
-          example: 2.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 5281e333-a4d9-4960-aec3-553267a9a8aa
-        event_type:
-          type: string
-          description: Event type identifier
-          example: cards#manual-provisioning-verification
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2026-03-09T05:52:37Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: ID of the profile that owns the card
-                  example: 9953556
-                client_id:
-                  type: string
-                  description: Your api_client_id
-                  example: tw-test-card-issuance
-                card_token:
-                  type: string
-                  description: Unique identifier of the card
-                  example: 72393ec3-0707-4bf1-00b7-744f7a380d2c
-                type:
-                  type: string
-                  description: Resource type (always `card`)
-                  example: card
-            payment_token_unique_reference:
-              type: string
-              description: The payment token unique reference associated to the card
-              example: DNITHE352605523102858206
-            last_four_digits:
-              type: string
-              description: The last four digits for the card Primary Account Number (PAN)
-              example: '8237'
-            creation_time:
-              type: string
-              format: date-time
-              description: The time when the card provisioning request was created
-              example: '2026-03-09T05:52:37.274962Z'
-            wallet_name:
-              type: string
-              description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
-              example: Google Pay
   parameters:
     x-delivery-id:
       name: X-Delivery-Id

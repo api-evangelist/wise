@@ -704,45 +704,41 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    DisputeReason:
+      title: DisputeReason
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
+
+
+            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
+
+            '
+          example: UNAUTHORIZED
+        description:
+          type: string
+          description: The description of the dispute reason.
+          example: I did not make, authorize, or participate in this transaction
+        isFraud:
+          type: boolean
+          description: Flag indicating that the dispute reason is fraud-related.
+          example: false
+        tooltip:
+          type: string
+          description: Text to display when showing the dispute form to your users.
+          example: Choose this if you don't know the merchant or have never purchased anything from them
+        supportsMultipleTransactions:
+          type: boolean
+          description: Whether the dispute supports multiple transactions.
+          example: false
+        subOptions:
+          type: array
+          description: Optional list of sub-reasons that should be used as the dispute reason.
+          items:
+            $ref: '#/components/schemas/DisputeReason'
     Dispute:
       title: Dispute
       type: object
@@ -808,40 +804,44 @@ components:
           type: boolean
           description: Whether the dispute can be withdrawn.
           example: false
-    DisputeReason:
-      title: DisputeReason
-      type: object
-      properties:
-        code:
-          type: string
-          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
-
-
-            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
-
-            '
-          example: UNAUTHORIZED
-        description:
-          type: string
-          description: The description of the dispute reason.
-          example: I did not make, authorize, or participate in this transaction
-        isFraud:
-          type: boolean
-          description: Flag indicating that the dispute reason is fraud-related.
-          example: false
-        tooltip:
-          type: string
-          description: Text to display when showing the dispute form to your users.
-          example: Choose this if you don't know the merchant or have never purchased anything from them
-        supportsMultipleTransactions:
-          type: boolean
-          description: Whether the dispute supports multiple transactions.
-          example: false
-        subOptions:
-          type: array
-          description: Optional list of sub-reasons that should be used as the dispute reason.
-          items:
-            $ref: '#/components/schemas/DisputeReason'
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

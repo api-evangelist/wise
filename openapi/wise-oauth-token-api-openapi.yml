@@ -98,29 +98,6 @@ paths:
       parameters:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
 components:
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   schemas:
     authorization-code-grant:
       type: object
@@ -146,6 +123,56 @@ components:
           type: string
           description: Registered redirect URL coordinated with Wise during onboarding.
           example: https://www.yourapp.com
+    client-credentials-grant:
+      type: object
+      required:
+      - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - client_credentials
+          example: client_credentials
+    refresh-token-grant:
+      type: object
+      required:
+      - grant_type
+      - refresh_token
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - refresh_token
+          example: refresh_token
+        refresh_token:
+          type: string
+          description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
+    registration-code-grant:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - email
+      - registration_code
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - registration_code
+          example: registration_code
+        client_id:
+          type: string
+          description: Your API client ID.
+        email:
+          type: string
+          format: email
+          description: The email address of the user being registered.
+        registration_code:
+          type: string
+          description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
     token-response:
       type: object
       properties:
@@ -207,56 +234,29 @@ components:
 
             '
           example: '2020-01-01T12:33:33.12345Z'
-    refresh-token-grant:
-      type: object
-      required:
-      - grant_type
-      - refresh_token
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - refresh_token
-          example: refresh_token
-        refresh_token:
-          type: string
-          description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
-    registration-code-grant:
-      type: object
-      required:
-      - grant_type
-      - client_id
-      - email
-      - registration_code
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - registration_code
-          example: registration_code
-        client_id:
-          type: string
-          description: Your API client ID.
-        email:
-          type: string
-          format: email
-          description: The email address of the user being registered.
-        registration_code:
-          type: string
-          description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
-    client-credentials-grant:
-      type: object
-      required:
-      - grant_type
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - client_credentials
-          example: client_credentials
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   headers:
     x-trace-id:
       x-global: true

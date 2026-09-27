@@ -235,83 +235,7 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
-    one-time-token:
-      title: One-Time Token
-      x-tags:
-      - sca-ott
-      type: object
-      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
-
-
-        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
-
-        '
-      properties:
-        oneTimeToken:
-          type: string
-          format: uuid
-          description: A one-time token unique identifier.
-          example: 5932d5b5-ec13-452f-8688-308feade7834
-        challenges:
-          type: array
-          description: An array of challenges.
-          items:
-            type: object
-            properties:
-              primaryChallenge:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: A type of challenge.
-                    example: PIN
-              passed:
-                type: boolean
-                description: The status of a challenge.
-                example: false
-        validity:
-          type: integer
-          description: The One-Time Token expiration in seconds.
-          example: 3600
     ott-response:
       type: object
       properties:
@@ -361,6 +285,82 @@ components:
               type: integer
               format: int64
               description: Creator of this one time token.
+    one-time-token:
+      title: One-Time Token
+      x-tags:
+      - sca-ott
+      type: object
+      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
+
+
+        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
+
+        '
+      properties:
+        oneTimeToken:
+          type: string
+          format: uuid
+          description: A one-time token unique identifier.
+          example: 5932d5b5-ec13-452f-8688-308feade7834
+        challenges:
+          type: array
+          description: An array of challenges.
+          items:
+            type: object
+            properties:
+              primaryChallenge:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: A type of challenge.
+                    example: PIN
+              passed:
+                type: boolean
+                description: The status of a challenge.
+                example: false
+        validity:
+          type: integer
+          description: The One-Time Token expiration in seconds.
+          example: 3600
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

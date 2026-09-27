@@ -560,69 +560,7 @@ webhooks:
                     example: ok
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   schemas:
-    Permission:
-      type: object
-      description: Spending permission configuration for a card.
-      x-tags:
-      - card
-      properties:
-        type:
-          type: string
-          description: 'The type of transaction this permission controls:
-
-            - `ECOM` - Online transactions
-
-            - `POS_CHIP` - Physical point-of-sale transactions with chip
-
-            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
-
-            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
-
-            - `ATM_WITHDRAWAL` - ATM withdrawals
-
-            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
-
-            '
-          enum:
-          - ECOM
-          - POS_CHIP
-          - POS_MAGSTRIPE
-          - POS_CONTACTLESS
-          - ATM_WITHDRAWAL
-          - MOBILE_WALLETS
-          example: ECOM
-        isEnabled:
-          type: boolean
-          description: Indicates if this permission type is enabled.
-          example: false
-        isLocked:
-          type: boolean
-          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
-          example: false
     v2.0.0-4:
       title: Schema version 2.0.0
       type: object
@@ -687,6 +625,45 @@ components:
               type: string
               description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
               example: Google Pay
+    Permission:
+      type: object
+      description: Spending permission configuration for a card.
+      x-tags:
+      - card
+      properties:
+        type:
+          type: string
+          description: 'The type of transaction this permission controls:
+
+            - `ECOM` - Online transactions
+
+            - `POS_CHIP` - Physical point-of-sale transactions with chip
+
+            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
+
+            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
+
+            - `ATM_WITHDRAWAL` - ATM withdrawals
+
+            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
+
+            '
+          enum:
+          - ECOM
+          - POS_CHIP
+          - POS_MAGSTRIPE
+          - POS_CONTACTLESS
+          - ATM_WITHDRAWAL
+          - MOBILE_WALLETS
+          example: ECOM
+        isEnabled:
+          type: boolean
+          description: Indicates if this permission type is enabled.
+          example: false
+        isLocked:
+          type: boolean
+          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
+          example: false
     Card:
       type: object
       description: The Card resource represents a Wise card linked to a profile.
@@ -818,6 +795,19 @@ components:
         type: string
         format: uuid
       example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
     x-signature-sha256:
       name: X-Signature-SHA256
       in: header
@@ -838,19 +828,29 @@ components:
       schema:
         type: boolean
       example: true
-    X-External-Correlation-Id:
+  responses:
+    '429':
       x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   headers:
     x-trace-id:
       x-global: true

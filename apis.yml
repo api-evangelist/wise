@@ -2697,8 +2697,6 @@ apis:
   humanURL: https://docs.wise.com/api-docs/api-reference/profile
   baseURL: https://api.wise.com/v2
   tags:
-  - 3D
-  tags_raw:
   - 3 DS
   properties:
   - type: OpenAPI

@@ -1438,6 +1438,60 @@ webhooks:
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
+    HoldLimitBreach:
+      type: object
+      x-tags:
+      - balance
+      description: Represents a hold limit breach.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Hold limit breach ID.
+          example: 200001
+        profileId:
+          type: integer
+          format: int64
+          description: ID of the profile that owns the hold limit breach
+          example: 123456
+        amount:
+          type: number
+          description: Amount value.
+          example: 310.86
+        currency:
+          type: string
+          description: Currency code (ISO 4217 Alphabetic Code).
+          example: EUR
+        state:
+          type: string
+          description: Current state of the hold limit breach.
+          enum:
+          - OPEN
+          - CLOSED
+          x-enumDescriptions:
+            OPEN: Hold limit breach is open and needs to be resolved.
+            CLOSED: Hold limit breach is closed and resolved.
+          example: OPEN
+        closingReason:
+          type: string
+          description: Reason the breach was closed, null if state is `OPEN`.
+          enum:
+          - AUTOMATICALLY_RESOLVED
+          - MANUALLY_RESOLVED
+          x-enumDescriptions:
+            AUTOMATICALLY_RESOLVED: The breach was resolved automatically after the customer withdrew funds and the balance dropped below the hold limit.
+            MANUALLY_RESOLVED: The breach was closed by calling the [Close Hold Limit Breach](/api-reference/balance/holdlimitbreachclose) endpoint with a specified recipient.
+          example: AUTOMATICALLY_RESOLVED
+        createdAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was created.
+          example: '2020-05-20T14:43:16.658Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date when the hold limit breach was last modified.
+          example: '2020-05-20T14:43:16.658Z'
     Balance:
       type: object
       x-tags:
@@ -1560,6 +1614,19 @@ components:
           type: boolean
           description: Whether the balance is visible to the user.
           example: true
+    BalanceType:
+      type: string
+      description: 'Type of balance account.
+
+        - `STANDARD` - Standard balance account. Only one per currency per profile.
+
+        - `SAVINGS` - Savings balance (Jar). Multiple allowed per currency.
+
+        '
+      enum:
+      - STANDARD
+      - SAVINGS
+      example: STANDARD
     v4.0.0-4:
       title: Schema version 4.0.0
       type: object
@@ -1645,73 +1712,49 @@ components:
               format: date-time
               description: Timestamp when the event occurred (ISO 8601). Use this field to reconcile out-of-order events
               example: '2024-06-01T08:00:00Z'
-    HoldLimitBreach:
-      type: object
-      x-tags:
-      - balance
-      description: Represents a hold limit breach.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Hold limit breach ID.
-          example: 200001
-        profileId:
-          type: integer
-          format: int64
-          description: ID of the profile that owns the hold limit breach
-          example: 123456
-        amount:
-          type: number
-          description: Amount value.
-          example: 310.86
-        currency:
-          type: string
-          description: Currency code (ISO 4217 Alphabetic Code).
-          example: EUR
-        state:
-          type: string
-          description: Current state of the hold limit breach.
-          enum:
-          - OPEN
-          - CLOSED
-          x-enumDescriptions:
-            OPEN: Hold limit breach is open and needs to be resolved.
-            CLOSED: Hold limit breach is closed and resolved.
-          example: OPEN
-        closingReason:
-          type: string
-          description: Reason the breach was closed, null if state is `OPEN`.
-          enum:
-          - AUTOMATICALLY_RESOLVED
-          - MANUALLY_RESOLVED
-          x-enumDescriptions:
-            AUTOMATICALLY_RESOLVED: The breach was resolved automatically after the customer withdrew funds and the balance dropped below the hold limit.
-            MANUALLY_RESOLVED: The breach was closed by calling the [Close Hold Limit Breach](/api-reference/balance/holdlimitbreachclose) endpoint with a specified recipient.
-          example: AUTOMATICALLY_RESOLVED
-        createdAt:
-          type: string
-          format: date-time
-          description: Date when the hold limit breach was created.
-          example: '2020-05-20T14:43:16.658Z'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Date when the hold limit breach was last modified.
-          example: '2020-05-20T14:43:16.658Z'
-    BalanceType:
-      type: string
-      description: 'Type of balance account.
-
-        - `STANDARD` - Standard balance account. Only one per currency per profile.
-
-        - `SAVINGS` - Savings balance (Jar). Multiple allowed per currency.
+  parameters:
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
 
         '
-      enum:
-      - STANDARD
-      - SAVINGS
-      example: STANDARD
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
   responses:
     '429':
       x-global: true
@@ -1735,49 +1778,6 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
-      schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
-      schema:
-        type: string
-      example: t7FMhk3OARMgwqz0LJXO...
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
-      schema:
-        type: boolean
-      example: true
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   headers:
     x-trace-id:
       x-global: true
