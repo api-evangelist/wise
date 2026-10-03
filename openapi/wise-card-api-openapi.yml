@@ -560,6 +560,49 @@ webhooks:
                     example: ok
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
+  parameters:
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     v2.0.0-4:
       title: Schema version 2.0.0
@@ -625,45 +668,6 @@ components:
               type: string
               description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
               example: Google Pay
-    Permission:
-      type: object
-      description: Spending permission configuration for a card.
-      x-tags:
-      - card
-      properties:
-        type:
-          type: string
-          description: 'The type of transaction this permission controls:
-
-            - `ECOM` - Online transactions
-
-            - `POS_CHIP` - Physical point-of-sale transactions with chip
-
-            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
-
-            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
-
-            - `ATM_WITHDRAWAL` - ATM withdrawals
-
-            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
-
-            '
-          enum:
-          - ECOM
-          - POS_CHIP
-          - POS_MAGSTRIPE
-          - POS_CONTACTLESS
-          - ATM_WITHDRAWAL
-          - MOBILE_WALLETS
-          example: ECOM
-        isEnabled:
-          type: boolean
-          description: Indicates if this permission type is enabled.
-          example: false
-        isLocked:
-          type: boolean
-          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
-          example: false
     Card:
       type: object
       description: The Card resource represents a Wise card linked to a profile.
@@ -785,49 +789,60 @@ components:
           format: date-time
           description: Time when the card was last modified.
           example: '2022-05-31T01:43:24.596321825Z'
-  parameters:
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
-      schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    Permission:
+      type: object
+      description: Spending permission configuration for a card.
+      x-tags:
+      - card
+      properties:
+        type:
+          type: string
+          description: 'The type of transaction this permission controls:
+
+            - `ECOM` - Online transactions
+
+            - `POS_CHIP` - Physical point-of-sale transactions with chip
+
+            - `POS_MAGSTRIPE` - Physical point-of-sale transactions with magnetic stripe
+
+            - `POS_CONTACTLESS` - Physical point-of-sale contactless transactions
+
+            - `ATM_WITHDRAWAL` - ATM withdrawals
+
+            - `MOBILE_WALLETS` - Digital wallet payments (Apple Pay, Google Pay)
+
+            '
+          enum:
+          - ECOM
+          - POS_CHIP
+          - POS_MAGSTRIPE
+          - POS_CONTACTLESS
+          - ATM_WITHDRAWAL
+          - MOBILE_WALLETS
+          example: ECOM
+        isEnabled:
+          type: boolean
+          description: Indicates if this permission type is enabled.
+          example: false
+        isLocked:
+          type: boolean
+          description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
+          example: false
+  headers:
     X-External-Correlation-Id:
       x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
       schema:
         type: string
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
       schema:
         type: string
-      example: t7FMhk3OARMgwqz0LJXO...
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
-      schema:
-        type: boolean
-      example: true
+      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -851,21 +866,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

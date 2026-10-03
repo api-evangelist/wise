@@ -723,79 +723,6 @@ components:
           - 'null'
           description: Clearing number. Provided only when the currency route requires it (such as SEK).
           example: null
-    BatchGroup:
-      title: Batch Group
-      x-tags:
-      - batch-group
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Batch group ID.
-          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
-        version:
-          type: integer
-          format: int64
-          description: 'Batch version, used for concurrency control. This number is updated whenever there is a change to the batch group state (its status, the identity of the transfers in the batch, etc).
-
-
-            Some API operations require this version in requests, and operations may be rejected when the requested version does not match the server''s version.
-
-
-            The version is a signed integer and is not ordered with respect to any previous version.
-
-            '
-          example: 123
-        name:
-          type: string
-          description: Descriptive name for the batch group.
-          example: My batch group
-        sourceCurrency:
-          type: string
-          description: Source currency code (ISO 4217 Alphabetic Code). This currency is expected to be used for funding the batch group.
-          example: GBP
-        status:
-          type: string
-          description: 'Current batch group status:
-
-            - `NEW` — New batch group with zero or more transfers. Able to have more transfers added to it. Transfers in a `NEW` group cannot yet be funded and paid out.
-
-            - `COMPLETED` — The batch group has had all desired transfers added and is now closed to further changes. Transfers in the group can now be funded and paid out. Note: `COMPLETED` does not imply payouts have been successfully completed.
-
-            - `MARKED_FOR_CANCELLATION` — Cancellation of the transfers in the batch group was requested.
-
-            - `PROCESSING_CANCEL` — Transfers in the group are being cancelled.
-
-            - `CANCELLED` — Transfers in the group have been cancelled.
-
-            '
-          enum:
-          - NEW
-          - COMPLETED
-          - MARKED_FOR_CANCELLATION
-          - PROCESSING_CANCEL
-          - CANCELLED
-          example: COMPLETED
-        transferIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: The IDs of all transfers successfully added to the group.
-          example:
-          - 234
-          - 456
-        payInDetails:
-          type: array
-          description: 'List of pay-in details describing how the batch group can be funded. Provided only when the batch group is in the `COMPLETED` state.
-
-
-            Currently supported types: `bank_transfer`.
-
-            '
-          items:
-            $ref: '#/components/schemas/PayInDetails'
     PaymentInitiation:
       type: object
       description: Payment initiation for funding a batch group via direct debit.
@@ -869,6 +796,94 @@ components:
           format: date-time
           description: Date and time when the payment initiation was created.
           example: '2022-01-01T19:51:41.423404Z'
+    BatchGroup:
+      title: Batch Group
+      x-tags:
+      - batch-group
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Batch group ID.
+          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+        version:
+          type: integer
+          format: int64
+          description: 'Batch version, used for concurrency control. This number is updated whenever there is a change to the batch group state (its status, the identity of the transfers in the batch, etc).
+
+
+            Some API operations require this version in requests, and operations may be rejected when the requested version does not match the server''s version.
+
+
+            The version is a signed integer and is not ordered with respect to any previous version.
+
+            '
+          example: 123
+        name:
+          type: string
+          description: Descriptive name for the batch group.
+          example: My batch group
+        sourceCurrency:
+          type: string
+          description: Source currency code (ISO 4217 Alphabetic Code). This currency is expected to be used for funding the batch group.
+          example: GBP
+        status:
+          type: string
+          description: 'Current batch group status:
+
+            - `NEW` — New batch group with zero or more transfers. Able to have more transfers added to it. Transfers in a `NEW` group cannot yet be funded and paid out.
+
+            - `COMPLETED` — The batch group has had all desired transfers added and is now closed to further changes. Transfers in the group can now be funded and paid out. Note: `COMPLETED` does not imply payouts have been successfully completed.
+
+            - `MARKED_FOR_CANCELLATION` — Cancellation of the transfers in the batch group was requested.
+
+            - `PROCESSING_CANCEL` — Transfers in the group are being cancelled.
+
+            - `CANCELLED` — Transfers in the group have been cancelled.
+
+            '
+          enum:
+          - NEW
+          - COMPLETED
+          - MARKED_FOR_CANCELLATION
+          - PROCESSING_CANCEL
+          - CANCELLED
+          example: COMPLETED
+        transferIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The IDs of all transfers successfully added to the group.
+          example:
+          - 234
+          - 456
+        payInDetails:
+          type: array
+          description: 'List of pay-in details describing how the batch group can be funded. Provided only when the batch group is in the `COMPLETED` state.
+
+
+            Currently supported types: `bank_transfer`.
+
+            '
+          items:
+            $ref: '#/components/schemas/PayInDetails'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -892,21 +907,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

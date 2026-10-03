@@ -256,6 +256,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -279,36 +294,320 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    CardTransactionV3:
+      title: Card Transaction (V3)
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: ID of the transaction
+          example: '342671'
+        cardToken:
+          type: string
+          description: Unique identifier of the card
+          example: 59123122-223d-45f9-b840-0ad4a4f80937
+        type:
+          type: string
+          description: '[Type](/api-reference/card-transaction#card-transaction-type) of the transaction. One of:
+
+            - `ACCOUNT_CREDIT`
+
+            - `ACCOUNT_FUNDING`
+
+            - `CASH_ADVANCE`
+
+            - `CASH_WITHDRAWAL`
+
+            - `CHARGEBACK`
+
+            - `CREDIT_TRANSACTION`
+
+            - `ECOM_PURCHASE`
+
+            - `POS_PURCHASE`
+
+            - `REFUND`
+
+            '
+          enum:
+          - ACCOUNT_CREDIT
+          - ACCOUNT_FUNDING
+          - CASH_ADVANCE
+          - CASH_WITHDRAWAL
+          - CHARGEBACK
+          - CREDIT_TRANSACTION
+          - ECOM_PURCHASE
+          - POS_PURCHASE
+          - REFUND
+          example: ECOM_PURCHASE
+        declineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [decline reason](/api-reference/card-transaction#card-transaction-decline-reasons) if applicable
+          example: null
+        detailedDeclineReason:
+          type:
+          - string
+          - 'null'
+          description: Code of the [detailed decline reason](/api-reference/card-transaction#card-transaction-detailed-decline-reasons) if applicable
+          example: null
+        createdDate:
+          type: string
+          format: date-time
+          description: When the transaction was created
+          example: '2022-11-28T08:17:54.241236Z'
+        state:
+          type: string
+          description: 'The current [state](/api-reference/card-transaction#card-transaction-state) of the transaction. One of:
+
+            - `IN_PROGRESS`
+
+            - `COMPLETED`
+
+            - `DECLINED`
+
+            - `CANCELLED`
+
+            - `UNKNOWN`
+
+            '
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DECLINED
+          - CANCELLED
+          - UNKNOWN
+          example: IN_PROGRESS
+        cardLastDigits:
+          type: string
+          description: Last 4 digits of the card
+          example: '3086'
+        transactionAmount:
+          type: object
+          description: Transaction amount, excluding all embedded fees such as ATM fees that are not applied by Wise
+          properties:
+            amount:
+              type: number
+              description: Transaction amount
+              example: 1.5
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        fees:
+          type: array
+          description: Array of fees
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+                description: Fee amount
+                example: 0.1
+              currency:
+                type: string
+                description: Currency code
+                example: SGD
+              fee_type:
+                type: string
+                description: Fee type
+                example: ATM_ACQUIRER
+        transactionAmountWithFees:
+          type: object
+          description: Transaction amount including fees
+          properties:
+            value:
+              type: number
+              description: Transaction amount including fees
+              example: 1.5
+            currency:
+              type: string
+              description: Currency code
+              example: SGD
+        merchant:
+          type: object
+          description: Merchant information
+          properties:
+            name:
+              type: string
+              description: Name of the merchant
+              example: Test Payment
+            location:
+              type: object
+              description: Merchant location
+              properties:
+                country:
+                  type:
+                  - string
+                  - 'null'
+                  description: Country where merchant is located
+                  example: France
+                city:
+                  type:
+                  - string
+                  - 'null'
+                  description: City where merchant is located
+                  example: Rouen
+                zipCode:
+                  type:
+                  - string
+                  - 'null'
+                  description: Zip code where merchant is located
+                  example: '00000'
+                region:
+                  type:
+                  - string
+                  - 'null'
+                  description: Region where merchant is located
+                  example: null
+                state:
+                  type:
+                  - string
+                  - 'null'
+                  description: State where merchant is located
+                  example: null
+            category:
+              type: object
+              description: Merchant category
+              properties:
+                name:
+                  type: string
+                  description: Category of the merchant
+                  example: RMiscellaneousAndSpecial
+                code:
+                  type: string
+                  description: MCC code of the merchant
+                  example: '5999'
+                description:
+                  type: string
+                  description: Description of the merchant category
+                  example: 5999 R Miscellaneous and Special
+        authorisationMethod:
+          type: string
+          description: Authorisation method
+          example: MANUAL_ENTRY
+        balanceTransactionId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Associated balance transaction ID if applicable
+          example: 2598366
+        debits:
+          type: array
+          description: Array of debits
+          items:
+            type: object
+            properties:
+              balanceId:
+                type: integer
+                format: int64
+                description: Balance ID
+                example: 52832
+              debitedAmount:
+                type: object
+                description: Amount taken from the balance
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.06
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+              forAmount:
+                type: object
+                description: Amount converted to
+                properties:
+                  amount:
+                    type: number
+                    description: Amount
+                    example: 1.5
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: SGD
+              rate:
+                type: number
+                description: Exchange rate of debitedAmount to forAmount
+                example: 1.43073
+              fee:
+                type: object
+                description: Conversion fee
+                properties:
+                  amount:
+                    type: number
+                    description: Conversion fee amount
+                    example: 0.01
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: EUR
+        credit:
+          type:
+          - object
+          - 'null'
+          description: Credit details, present for refund transactions
+          properties:
+            balanceId:
+              type: integer
+              format: int64
+              description: Balance ID
+              example: 52832
+            creditedAmount:
+              type: object
+              description: Amount credited to the balance
+              properties:
+                amount:
+                  type: number
+                  description: Amount
+                  example: 1.5
+                currency:
+                  type: string
+                  description: Currency code
+                  example: SGD
+        relayAuthorisationData:
+          type:
+          - object
+          - 'null'
+          description: Relayed authorisation response data, only available if the partner has opted in for [relayed authorisation](/guides/product/issue-cards/relayed-authorisation)
+          properties:
+            responseCode:
+              type: string
+              description: '[ResponseCode](/guides/product/issue-cards/relayed-authorisation#authorisation-response) of the relayed authorisation. One of:
+
+                - `APPROVED`
+
+                - `PROCESSING_ERROR`
+
+                - `NON_SUPPORTED_CURRENCY`
+
+                - `NON_SUPPORTED_MCC_FOR_COUNTRY`
+
+                - `BLOCKED_COUNTRY`
+
+                - `TRANSACTION_TYPE_NOT_SUPPORTED`
+
+                - `SUSPECTED_FRAUD`
+
+                '
+              enum:
+              - APPROVED
+              - PROCESSING_ERROR
+              - NON_SUPPORTED_CURRENCY
+              - NON_SUPPORTED_MCC_FOR_COUNTRY
+              - BLOCKED_COUNTRY
+              - TRANSACTION_TYPE_NOT_SUPPORTED
+              - SUSPECTED_FRAUD
+              example: APPROVED
+            fallback:
+              type: boolean
+              description: Indicating whether there was a fallback applied by Wise
+              example: true
     CardTransaction:
       title: Card Transaction
       type: object
@@ -696,319 +995,20 @@ components:
               type: boolean
               description: Indicating whether there was a fallback applied by Wise
               example: true
-    CardTransactionV3:
-      title: Card Transaction (V3)
-      type: object
-      additionalProperties: true
-      properties:
-        id:
-          type: string
-          description: ID of the transaction
-          example: '342671'
-        cardToken:
-          type: string
-          description: Unique identifier of the card
-          example: 59123122-223d-45f9-b840-0ad4a4f80937
-        type:
-          type: string
-          description: '[Type](/api-reference/card-transaction#card-transaction-type) of the transaction. One of:
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
 
-            - `ACCOUNT_CREDIT`
-
-            - `ACCOUNT_FUNDING`
-
-            - `CASH_ADVANCE`
-
-            - `CASH_WITHDRAWAL`
-
-            - `CHARGEBACK`
-
-            - `CREDIT_TRANSACTION`
-
-            - `ECOM_PURCHASE`
-
-            - `POS_PURCHASE`
-
-            - `REFUND`
-
-            '
-          enum:
-          - ACCOUNT_CREDIT
-          - ACCOUNT_FUNDING
-          - CASH_ADVANCE
-          - CASH_WITHDRAWAL
-          - CHARGEBACK
-          - CREDIT_TRANSACTION
-          - ECOM_PURCHASE
-          - POS_PURCHASE
-          - REFUND
-          example: ECOM_PURCHASE
-        declineReason:
-          type:
-          - string
-          - 'null'
-          description: Code of the [decline reason](/api-reference/card-transaction#card-transaction-decline-reasons) if applicable
-          example: null
-        detailedDeclineReason:
-          type:
-          - string
-          - 'null'
-          description: Code of the [detailed decline reason](/api-reference/card-transaction#card-transaction-detailed-decline-reasons) if applicable
-          example: null
-        createdDate:
-          type: string
-          format: date-time
-          description: When the transaction was created
-          example: '2022-11-28T08:17:54.241236Z'
-        state:
-          type: string
-          description: 'The current [state](/api-reference/card-transaction#card-transaction-state) of the transaction. One of:
-
-            - `IN_PROGRESS`
-
-            - `COMPLETED`
-
-            - `DECLINED`
-
-            - `CANCELLED`
-
-            - `UNKNOWN`
-
-            '
-          enum:
-          - IN_PROGRESS
-          - COMPLETED
-          - DECLINED
-          - CANCELLED
-          - UNKNOWN
-          example: IN_PROGRESS
-        cardLastDigits:
-          type: string
-          description: Last 4 digits of the card
-          example: '3086'
-        transactionAmount:
-          type: object
-          description: Transaction amount, excluding all embedded fees such as ATM fees that are not applied by Wise
-          properties:
-            amount:
-              type: number
-              description: Transaction amount
-              example: 1.5
-            currency:
-              type: string
-              description: Currency code
-              example: SGD
-        fees:
-          type: array
-          description: Array of fees
-          items:
-            type: object
-            properties:
-              amount:
-                type: number
-                description: Fee amount
-                example: 0.1
-              currency:
-                type: string
-                description: Currency code
-                example: SGD
-              fee_type:
-                type: string
-                description: Fee type
-                example: ATM_ACQUIRER
-        transactionAmountWithFees:
-          type: object
-          description: Transaction amount including fees
-          properties:
-            value:
-              type: number
-              description: Transaction amount including fees
-              example: 1.5
-            currency:
-              type: string
-              description: Currency code
-              example: SGD
-        merchant:
-          type: object
-          description: Merchant information
-          properties:
-            name:
-              type: string
-              description: Name of the merchant
-              example: Test Payment
-            location:
-              type: object
-              description: Merchant location
-              properties:
-                country:
-                  type:
-                  - string
-                  - 'null'
-                  description: Country where merchant is located
-                  example: France
-                city:
-                  type:
-                  - string
-                  - 'null'
-                  description: City where merchant is located
-                  example: Rouen
-                zipCode:
-                  type:
-                  - string
-                  - 'null'
-                  description: Zip code where merchant is located
-                  example: '00000'
-                region:
-                  type:
-                  - string
-                  - 'null'
-                  description: Region where merchant is located
-                  example: null
-                state:
-                  type:
-                  - string
-                  - 'null'
-                  description: State where merchant is located
-                  example: null
-            category:
-              type: object
-              description: Merchant category
-              properties:
-                name:
-                  type: string
-                  description: Category of the merchant
-                  example: RMiscellaneousAndSpecial
-                code:
-                  type: string
-                  description: MCC code of the merchant
-                  example: '5999'
-                description:
-                  type: string
-                  description: Description of the merchant category
-                  example: 5999 R Miscellaneous and Special
-        authorisationMethod:
-          type: string
-          description: Authorisation method
-          example: MANUAL_ENTRY
-        balanceTransactionId:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Associated balance transaction ID if applicable
-          example: 2598366
-        debits:
-          type: array
-          description: Array of debits
-          items:
-            type: object
-            properties:
-              balanceId:
-                type: integer
-                format: int64
-                description: Balance ID
-                example: 52832
-              debitedAmount:
-                type: object
-                description: Amount taken from the balance
-                properties:
-                  amount:
-                    type: number
-                    description: Amount
-                    example: 1.06
-                  currency:
-                    type: string
-                    description: Currency code
-                    example: EUR
-              forAmount:
-                type: object
-                description: Amount converted to
-                properties:
-                  amount:
-                    type: number
-                    description: Amount
-                    example: 1.5
-                  currency:
-                    type: string
-                    description: Currency code
-                    example: SGD
-              rate:
-                type: number
-                description: Exchange rate of debitedAmount to forAmount
-                example: 1.43073
-              fee:
-                type: object
-                description: Conversion fee
-                properties:
-                  amount:
-                    type: number
-                    description: Conversion fee amount
-                    example: 0.01
-                  currency:
-                    type: string
-                    description: Currency code
-                    example: EUR
-        credit:
-          type:
-          - object
-          - 'null'
-          description: Credit details, present for refund transactions
-          properties:
-            balanceId:
-              type: integer
-              format: int64
-              description: Balance ID
-              example: 52832
-            creditedAmount:
-              type: object
-              description: Amount credited to the balance
-              properties:
-                amount:
-                  type: number
-                  description: Amount
-                  example: 1.5
-                currency:
-                  type: string
-                  description: Currency code
-                  example: SGD
-        relayAuthorisationData:
-          type:
-          - object
-          - 'null'
-          description: Relayed authorisation response data, only available if the partner has opted in for [relayed authorisation](/guides/product/issue-cards/relayed-authorisation)
-          properties:
-            responseCode:
-              type: string
-              description: '[ResponseCode](/guides/product/issue-cards/relayed-authorisation#authorisation-response) of the relayed authorisation. One of:
-
-                - `APPROVED`
-
-                - `PROCESSING_ERROR`
-
-                - `NON_SUPPORTED_CURRENCY`
-
-                - `NON_SUPPORTED_MCC_FOR_COUNTRY`
-
-                - `BLOCKED_COUNTRY`
-
-                - `TRANSACTION_TYPE_NOT_SUPPORTED`
-
-                - `SUSPECTED_FRAUD`
-
-                '
-              enum:
-              - APPROVED
-              - PROCESSING_ERROR
-              - NON_SUPPORTED_CURRENCY
-              - NON_SUPPORTED_MCC_FOR_COUNTRY
-              - BLOCKED_COUNTRY
-              - TRANSACTION_TYPE_NOT_SUPPORTED
-              - SUSPECTED_FRAUD
-              example: APPROVED
-            fallback:
-              type: boolean
-              description: Indicating whether there was a fallback applied by Wise
-              example: true
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

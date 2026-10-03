@@ -340,64 +340,6 @@ components:
                     enum:
                     - FREE_FORM
                     example: FREE_FORM
-    AddressRequest:
-      type: object
-      description: Request payload for creating or updating an address.
-      required:
-      - profile
-      - details
-      properties:
-        profile:
-          type: integer
-          format: int64
-          description: User profile ID.
-          example: 12345678
-        details:
-          type: object
-          description: Address details.
-          required:
-          - country
-          - firstLine
-          - postCode
-          - city
-          properties:
-            country:
-              type: string
-              description: Country code (ISO 3166-1 alpha-2).
-              example: US
-            firstLine:
-              type: string
-              description: 'Address line: street, house, apartment.'
-              example: 50 Sunflower Ave
-            postCode:
-              type: string
-              description: Postal / zip code (max 30 characters).
-              maxLength: 30
-              example: '10025'
-            city:
-              type: string
-              description: City name.
-              example: Phoenix
-            state:
-              type: string
-              description: State code. Required if country is US, CA, BR, or AU.
-              example: AZ
-            occupations:
-              type: array
-              description: User occupations. Required for CA, IN, JP, ID, IL, MX, and within the US for state NM.
-              items:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    description: User occupation - any value permitted.
-                    example: Software Engineer
-                  format:
-                    type: string
-                    description: Occupation type - always `FREE_FORM`.
-                    enum:
-                    - FREE_FORM
-                    example: FREE_FORM
     AddressRequirementsResponse:
       type: array
       items:
@@ -495,6 +437,79 @@ components:
                             name:
                               type: string
                               description: Display name for the value.
+    AddressRequest:
+      type: object
+      description: Request payload for creating or updating an address.
+      required:
+      - profile
+      - details
+      properties:
+        profile:
+          type: integer
+          format: int64
+          description: User profile ID.
+          example: 12345678
+        details:
+          type: object
+          description: Address details.
+          required:
+          - country
+          - firstLine
+          - postCode
+          - city
+          properties:
+            country:
+              type: string
+              description: Country code (ISO 3166-1 alpha-2).
+              example: US
+            firstLine:
+              type: string
+              description: 'Address line: street, house, apartment.'
+              example: 50 Sunflower Ave
+            postCode:
+              type: string
+              description: Postal / zip code (max 30 characters).
+              maxLength: 30
+              example: '10025'
+            city:
+              type: string
+              description: City name.
+              example: Phoenix
+            state:
+              type: string
+              description: State code. Required if country is US, CA, BR, or AU.
+              example: AZ
+            occupations:
+              type: array
+              description: User occupations. Required for CA, IN, JP, ID, IL, MX, and within the US for state NM.
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: User occupation - any value permitted.
+                    example: Software Engineer
+                  format:
+                    type: string
+                    description: Occupation type - always `FREE_FORM`.
+                    enum:
+                    - FREE_FORM
+                    example: FREE_FORM
+  headers:
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -518,21 +533,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

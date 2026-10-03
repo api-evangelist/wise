@@ -953,430 +953,62 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
-    confirmations:
+    recipient-create-request:
       type: object
-      description: 'Verification results for the recipient''s details. Only populated for currencies with recipient verification enabled (KRW, INR, IDR, EUR). See the [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) guide for how to handle these.
+      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
 
         '
       properties:
-        acceptedOutcomes:
-          type: boolean
-          description: Whether we've received an explicit customer acceptance.
-          example: false
-        acceptedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp indicating time of outcome acceptance, `null` if has not been accepted.
-          example: null
-        quoteId:
-          type:
-          - string
-          - 'null'
-          description: If the confirmation check was run as part of a quote compatibility check, then the `quoteId` will be on the result. If `quoteId` is present, then the outcome acceptance will need the `quoteId` to be specified as well.
-          example: null
-        outcomes:
-          type: array
-          description: Array of confirmation outcomes. At the moment it is safe to assume that there is only one element in the outcomes list.
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                description: 'The type of confirmation. Possible values: `ACCOUNT_EXISTENCE`, `NAME_MATCHING`, `NAME_RESOLUTION`.'
-                example: NAME_MATCHING
-              timestamp:
-                type: string
-                format: date-time
-                description: Timestamp of when the confirmation check was performed.
-                example: '2024-11-11T23:58:11.105916743Z'
-              outcome:
-                type: string
-                description: 'The actual outcome of the confirmation. Possible values: `SUCCESS`, `PARTIAL_FAILURE`, `FAILURE`, `COULD_NOT_CHECK`.'
-                example: PARTIAL_FAILURE
-              requiresCustomerAcceptance:
-                type: boolean
-                description: Whether we require customer acceptance. Whether this value is true or false is dependent on the currency and the nature of the confirmation.
-                example: true
-              fieldsChecked:
-                type: array
-                description: Fields we used to confirm the account.
-                items:
-                  type: string
-                example:
-                - name/fullName
-                - details/accountNumber
-              providedName:
-                type: string
-                description: The name that the customer provided when creating the recipient account. Only populated for NAME_MATCHING and NAME_RESOLUTION types for certain outcomes.
-                example: John Doe
-              resolvedName:
-                type: string
-                description: The name that we resolved during name matching or name resolution.
-                example: Joe Doe
-              message:
-                type: string
-                description: Customer facing message about the outcome of the check.
-                example: The name entered is slightly different to the name on the account.
-              recommendedUpdates:
-                type: array
-                description: Shows what are the correct values for some of the fields we've checked.
-                items:
-                  type: object
-                  properties:
-                    path:
-                      type: string
-                      description: The field path to update.
-                      example: name/fullName
-                    value:
-                      type: string
-                      description: The recommended value for the field.
-                      example: Joe Doe
-    recipient-v1:
-      type: object
-      title: Recipient Account (v1)
-      description: 'Deprecated v1 recipient account object. For new integrations, use the v2 resource which includes additional fields such as `displayFields`, `accountSummary`, and `longAccountSummary`.
-
-        '
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Recipient account ID.
-          example: 40000000
-        business:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Business profile ID (if applicable).
-          example: null
+        currency:
+          type: string
+          description: 3 character currency code.
+          example: GBP
+        type:
+          type: string
+          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
+          example: sort_code
         profile:
           type: integer
           format: int64
-          description: Personal or business profile ID.
+          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
           example: 30000000
         accountHolderName:
           type: string
           description: Recipient full name.
           example: John Doe
-        currency:
-          type: string
-          description: 3 character currency code.
-          example: GBP
-        country:
-          type: string
-          description: 2 character country code.
-          example: GB
-        type:
-          type: string
-          description: Recipient type.
-          example: sort_code
+        ownedByCustomer:
+          type: boolean
+          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
+
+            '
+          example: true
         details:
           type: object
-          description: Currency-specific fields. All possible fields are returned, with unused fields set to `null`.
+          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
+
+            '
           properties:
             legalType:
               type: string
-              description: Recipient legal type.
+              description: Recipient legal type (when applicable).
+              enum:
+              - PRIVATE
+              - BUSINESS
               example: PRIVATE
             sortCode:
               type: string
-              description: Recipient bank sort code (GBP example).
+              description: Sort code (GBP example).
               example: '040075'
             accountNumber:
               type: string
-              description: Recipient bank account number (GBP example).
+              description: Account number (GBP example).
               example: '37778842'
+            dateOfBirth:
+              type: string
+              description: Date of birth in ISO 8601 date format (Optional for GBP example).
+              example: '1961-01-01'
           additionalProperties: true
-        user:
-          type: integer
-          format: int64
-          description: User that created or owns this recipient.
-          example: 10000000
-        active:
-          type: boolean
-          description: Status of the recipient.
-          example: true
-        ownedByCustomer:
-          type: boolean
-          description: Whether this account is owned by the sending user.
-          example: false
-        confirmations:
-          type: object
-          description: Verification results for the recipient's details.
-          properties:
-            acceptedOutcomes:
-              type: boolean
-              example: false
-            acceptedAt:
-              type:
-              - string
-              - 'null'
-              format: date-time
-              example: null
-            quoteId:
-              type:
-              - string
-              - 'null'
-              example: null
-            outcomes:
-              type: array
-              items:
-                type: object
-    account-requirements-response:
-      type: array
-      description: 'Dynamic account-requirements response used to build recipient forms. The structure and the fields returned vary by currency, recipient type, route, and sometimes previously provided inputs. Treat this as a schema for a dynamically generated form definition rather than a fixed set of recipient fields.
-
-        '
-      items:
-        type: object
-        description: A requirement group for a specific payout method / route.
-        properties:
-          type:
-            type: string
-            description: Requirement group identifier (route/payout-method specific).
-            example: south_korean_paygate
-          title:
-            type: string
-            description: Human-readable title for the requirement group.
-            example: PayGate
-          usageInfo:
-            type: string
-            description: Optional usage/help text.
-            example: null
-          fields:
-            type: array
-            description: List of UI field groups to collect required data.
-            items:
-              type: object
-              description: Group of related fields shown together in UI.
-              properties:
-                name:
-                  type: string
-                  description: Display name of this group.
-                  example: E-mail
-                group:
-                  type: array
-                  description: The actual fields within this group.
-                  items:
-                    type: object
-                    description: A single field descriptor.
-                    properties:
-                      key:
-                        type: string
-                        description: Key to include in JSON when submitting recipient details.
-                        example: email
-                      name:
-                        type: string
-                        description: Human-readable label.
-                        example: E-mail
-                      type:
-                        type: string
-                        description: UI field type.
-                        example: text
-                      refreshRequirementsOnChange:
-                        type: boolean
-                        description: 'If true, changing this field can alter requirements; call the POST account-requirements endpoint with updated data to refresh requirements.
-
-                          '
-                        example: false
-                      required:
-                        type: boolean
-                        description: Indicates whether this field is mandatory.
-                        example: true
-                      displayFormat:
-                        type: string
-                        description: Optional display formatting hint.
-                        example: null
-                      example:
-                        type: string
-                        description: Example value for the field (may be empty string).
-                        example: example@example.ex
-                      minLength:
-                        type: integer
-                        description: Minimum allowed length, when applicable.
-                        example: null
-                      maxLength:
-                        type: integer
-                        description: Maximum allowed length, when applicable.
-                        example: null
-                      validationRegexp:
-                        type: string
-                        description: Regex pattern for validation, when applicable.
-                        example: ^[^\s]+@[^\s]+\.[^\s]{2,}$
-                      validationAsync:
-                        type: string
-                        deprecated: true
-                        description: Deprecated. This validation will instead be performed when submitting the request.
-                        example: null
-                      valuesAllowed:
-                        type:
-                        - array
-                        - 'null'
-                        description: Allowed values for select/radio inputs; null for free-text/date inputs.
-                        items:
-                          type: object
-                          properties:
-                            key:
-                              type: string
-                              description: Machine-readable value.
-                              example: PRIVATE
-                            name:
-                              type: string
-                              description: Human-readable value label.
-                              example: Person
-      example:
-      - type: south_korean_paygate
-        title: PayGate
-        usageInfo: null
-        fields:
-        - name: E-mail
-          group:
-          - key: email
-            name: E-mail
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: example@example.ex
-            minLength: null
-            maxLength: null
-            validationRegexp: ^[^\s]+@[^\s]+\.[^\s]{2,}$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient type
-          group:
-          - key: legalType
-            name: Recipient type
-            type: select
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: null
-            maxLength: null
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed:
-            - key: PRIVATE
-              name: Person
-        - name: Full Name
-          group:
-          - key: accountHolderName
-            name: Full Name
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: 2
-            maxLength: 140
-            validationRegexp: ^[0-9A-Za-zÀ-ÖØ-öø-ÿ-_()'*,.%#^@{}~<>+$"\[\]\\ ]+$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient's Date of Birth
-          group:
-          - key: dateOfBirth
-            name: Recipient's Date of Birth
-            type: date
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: null
-            maxLength: null
-            validationRegexp: ^\d{4}\-\d{2}\-\d{2}$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient Bank Name
-          group:
-          - key: bankCode
-            name: Recipient Bank Name
-            type: select
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: Choose recipient bank
-            minLength: null
-            maxLength: null
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed:
-            - key: ''
-              name: Choose recipient bank
-            - key: '004'
-              name: Example Bank A
-            - key: '011'
-              name: Example Bank B
-        - name: Account number (KRW accounts only)
-          group:
-          - key: accountNumber
-            name: Account number (KRW accounts only)
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: '1254693521232'
-            minLength: 10
-            maxLength: 16
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed: null
     recipient:
       type: object
       title: Recipient Account
@@ -1608,61 +1240,429 @@ components:
                           type: string
                           description: The recommended value for the field.
                           example: Joe Doe
-    recipient-create-request:
+    account-requirements-response:
+      type: array
+      description: 'Dynamic account-requirements response used to build recipient forms. The structure and the fields returned vary by currency, recipient type, route, and sometimes previously provided inputs. Treat this as a schema for a dynamically generated form definition rather than a fixed set of recipient fields.
+
+        '
+      items:
+        type: object
+        description: A requirement group for a specific payout method / route.
+        properties:
+          type:
+            type: string
+            description: Requirement group identifier (route/payout-method specific).
+            example: south_korean_paygate
+          title:
+            type: string
+            description: Human-readable title for the requirement group.
+            example: PayGate
+          usageInfo:
+            type: string
+            description: Optional usage/help text.
+            example: null
+          fields:
+            type: array
+            description: List of UI field groups to collect required data.
+            items:
+              type: object
+              description: Group of related fields shown together in UI.
+              properties:
+                name:
+                  type: string
+                  description: Display name of this group.
+                  example: E-mail
+                group:
+                  type: array
+                  description: The actual fields within this group.
+                  items:
+                    type: object
+                    description: A single field descriptor.
+                    properties:
+                      key:
+                        type: string
+                        description: Key to include in JSON when submitting recipient details.
+                        example: email
+                      name:
+                        type: string
+                        description: Human-readable label.
+                        example: E-mail
+                      type:
+                        type: string
+                        description: UI field type.
+                        example: text
+                      refreshRequirementsOnChange:
+                        type: boolean
+                        description: 'If true, changing this field can alter requirements; call the POST account-requirements endpoint with updated data to refresh requirements.
+
+                          '
+                        example: false
+                      required:
+                        type: boolean
+                        description: Indicates whether this field is mandatory.
+                        example: true
+                      displayFormat:
+                        type: string
+                        description: Optional display formatting hint.
+                        example: null
+                      example:
+                        type: string
+                        description: Example value for the field (may be empty string).
+                        example: example@example.ex
+                      minLength:
+                        type: integer
+                        description: Minimum allowed length, when applicable.
+                        example: null
+                      maxLength:
+                        type: integer
+                        description: Maximum allowed length, when applicable.
+                        example: null
+                      validationRegexp:
+                        type: string
+                        description: Regex pattern for validation, when applicable.
+                        example: ^[^\s]+@[^\s]+\.[^\s]{2,}$
+                      validationAsync:
+                        type: string
+                        deprecated: true
+                        description: Deprecated. This validation will instead be performed when submitting the request.
+                        example: null
+                      valuesAllowed:
+                        type:
+                        - array
+                        - 'null'
+                        description: Allowed values for select/radio inputs; null for free-text/date inputs.
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              description: Machine-readable value.
+                              example: PRIVATE
+                            name:
+                              type: string
+                              description: Human-readable value label.
+                              example: Person
+      example:
+      - type: south_korean_paygate
+        title: PayGate
+        usageInfo: null
+        fields:
+        - name: E-mail
+          group:
+          - key: email
+            name: E-mail
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: example@example.ex
+            minLength: null
+            maxLength: null
+            validationRegexp: ^[^\s]+@[^\s]+\.[^\s]{2,}$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient type
+          group:
+          - key: legalType
+            name: Recipient type
+            type: select
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: null
+            maxLength: null
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed:
+            - key: PRIVATE
+              name: Person
+        - name: Full Name
+          group:
+          - key: accountHolderName
+            name: Full Name
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: 2
+            maxLength: 140
+            validationRegexp: ^[0-9A-Za-zÀ-ÖØ-öø-ÿ-_()'*,.%#^@{}~<>+$"\[\]\\ ]+$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient's Date of Birth
+          group:
+          - key: dateOfBirth
+            name: Recipient's Date of Birth
+            type: date
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: null
+            maxLength: null
+            validationRegexp: ^\d{4}\-\d{2}\-\d{2}$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient Bank Name
+          group:
+          - key: bankCode
+            name: Recipient Bank Name
+            type: select
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: Choose recipient bank
+            minLength: null
+            maxLength: null
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed:
+            - key: ''
+              name: Choose recipient bank
+            - key: '004'
+              name: Example Bank A
+            - key: '011'
+              name: Example Bank B
+        - name: Account number (KRW accounts only)
+          group:
+          - key: accountNumber
+            name: Account number (KRW accounts only)
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: '1254693521232'
+            minLength: 10
+            maxLength: 16
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed: null
+    recipient-v1:
       type: object
-      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
+      title: Recipient Account (v1)
+      description: 'Deprecated v1 recipient account object. For new integrations, use the v2 resource which includes additional fields such as `displayFields`, `accountSummary`, and `longAccountSummary`.
 
         '
       properties:
-        currency:
-          type: string
-          description: 3 character currency code.
-          example: GBP
-        type:
-          type: string
-          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
-          example: sort_code
+        id:
+          type: integer
+          format: int64
+          description: Recipient account ID.
+          example: 40000000
+        business:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Business profile ID (if applicable).
+          example: null
         profile:
           type: integer
           format: int64
-          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
+          description: Personal or business profile ID.
           example: 30000000
         accountHolderName:
           type: string
           description: Recipient full name.
           example: John Doe
-        ownedByCustomer:
-          type: boolean
-          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
-
-            '
-          example: true
+        currency:
+          type: string
+          description: 3 character currency code.
+          example: GBP
+        country:
+          type: string
+          description: 2 character country code.
+          example: GB
+        type:
+          type: string
+          description: Recipient type.
+          example: sort_code
         details:
           type: object
-          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
-
-            '
+          description: Currency-specific fields. All possible fields are returned, with unused fields set to `null`.
           properties:
             legalType:
               type: string
-              description: Recipient legal type (when applicable).
-              enum:
-              - PRIVATE
-              - BUSINESS
+              description: Recipient legal type.
               example: PRIVATE
             sortCode:
               type: string
-              description: Sort code (GBP example).
+              description: Recipient bank sort code (GBP example).
               example: '040075'
             accountNumber:
               type: string
-              description: Account number (GBP example).
+              description: Recipient bank account number (GBP example).
               example: '37778842'
-            dateOfBirth:
-              type: string
-              description: Date of birth in ISO 8601 date format (Optional for GBP example).
-              example: '1961-01-01'
           additionalProperties: true
+        user:
+          type: integer
+          format: int64
+          description: User that created or owns this recipient.
+          example: 10000000
+        active:
+          type: boolean
+          description: Status of the recipient.
+          example: true
+        ownedByCustomer:
+          type: boolean
+          description: Whether this account is owned by the sending user.
+          example: false
+        confirmations:
+          type: object
+          description: Verification results for the recipient's details.
+          properties:
+            acceptedOutcomes:
+              type: boolean
+              example: false
+            acceptedAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+              example: null
+            quoteId:
+              type:
+              - string
+              - 'null'
+              example: null
+            outcomes:
+              type: array
+              items:
+                type: object
+    confirmations:
+      type: object
+      description: 'Verification results for the recipient''s details. Only populated for currencies with recipient verification enabled (KRW, INR, IDR, EUR). See the [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) guide for how to handle these.
+
+        '
+      properties:
+        acceptedOutcomes:
+          type: boolean
+          description: Whether we've received an explicit customer acceptance.
+          example: false
+        acceptedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp indicating time of outcome acceptance, `null` if has not been accepted.
+          example: null
+        quoteId:
+          type:
+          - string
+          - 'null'
+          description: If the confirmation check was run as part of a quote compatibility check, then the `quoteId` will be on the result. If `quoteId` is present, then the outcome acceptance will need the `quoteId` to be specified as well.
+          example: null
+        outcomes:
+          type: array
+          description: Array of confirmation outcomes. At the moment it is safe to assume that there is only one element in the outcomes list.
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: 'The type of confirmation. Possible values: `ACCOUNT_EXISTENCE`, `NAME_MATCHING`, `NAME_RESOLUTION`.'
+                example: NAME_MATCHING
+              timestamp:
+                type: string
+                format: date-time
+                description: Timestamp of when the confirmation check was performed.
+                example: '2024-11-11T23:58:11.105916743Z'
+              outcome:
+                type: string
+                description: 'The actual outcome of the confirmation. Possible values: `SUCCESS`, `PARTIAL_FAILURE`, `FAILURE`, `COULD_NOT_CHECK`.'
+                example: PARTIAL_FAILURE
+              requiresCustomerAcceptance:
+                type: boolean
+                description: Whether we require customer acceptance. Whether this value is true or false is dependent on the currency and the nature of the confirmation.
+                example: true
+              fieldsChecked:
+                type: array
+                description: Fields we used to confirm the account.
+                items:
+                  type: string
+                example:
+                - name/fullName
+                - details/accountNumber
+              providedName:
+                type: string
+                description: The name that the customer provided when creating the recipient account. Only populated for NAME_MATCHING and NAME_RESOLUTION types for certain outcomes.
+                example: John Doe
+              resolvedName:
+                type: string
+                description: The name that we resolved during name matching or name resolution.
+                example: Joe Doe
+              message:
+                type: string
+                description: Customer facing message about the outcome of the check.
+                example: The name entered is slightly different to the name on the account.
+              recommendedUpdates:
+                type: array
+                description: Shows what are the correct values for some of the fields we've checked.
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      description: The field path to update.
+                      example: name/fullName
+                    value:
+                      type: string
+                      description: The recommended value for the field.
+                      example: Joe Doe
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

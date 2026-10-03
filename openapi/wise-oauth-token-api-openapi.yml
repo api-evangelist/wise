@@ -98,7 +98,37 @@ paths:
       parameters:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   schemas:
+    refresh-token-grant:
+      type: object
+      required:
+      - grant_type
+      - refresh_token
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - refresh_token
+          example: refresh_token
+        refresh_token:
+          type: string
+          description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
     authorization-code-grant:
       type: object
       required:
@@ -134,21 +164,6 @@ components:
           enum:
           - client_credentials
           example: client_credentials
-    refresh-token-grant:
-      type: object
-      required:
-      - grant_type
-      - refresh_token
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - refresh_token
-          example: refresh_token
-        refresh_token:
-          type: string
-          description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
     registration-code-grant:
       type: object
       required:
@@ -257,21 +272,6 @@ components:
         application/json:
           schema:
             type: object
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   parameters:
     X-External-Correlation-Id:
       x-global: true

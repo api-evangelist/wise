@@ -3264,75 +3264,6 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    address:
-      type: object
-      description: Address associated with a profile.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the address.
-          example: 36086782
-        addressFirstLine:
-          type: string
-          description: First line of the address.
-          example: 24 Willow Creek Lane
-        city:
-          type: string
-          description: City of the address.
-          example: Bristol
-        countryIso2Code:
-          type: string
-          description: Two-letter ISO country code.
-          example: GB
-        countryIso3Code:
-          type: string
-          description: Three-letter ISO country code.
-          example: gbr
-        postCode:
-          type: string
-          description: Postal code of the address.
-          example: BS1 6AE
-        stateCode:
-          type:
-          - string
-          - 'null'
-          description: State code of the address (can be null for some countries).
-          example: null
-    ubo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID of the ultimate beneficial owner.
-          example: 013ab1c2688d0185b582ee7e0bcb28b2
-        name:
-          type: string
-          description: Owner full name.
-          example: John Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
-        addressFirstLine:
-          type: string
-          description: First line of address.
-          example: 123 Fake St
-        postCode:
-          type: string
-          description: Address post code.
-          example: FK 12345
-        ownershipPercentage:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          description: Percentage of ownership.
-          example: 30
     profile:
       title: Profile
       x-tags:
@@ -3470,6 +3401,75 @@ components:
           type: string
           description: 3 character country code.
           example: usa
+    address:
+      type: object
+      description: Address associated with a profile.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the address.
+          example: 36086782
+        addressFirstLine:
+          type: string
+          description: First line of the address.
+          example: 24 Willow Creek Lane
+        city:
+          type: string
+          description: City of the address.
+          example: Bristol
+        countryIso2Code:
+          type: string
+          description: Two-letter ISO country code.
+          example: GB
+        countryIso3Code:
+          type: string
+          description: Three-letter ISO country code.
+          example: gbr
+        postCode:
+          type: string
+          description: Postal code of the address.
+          example: BS1 6AE
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: State code of the address (can be null for some countries).
+          example: null
+    ubo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the ultimate beneficial owner.
+          example: 013ab1c2688d0185b582ee7e0bcb28b2
+        name:
+          type: string
+          description: Owner full name.
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+        addressFirstLine:
+          type: string
+          description: First line of address.
+          example: 123 Fake St
+        postCode:
+          type: string
+          description: Address post code.
+          example: FK 12345
+        ownershipPercentage:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Percentage of ownership.
+          example: 30
     business-profile:
       title: Business Profile
       type: object
@@ -3582,6 +3582,21 @@ components:
           type: string
           description: Full legal name of the business.
           example: Innovate Solutions Ltd
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
@@ -3614,21 +3629,6 @@ components:
       description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
 
         '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-  headers:
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
       schema:
         type: string
         format: uuid
