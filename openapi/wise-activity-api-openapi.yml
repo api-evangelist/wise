@@ -123,38 +123,59 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   schemas:
-    ActivityType:
-      type: string
-      description: Type of Activity.
-      example: CARD_PAYMENT
-      enum:
-      - ACQUIRING_PAYMENT
-      - AUTO_CONVERSION
-      - BALANCE_ADJUSTMENT
-      - BALANCE_ASSET_FEE
-      - BALANCE_CASHBACK
-      - BALANCE_DEPOSIT
-      - BALANCE_HOLD_FEE
-      - BALANCE_INTEREST
-      - BANK_DETAILS_ORDER
-      - BATCH_TRANSFER
-      - CARD_CASHBACK
-      - CARD_CHECK
-      - CARD_ORDER
-      - CARD_PAYMENT
-      - CASH_WITHDRAWAL
-      - CLAIMABLE_SEND_ORDER
-      - DIRECT_DEBIT_TRANSACTION
-      - EXCESS_REFUND
-      - FEE_REFUND
-      - INCORPORATION_ORDER
-      - INTERBALANCE
-      - PAYMENT_REQUEST
-      - PREFUNDING_TRANSFER
-      - REWARD
-      - SCHEDULED_SEND_ORDER
-      - TRANSFER
     ActivityStatus:
       type: string
       description: 'Status of the Activity.
@@ -177,6 +198,34 @@ components:
       - UPCOMING
       - COMPLETED
       - CANCELLED
+    ActivityResourceType:
+      type: string
+      description: Type of Activity Monetary Resource.
+      example: TRANSFER
+      enum:
+      - ACCRUAL_CHARGE
+      - ACQUIRING_PAYMENT
+      - ASSETS_WITHDRAWAL
+      - BALANCE_CASHBACK
+      - BALANCE_INTEREST
+      - BALANCE_TRANSACTION
+      - BANK_DETAILS_ORDER
+      - BATCH_TRANSFER
+      - CARD_CASHBACK
+      - CARD_ORDER
+      - CARD_TRANSACTION
+      - DIRECT_DEBIT_INSTRUCTION
+      - DIRECT_DEBIT_TRANSACTION
+      - FEE_REFUND
+      - INCIDENT_REFUND
+      - INCORPORATION_ORDER
+      - OPERATIONAL_TRANSACTION
+      - PAYMENT_REQUEST
+      - REWARD
+      - REWARDS_REDEMPTION
+      - SEND_ORDER
+      - SEND_ORDER_EXECUTION
+      - TRANSFER
     Activity:
       type: object
       description: Activity represents a snapshot of a performed action for a profile.
@@ -258,86 +307,37 @@ components:
           format: date-time
           description: Timestamp when the activity was last modified.
           example: '2023-01-01T00:00:00.000Z'
-    ActivityResourceType:
+    ActivityType:
       type: string
-      description: Type of Activity Monetary Resource.
-      example: TRANSFER
+      description: Type of Activity.
+      example: CARD_PAYMENT
       enum:
-      - ACCRUAL_CHARGE
       - ACQUIRING_PAYMENT
-      - ASSETS_WITHDRAWAL
+      - AUTO_CONVERSION
+      - BALANCE_ADJUSTMENT
+      - BALANCE_ASSET_FEE
       - BALANCE_CASHBACK
+      - BALANCE_DEPOSIT
+      - BALANCE_HOLD_FEE
       - BALANCE_INTEREST
-      - BALANCE_TRANSACTION
       - BANK_DETAILS_ORDER
       - BATCH_TRANSFER
       - CARD_CASHBACK
+      - CARD_CHECK
       - CARD_ORDER
-      - CARD_TRANSACTION
-      - DIRECT_DEBIT_INSTRUCTION
+      - CARD_PAYMENT
+      - CASH_WITHDRAWAL
+      - CLAIMABLE_SEND_ORDER
       - DIRECT_DEBIT_TRANSACTION
+      - EXCESS_REFUND
       - FEE_REFUND
-      - INCIDENT_REFUND
       - INCORPORATION_ORDER
-      - OPERATIONAL_TRANSACTION
+      - INTERBALANCE
       - PAYMENT_REQUEST
+      - PREFUNDING_TRANSFER
       - REWARD
-      - REWARDS_REDEMPTION
-      - SEND_ORDER
-      - SEND_ORDER_EXECUTION
+      - SCHEDULED_SEND_ORDER
       - TRANSFER
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

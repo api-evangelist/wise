@@ -98,22 +98,18 @@ paths:
       parameters:
       - $ref: '#/components/parameters/X-External-Correlation-Id'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   schemas:
+    client-credentials-grant:
+      type: object
+      required:
+      - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - client_credentials
+          example: client_credentials
     refresh-token-grant:
       type: object
       required:
@@ -129,41 +125,6 @@ components:
         refresh_token:
           type: string
           description: Refresh token obtained from a `registration_code` or `authorization_code` grant.
-    authorization-code-grant:
-      type: object
-      required:
-      - grant_type
-      - client_id
-      - code
-      - redirect_uri
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - authorization_code
-          example: authorization_code
-        client_id:
-          type: string
-          description: Your API client ID.
-        code:
-          type: string
-          description: Authorisation code provided upon redirect back from the authorisation flow.
-        redirect_uri:
-          type: string
-          description: Registered redirect URL coordinated with Wise during onboarding.
-          example: https://www.yourapp.com
-    client-credentials-grant:
-      type: object
-      required:
-      - grant_type
-      properties:
-        grant_type:
-          type: string
-          description: OAuth 2.0 grant type.
-          enum:
-          - client_credentials
-          example: client_credentials
     registration-code-grant:
       type: object
       required:
@@ -188,6 +149,30 @@ components:
         registration_code:
           type: string
           description: Registration code obtained when creating the user via `POST /v1/user/signup/registration_code`.
+    authorization-code-grant:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - code
+      - redirect_uri
+      properties:
+        grant_type:
+          type: string
+          description: OAuth 2.0 grant type.
+          enum:
+          - authorization_code
+          example: authorization_code
+        client_id:
+          type: string
+          description: Your API client ID.
+        code:
+          type: string
+          description: Authorisation code provided upon redirect back from the authorisation flow.
+        redirect_uri:
+          type: string
+          description: Registered redirect URL coordinated with Wise during onboarding.
+          example: https://www.yourapp.com
     token-response:
       type: object
       properties:
@@ -249,6 +234,35 @@ components:
 
             '
           example: '2020-01-01T12:33:33.12345Z'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -272,20 +286,6 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

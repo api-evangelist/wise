@@ -1580,72 +1580,6 @@ webhooks:
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
   schemas:
-    v4.0.0:
-      title: Schema version 4.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 4.0.0
-          example: 4.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 01234567-89ab-cdef-0123-456789abcdef
-        event_type:
-          type: string
-          description: Event type identifier
-          example: transfers#state-change
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2020-01-01T12:34:56.123Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                type:
-                  type: string
-                  description: Resource type
-                  example: transfer
-                id:
-                  type: integer
-                  format: int64
-                  description: Transfer ID
-                  example: 111
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: Profile ID of the transfer owner
-                  example: 222
-                account_id:
-                  type: integer
-                  format: int64
-                  description: Recipient account ID
-                  example: 333
-            current_state:
-              type: string
-              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
-
-                '
-              example: processing
-            previous_state:
-              type:
-              - string
-              - 'null'
-              description: Previous transfer status. Note that this will be null for newly created transfers.
-              example: incoming_payment_waiting
-            occurred_at:
-              type: string
-              format: date-time
-              description: Timestamp when the state change occurred
-              example: '2020-01-01T12:34:56.789Z'
     payment:
       title: Payment
       type: object
@@ -1749,189 +1683,72 @@ components:
               format: date-time
               description: Timestamp when the state change occurred
               example: '2020-01-01T12:34:56Z'
-    originator-transfer:
-      title: Originator Transfer
-      x-tags:
-      - transfer
+    v4.0.0:
+      title: Schema version 4.0.0
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          description: Transfer ID
-          example: 16521632
-        user:
-          type: integer
-          format: int64
-          description: Your user ID
-          example: 4342275
-        targetAccount:
-          type: integer
-          format: int64
-          description: Recipient account ID
-          example: 8692237
-        sourceAccount:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Refund recipient account ID
-          example: null
-        quote:
+        schema_version:
           type: string
-          description: Quote ID
-          example: 8fa9be20-ba43-4b15-abbb-9424e1481050
-        status:
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 4.0.0
+          example: 4.0.0
+        subscription_id:
           type: string
-          description: Transfer current status. See [Tracking Transfers](/guides/product/send-money/tracking-transfers) for all possible statuses.
-          example: cancelled
-        reference:
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 01234567-89ab-cdef-0123-456789abcdef
+        event_type:
           type: string
-          description: Deprecated, use `details.reference` instead
-          deprecated: true
-          example: reference text
-        rate:
-          type: number
-          description: Exchange rate value
-          example: 0.89
-        created:
+          description: Event type identifier
+          example: transfers#state-change
+        sent_at:
           type: string
           format: date-time
-          description: Timestamp when transfer was created
-          example: '2025-10-29T12:28:16.000Z'
-        business:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Your business profile ID
-          example: null
-        transferRequest:
-          type:
-          - integer
-          - 'null'
-          description: Deprecated
-          deprecated: true
-          example: null
-        details:
+          description: Timestamp when the event was sent
+          example: '2020-01-01T12:34:56.123Z'
+        data:
           type: object
           properties:
-            reference:
-              type: string
-              description: Payment reference text
-              example: Testing
-        originator:
-          type: object
-          description: Data block to capture payment originator details
-          properties:
-            legalEntityType:
-              type: string
-              enum:
-              - PRIVATE
-              - BUSINESS
-              description: Payment originator legal type
-              example: PRIVATE
-            reference:
-              type: string
-              description: Unique customer ID in your system
-              example: CST-2991992
-            name:
+            resource:
               type: object
               properties:
-                givenName:
+                type:
                   type: string
-                  description: Payment originator first name
-                  example: John
-                middleNames:
-                  type: array
-                  items:
-                    type: string
-                  description: Payment originator middle name(s)
-                  example:
-                  - Ryan
-                familyName:
-                  type: string
-                  description: Payment originator family name
-                  example: Godspeed
-                patronymicName:
-                  type:
-                  - string
-                  - 'null'
-                  description: Payment originator patronymic name
-                  example: null
-                fullName:
-                  type: string
-                  description: Payment originator full legal name
-                  example: John Godspeed
-            dateOfBirth:
+                  description: Resource type
+                  example: transfer
+                id:
+                  type: integer
+                  format: int64
+                  description: Transfer ID
+                  example: 111
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: Profile ID of the transfer owner
+                  example: 222
+                account_id:
+                  type: integer
+                  format: int64
+                  description: Recipient account ID
+                  example: 333
+            current_state:
               type: string
-              format: date
-              description: Payment originator date of birth
-              example: '1977-07-01'
-            businessRegistrationCode:
+              description: 'Current transfer status. See [Transfer Statuses](/guides/product/send-money/tracking-transfers) for possible values.
+
+                '
+              example: processing
+            previous_state:
               type:
               - string
               - 'null'
-              description: Payment originator business registry or incorporation number
-              example: null
-            address:
-              type: object
-              properties:
-                firstLine:
-                  type: string
-                  description: Payment originator address first line
-                  example: Salu tee 14
-                city:
-                  type: string
-                  description: Payment originator address city
-                  example: Tallinn
-                stateCode:
-                  type:
-                  - string
-                  - 'null'
-                  description: Payment originator address state code
-                  example: null
-                countryCode:
-                  type: string
-                  description: Payment originator address country code ISO 3166-1 alpha-2
-                  example: EE
-                postCode:
-                  type: string
-                  description: Payment originator address zip code
-                  example: '12112'
-            accountDetails:
+              description: Previous transfer status. Note that this will be null for newly created transfers.
+              example: incoming_payment_waiting
+            occurred_at:
               type: string
-              description: Originator account number
-              example: '23456789'
-        hasActiveIssues:
-          type: boolean
-          description: Are there any pending issues which stop executing the transfer?
-          example: false
-        sourceCurrency:
-          type: string
-          description: Source currency code
-          example: EUR
-        sourceValue:
-          type: number
-          description: Transfer amount in source currency
-          example: 0
-        targetCurrency:
-          type: string
-          description: Target currency code
-          example: GBP
-        targetValue:
-          type: number
-          description: Transfer amount in target currency
-          example: 150
-        originalTransferId:
-          type: string
-          description: Unique identifier randomly generated per transfer request by the calling client
-          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
-        payinSessionId:
-          type: string
-          format: uuid
-          description: ID of the Payin Session generated for the transfer, which can be used for certain payin methods when funding the transfer
-          example: 23330542-8e9e-419f-95eb-312b880f92ad
+              format: date-time
+              description: Timestamp when the state change occurred
+              example: '2020-01-01T12:34:56.789Z'
     transfer:
       title: Standard Transfer
       x-tags:
@@ -2180,6 +1997,189 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
+    originator-transfer:
+      title: Originator Transfer
+      x-tags:
+      - transfer
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Transfer ID
+          example: 16521632
+        user:
+          type: integer
+          format: int64
+          description: Your user ID
+          example: 4342275
+        targetAccount:
+          type: integer
+          format: int64
+          description: Recipient account ID
+          example: 8692237
+        sourceAccount:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Refund recipient account ID
+          example: null
+        quote:
+          type: string
+          description: Quote ID
+          example: 8fa9be20-ba43-4b15-abbb-9424e1481050
+        status:
+          type: string
+          description: Transfer current status. See [Tracking Transfers](/guides/product/send-money/tracking-transfers) for all possible statuses.
+          example: cancelled
+        reference:
+          type: string
+          description: Deprecated, use `details.reference` instead
+          deprecated: true
+          example: reference text
+        rate:
+          type: number
+          description: Exchange rate value
+          example: 0.89
+        created:
+          type: string
+          format: date-time
+          description: Timestamp when transfer was created
+          example: '2025-10-29T12:28:16.000Z'
+        business:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Your business profile ID
+          example: null
+        transferRequest:
+          type:
+          - integer
+          - 'null'
+          description: Deprecated
+          deprecated: true
+          example: null
+        details:
+          type: object
+          properties:
+            reference:
+              type: string
+              description: Payment reference text
+              example: Testing
+        originator:
+          type: object
+          description: Data block to capture payment originator details
+          properties:
+            legalEntityType:
+              type: string
+              enum:
+              - PRIVATE
+              - BUSINESS
+              description: Payment originator legal type
+              example: PRIVATE
+            reference:
+              type: string
+              description: Unique customer ID in your system
+              example: CST-2991992
+            name:
+              type: object
+              properties:
+                givenName:
+                  type: string
+                  description: Payment originator first name
+                  example: John
+                middleNames:
+                  type: array
+                  items:
+                    type: string
+                  description: Payment originator middle name(s)
+                  example:
+                  - Ryan
+                familyName:
+                  type: string
+                  description: Payment originator family name
+                  example: Godspeed
+                patronymicName:
+                  type:
+                  - string
+                  - 'null'
+                  description: Payment originator patronymic name
+                  example: null
+                fullName:
+                  type: string
+                  description: Payment originator full legal name
+                  example: John Godspeed
+            dateOfBirth:
+              type: string
+              format: date
+              description: Payment originator date of birth
+              example: '1977-07-01'
+            businessRegistrationCode:
+              type:
+              - string
+              - 'null'
+              description: Payment originator business registry or incorporation number
+              example: null
+            address:
+              type: object
+              properties:
+                firstLine:
+                  type: string
+                  description: Payment originator address first line
+                  example: Salu tee 14
+                city:
+                  type: string
+                  description: Payment originator address city
+                  example: Tallinn
+                stateCode:
+                  type:
+                  - string
+                  - 'null'
+                  description: Payment originator address state code
+                  example: null
+                countryCode:
+                  type: string
+                  description: Payment originator address country code ISO 3166-1 alpha-2
+                  example: EE
+                postCode:
+                  type: string
+                  description: Payment originator address zip code
+                  example: '12112'
+            accountDetails:
+              type: string
+              description: Originator account number
+              example: '23456789'
+        hasActiveIssues:
+          type: boolean
+          description: Are there any pending issues which stop executing the transfer?
+          example: false
+        sourceCurrency:
+          type: string
+          description: Source currency code
+          example: EUR
+        sourceValue:
+          type: number
+          description: Transfer amount in source currency
+          example: 0
+        targetCurrency:
+          type: string
+          description: Target currency code
+          example: GBP
+        targetValue:
+          type: number
+          description: Transfer amount in target currency
+          example: 150
+        originalTransferId:
+          type: string
+          description: Unique identifier randomly generated per transfer request by the calling client
+          example: 54a6bc09-cef9-49a8-9041-f1f0c654cd88
+        payinSessionId:
+          type: string
+          format: uuid
+          description: ID of the Payin Session generated for the transfer, which can be used for certain payin methods when funding the transfer
+          example: 23330542-8e9e-419f-95eb-312b880f92ad
     v2.0.0-2:
       title: Schema version 2.0.0
       type: object
@@ -2236,49 +2236,6 @@ components:
               description: Ongoing issues related to the transfer
               example:
               - deposit_amount_less_invoice
-  parameters:
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
-      schema:
-        type: boolean
-      example: true
-    x-delivery-id:
-      name: X-Delivery-Id
-      in: header
-      required: false
-      description: Unique identifier for this webhook delivery attempt.
-      schema:
-        type: string
-        format: uuid
-      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
-      schema:
-        type: string
-      example: t7FMhk3OARMgwqz0LJXO...
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -2294,6 +2251,49 @@ components:
       schema:
         type: string
       example: fba501b6d453b96789f52338f019341f
+  parameters:
+    x-delivery-id:
+      name: X-Delivery-Id
+      in: header
+      required: false
+      description: Unique identifier for this webhook delivery attempt.
+      schema:
+        type: string
+        format: uuid
+      example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
   responses:
     '429':
       x-global: true

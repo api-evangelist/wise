@@ -480,20 +480,6 @@ components:
       schema:
         type: string
       example: fba501b6d453b96789f52338f019341f
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
     card-limits:
       title: Card Limits
@@ -722,6 +708,20 @@ components:
                   format: date-time
                   description: The time when the limit gets reset. ISO-8601 timestamp with timezone.
                   example: '2023-07-31T22:59:59.999999999Z'
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true

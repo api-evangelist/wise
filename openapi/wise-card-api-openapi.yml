@@ -560,17 +560,22 @@ webhooks:
                     example: ok
           description: Return any `2xx` status to acknowledge receipt of the event.
 components:
-  parameters:
-    x-test-notification:
-      name: X-Test-Notification
-      in: header
-      required: false
-      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
-
-        '
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
       schema:
-        type: boolean
-      example: true
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  parameters:
     x-delivery-id:
       name: X-Delivery-Id
       in: header
@@ -580,16 +585,6 @@ components:
         type: string
         format: uuid
       example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-    x-signature-sha256:
-      name: X-Signature-SHA256
-      in: header
-      required: false
-      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
-
-        '
-      schema:
-        type: string
-      example: t7FMhk3OARMgwqz0LJXO...
     X-External-Correlation-Id:
       x-global: true
       name: X-External-Correlation-Id
@@ -603,71 +598,27 @@ components:
         format: uuid
         maxLength: 36
       example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-test-notification:
+      name: X-Test-Notification
+      in: header
+      required: false
+      description: 'Present with the value `true` if this is a test notification sent to verify your callback URL during subscription setup.
+
+        '
+      schema:
+        type: boolean
+      example: true
+    x-signature-sha256:
+      name: X-Signature-SHA256
+      in: header
+      required: false
+      description: 'RSA-SHA256 signature of the request body, Base64 encoded. Verify this against the [Wise public key](/guides/developer/webhooks/event-handling#requests) to ensure the request is authentic and has not been tampered with.
+
+        '
+      schema:
+        type: string
+      example: t7FMhk3OARMgwqz0LJXO...
   schemas:
-    v2.0.0-4:
-      title: Schema version 2.0.0
-      type: object
-      properties:
-        schema_version:
-          type: string
-          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
-          enum:
-          - 2.0.0
-          example: 2.0.0
-        subscription_id:
-          type: string
-          format: uuid
-          description: ID of the webhook subscription that triggered this event
-          example: 5281e333-a4d9-4960-aec3-553267a9a8aa
-        event_type:
-          type: string
-          description: Event type identifier
-          example: cards#manual-provisioning-verification
-        sent_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event was sent
-          example: '2026-03-09T05:52:37Z'
-        data:
-          type: object
-          properties:
-            resource:
-              type: object
-              properties:
-                profile_id:
-                  type: integer
-                  format: int64
-                  description: ID of the profile that owns the card
-                  example: 9953556
-                client_id:
-                  type: string
-                  description: Your api_client_id
-                  example: tw-test-card-issuance
-                card_token:
-                  type: string
-                  description: Unique identifier of the card
-                  example: 72393ec3-0707-4bf1-00b7-744f7a380d2c
-                type:
-                  type: string
-                  description: Resource type (always `card`)
-                  example: card
-            payment_token_unique_reference:
-              type: string
-              description: The payment token unique reference associated to the card
-              example: DNITHE352605523102858206
-            last_four_digits:
-              type: string
-              description: The last four digits for the card Primary Account Number (PAN)
-              example: '8237'
-            creation_time:
-              type: string
-              format: date-time
-              description: The time when the card provisioning request was created
-              example: '2026-03-09T05:52:37.274962Z'
-            wallet_name:
-              type: string
-              description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
-              example: Google Pay
     Card:
       type: object
       description: The Card resource represents a Wise card linked to a profile.
@@ -789,6 +740,70 @@ components:
           format: date-time
           description: Time when the card was last modified.
           example: '2022-05-31T01:43:24.596321825Z'
+    v2.0.0-4:
+      title: Schema version 2.0.0
+      type: object
+      properties:
+        schema_version:
+          type: string
+          description: Version of the event schema. Determined by the `schema_version` on your [webhook subscription](/api-reference/webhook).
+          enum:
+          - 2.0.0
+          example: 2.0.0
+        subscription_id:
+          type: string
+          format: uuid
+          description: ID of the webhook subscription that triggered this event
+          example: 5281e333-a4d9-4960-aec3-553267a9a8aa
+        event_type:
+          type: string
+          description: Event type identifier
+          example: cards#manual-provisioning-verification
+        sent_at:
+          type: string
+          format: date-time
+          description: Timestamp when the event was sent
+          example: '2026-03-09T05:52:37Z'
+        data:
+          type: object
+          properties:
+            resource:
+              type: object
+              properties:
+                profile_id:
+                  type: integer
+                  format: int64
+                  description: ID of the profile that owns the card
+                  example: 9953556
+                client_id:
+                  type: string
+                  description: Your api_client_id
+                  example: tw-test-card-issuance
+                card_token:
+                  type: string
+                  description: Unique identifier of the card
+                  example: 72393ec3-0707-4bf1-00b7-744f7a380d2c
+                type:
+                  type: string
+                  description: Resource type (always `card`)
+                  example: card
+            payment_token_unique_reference:
+              type: string
+              description: The payment token unique reference associated to the card
+              example: DNITHE352605523102858206
+            last_four_digits:
+              type: string
+              description: The last four digits for the card Primary Account Number (PAN)
+              example: '8237'
+            creation_time:
+              type: string
+              format: date-time
+              description: The time when the card provisioning request was created
+              example: '2026-03-09T05:52:37.274962Z'
+            wallet_name:
+              type: string
+              description: The wallet provider used to provision the card such as "Google Pay" or "Apple Pay"
+              example: Google Pay
     Permission:
       type: object
       description: Spending permission configuration for a card.
@@ -828,21 +843,6 @@ components:
           type: boolean
           description: Indicates if this permission is locked. If locked, the permission cannot be enabled.
           example: false
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true

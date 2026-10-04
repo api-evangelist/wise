@@ -429,20 +429,6 @@ components:
         type: string
       example: fba501b6d453b96789f52338f019341f
   schemas:
-    test-notification:
-      title: Test Notification
-      type: object
-      properties:
-        delivery_id:
-          type: string
-          format: uuid
-          description: ID of the delivery that was queued for sending.
-          example: 4a6b9810-4279-4de5-8d8d-1a6cf3b92a75
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp of when the test notification was created.
-          example: '2019-03-28T11:22:33Z'
     subscription:
       title: Subscription
       type: object
@@ -532,6 +518,34 @@ components:
               type: string
               description: The URL where your server will be listening for events.
               example: https://your.webhook.url/12345
+    test-notification:
+      title: Test Notification
+      type: object
+      properties:
+        delivery_id:
+          type: string
+          format: uuid
+          description: ID of the delivery that was queued for sending.
+          example: 4a6b9810-4279-4de5-8d8d-1a6cf3b92a75
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the test notification was created.
+          example: '2019-03-28T11:22:33Z'
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -555,20 +569,6 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

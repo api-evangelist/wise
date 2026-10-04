@@ -705,40 +705,6 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    DisputeReason:
-      title: DisputeReason
-      type: object
-      properties:
-        code:
-          type: string
-          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
-
-
-            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
-
-            '
-          example: UNAUTHORIZED
-        description:
-          type: string
-          description: The description of the dispute reason.
-          example: I did not make, authorize, or participate in this transaction
-        isFraud:
-          type: boolean
-          description: Flag indicating that the dispute reason is fraud-related.
-          example: false
-        tooltip:
-          type: string
-          description: Text to display when showing the dispute form to your users.
-          example: Choose this if you don't know the merchant or have never purchased anything from them
-        supportsMultipleTransactions:
-          type: boolean
-          description: Whether the dispute supports multiple transactions.
-          example: false
-        subOptions:
-          type: array
-          description: Optional list of sub-reasons that should be used as the dispute reason.
-          items:
-            $ref: '#/components/schemas/DisputeReason'
     Dispute:
       title: Dispute
       type: object
@@ -804,6 +770,40 @@ components:
           type: boolean
           description: Whether the dispute can be withdrawn.
           example: false
+    DisputeReason:
+      title: DisputeReason
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'The type of reasons available for the dispute. Top-level codes include `ATM_DISPENSED_NO_FUNDS`, `WRONG_AMOUNT`, `TROUBLE_WITH_GOODS_SERVICES`, `MERCHANT_CHARGED_AGAIN`, `NO_REFUND`, `UNAUTHORIZED`.
+
+
+            If a reason has `subOptions`, use the sub-option reason code when submitting a dispute.
+
+            '
+          example: UNAUTHORIZED
+        description:
+          type: string
+          description: The description of the dispute reason.
+          example: I did not make, authorize, or participate in this transaction
+        isFraud:
+          type: boolean
+          description: Flag indicating that the dispute reason is fraud-related.
+          example: false
+        tooltip:
+          type: string
+          description: Text to display when showing the dispute form to your users.
+          example: Choose this if you don't know the merchant or have never purchased anything from them
+        supportsMultipleTransactions:
+          type: boolean
+          description: Whether the dispute supports multiple transactions.
+          example: false
+        subOptions:
+          type: array
+          description: Optional list of sub-reasons that should be used as the dispute reason.
+          items:
+            $ref: '#/components/schemas/DisputeReason'
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -819,6 +819,20 @@ components:
       schema:
         type: string
       example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -842,20 +856,6 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

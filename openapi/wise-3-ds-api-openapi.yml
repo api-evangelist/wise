@@ -76,24 +76,20 @@ components:
       schema:
         type: string
       example: fba501b6d453b96789f52338f019341f
-  schemas:
-    ChallengeResultRequest:
-      type: object
-      required:
-      - transactionReference
-      - challengeStatus
-      properties:
-        transactionReference:
-          type: string
-          description: Transaction reference as received in the 3DS challenge webhook event.
-          example: '148579538'
-        challengeStatus:
-          type: string
-          description: The customer's response to the 3DS challenge.
-          enum:
-          - APPROVED
-          - REJECTED
-          example: APPROVED
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -117,20 +113,24 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  schemas:
+    ChallengeResultRequest:
+      type: object
+      required:
+      - transactionReference
+      - challengeStatus
+      properties:
+        transactionReference:
+          type: string
+          description: Transaction reference as received in the 3DS challenge webhook event.
+          example: '148579538'
+        challengeStatus:
+          type: string
+          description: The customer's response to the 3DS challenge.
+          enum:
+          - APPROVED
+          - REJECTED
+          example: APPROVED
   securitySchemes:
     UserToken:
       type: http

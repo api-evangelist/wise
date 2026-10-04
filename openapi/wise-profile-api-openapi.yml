@@ -3263,7 +3263,227 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   schemas:
+    business-profile:
+      title: Business Profile
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Type of profile.
+          enum:
+          - BUSINESS
+          example: BUSINESS
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the profile.
+          example: 14599371
+        publicId:
+          type: string
+          description: Publicly accessible identifier for the profile.
+          example: f0e9d8c7-b6a5-4321-fedc-ba9876543210
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user associated with this profile.
+          example: 9889627
+        address:
+          description: Main registered address of the business.
+          $ref: '#/components/schemas/address'
+        email:
+          type: string
+          description: Primary email address for the business.
+          example: info@innovate-solutions.co.uk
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created (ISO 8601 format).
+          example: '2024-03-10T09:00:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated (ISO 8601 format).
+          example: '2025-06-18T14:22:00'
+        currentState:
+          type: string
+          description: Current status of this profile.
+          enum:
+          - HIDDEN
+          - VISIBLE
+          - DEACTIVATED
+          example: VISIBLE
+        contactDetails:
+          type: object
+          description: Contact information for the business.
+          properties:
+            email:
+              type: string
+              description: Contact email address.
+              example: contact@innovate-solutions.co.uk
+            phoneNumber:
+              type: string
+              description: Contact phone number.
+              example: '+441617891234'
+        businessName:
+          type: string
+          description: Registered business name.
+          example: Innovate Solutions Ltd
+        registrationNumber:
+          type: string
+          description: Business registration number.
+          example: SC1234567890ABCD
+        descriptionOfBusiness:
+          type: string
+          description: Brief description of the business.
+          example: SOFTWARE_DEVELOPMENT
+        webpage:
+          type: string
+          description: Business website URL.
+          example: https://www.innovate-solutions.co.uk
+        companyType:
+          type: string
+          description: Type of company.
+          example: LIMITED_COMPANY
+        companyRole:
+          type: string
+          description: Role of the person managing the business profile.
+          enum:
+          - OWNER
+          - DIRECTOR
+          - OTHER
+          example: OWNER
+        businessFreeFormDescription:
+          type: string
+          description: Free-form description of the business activities.
+          example: We create cutting-edge software for businesses.
+        firstLevelCategory:
+          type: string
+          description: Primary [business category](/guides/developer/api-guides/business-categories).
+          example: CONSULTING_IT_BUSINESS_SERVICES
+        secondLevelCategory:
+          type: string
+          description: Secondary [business category](/guides/developer/api-guides/business-categories).
+          example: IT_DEVELOPMENT
+        operationalAddresses:
+          type: array
+          description: An array of operational addresses for the business.
+          items:
+            $ref: '#/components/schemas/address'
+        fullName:
+          type: string
+          description: Full legal name of the business.
+          example: Innovate Solutions Ltd
+    address:
+      type: object
+      description: Address associated with a profile.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the address.
+          example: 36086782
+        addressFirstLine:
+          type: string
+          description: First line of the address.
+          example: 24 Willow Creek Lane
+        city:
+          type: string
+          description: City of the address.
+          example: Bristol
+        countryIso2Code:
+          type: string
+          description: Two-letter ISO country code.
+          example: GB
+        countryIso3Code:
+          type: string
+          description: Three-letter ISO country code.
+          example: gbr
+        postCode:
+          type: string
+          description: Postal code of the address.
+          example: BS1 6AE
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: State code of the address (can be null for some countries).
+          example: null
+    ubo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the ultimate beneficial owner.
+          example: 013ab1c2688d0185b582ee7e0bcb28b2
+        name:
+          type: string
+          description: Owner full name.
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+        addressFirstLine:
+          type: string
+          description: First line of address.
+          example: 123 Fake St
+        postCode:
+          type: string
+          description: Address post code.
+          example: FK 12345
+        ownershipPercentage:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Percentage of ownership.
+          example: 30
+    director:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the director. Automatically set.
+          example: 10
+        firstName:
+          type: string
+          description: Director first name.
+          example: John
+        lastName:
+          type: string
+          description: Director last name.
+          example: Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
     profile:
       title: Profile
       x-tags:
@@ -3377,226 +3597,6 @@ components:
           type: string
           description: Full name of the profile holder.
           example: Sarah Jenkins
-    director:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the director. Automatically set.
-          example: 10
-        firstName:
-          type: string
-          description: Director first name.
-          example: John
-        lastName:
-          type: string
-          description: Director last name.
-          example: Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
-    address:
-      type: object
-      description: Address associated with a profile.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the address.
-          example: 36086782
-        addressFirstLine:
-          type: string
-          description: First line of the address.
-          example: 24 Willow Creek Lane
-        city:
-          type: string
-          description: City of the address.
-          example: Bristol
-        countryIso2Code:
-          type: string
-          description: Two-letter ISO country code.
-          example: GB
-        countryIso3Code:
-          type: string
-          description: Three-letter ISO country code.
-          example: gbr
-        postCode:
-          type: string
-          description: Postal code of the address.
-          example: BS1 6AE
-        stateCode:
-          type:
-          - string
-          - 'null'
-          description: State code of the address (can be null for some countries).
-          example: null
-    ubo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID of the ultimate beneficial owner.
-          example: 013ab1c2688d0185b582ee7e0bcb28b2
-        name:
-          type: string
-          description: Owner full name.
-          example: John Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
-        addressFirstLine:
-          type: string
-          description: First line of address.
-          example: 123 Fake St
-        postCode:
-          type: string
-          description: Address post code.
-          example: FK 12345
-        ownershipPercentage:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          description: Percentage of ownership.
-          example: 30
-    business-profile:
-      title: Business Profile
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: Type of profile.
-          enum:
-          - BUSINESS
-          example: BUSINESS
-        id:
-          type: integer
-          format: int64
-          description: Unique identifier for the profile.
-          example: 14599371
-        publicId:
-          type: string
-          description: Publicly accessible identifier for the profile.
-          example: f0e9d8c7-b6a5-4321-fedc-ba9876543210
-        userId:
-          type: integer
-          format: int64
-          description: The ID of the user associated with this profile.
-          example: 9889627
-        address:
-          description: Main registered address of the business.
-          $ref: '#/components/schemas/address'
-        email:
-          type: string
-          description: Primary email address for the business.
-          example: info@innovate-solutions.co.uk
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was created (ISO 8601 format).
-          example: '2024-03-10T09:00:00'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was last updated (ISO 8601 format).
-          example: '2025-06-18T14:22:00'
-        currentState:
-          type: string
-          description: Current status of this profile.
-          enum:
-          - HIDDEN
-          - VISIBLE
-          - DEACTIVATED
-          example: VISIBLE
-        contactDetails:
-          type: object
-          description: Contact information for the business.
-          properties:
-            email:
-              type: string
-              description: Contact email address.
-              example: contact@innovate-solutions.co.uk
-            phoneNumber:
-              type: string
-              description: Contact phone number.
-              example: '+441617891234'
-        businessName:
-          type: string
-          description: Registered business name.
-          example: Innovate Solutions Ltd
-        registrationNumber:
-          type: string
-          description: Business registration number.
-          example: SC1234567890ABCD
-        descriptionOfBusiness:
-          type: string
-          description: Brief description of the business.
-          example: SOFTWARE_DEVELOPMENT
-        webpage:
-          type: string
-          description: Business website URL.
-          example: https://www.innovate-solutions.co.uk
-        companyType:
-          type: string
-          description: Type of company.
-          example: LIMITED_COMPANY
-        companyRole:
-          type: string
-          description: Role of the person managing the business profile.
-          enum:
-          - OWNER
-          - DIRECTOR
-          - OTHER
-          example: OWNER
-        businessFreeFormDescription:
-          type: string
-          description: Free-form description of the business activities.
-          example: We create cutting-edge software for businesses.
-        firstLevelCategory:
-          type: string
-          description: Primary [business category](/guides/developer/api-guides/business-categories).
-          example: CONSULTING_IT_BUSINESS_SERVICES
-        secondLevelCategory:
-          type: string
-          description: Secondary [business category](/guides/developer/api-guides/business-categories).
-          example: IT_DEVELOPMENT
-        operationalAddresses:
-          type: array
-          description: An array of operational addresses for the business.
-          items:
-            $ref: '#/components/schemas/address'
-        fullName:
-          type: string
-          description: Full legal name of the business.
-          example: Innovate Solutions Ltd
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   responses:
     '429':
       x-global: true
