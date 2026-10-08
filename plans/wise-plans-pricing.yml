@@ -157,3 +157,46 @@ plans:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  - metered
+  units:
+  - data
+  - object
+  - period
+  plans:
+  - name: Personal Account
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - data
+    - object
+    - other
+    periods:
+    - one-time
+    - per-use
+  - name: Business Account
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - data
+    - object
+    - other
+    periods:
+    - one-time
+    - per-use
+  - name: Wise Platform (Embedded)
+    access: enterprise
+    model: hybrid
+    model_how: derived
+    units:
+    - data
+    - period
+    periods:
+    - month
+    - per-use
