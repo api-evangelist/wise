@@ -1,17 +1,34 @@
-generated: '2026-07-15'
+generated: '2026-09-23'
 method: generated
-source: openapi/wise-platform-openapi.yml
+source: openapi/wise-3-ds-api-openapi.yml, openapi/wise-activity-api-openapi.yml, openapi/wise-address-api-openapi.yml,
+  openapi/wise-balance-api-openapi.yml, openapi/wise-balance-statement-api-openapi.yml, openapi/wise-bank-account-details-api-openapi.yml,
+  openapi/wise-batch-group-api-openapi.yml, openapi/wise-bulk-settlement-api-openapi.yml, openapi/wise-card-api-openapi.yml,
+  openapi/wise-card-kiosk-collection-api-openapi.yml, openapi/wise-card-order-api-openapi.yml,
+  openapi/wise-card-sensitive-details-api-openapi.yml, openapi/wise-card-transaction-api-openapi.yml,
+  openapi/wise-case-api-openapi.yml, openapi/wise-claim-account-api-openapi.yml, openapi/wise-comparison-api-openapi.yml,
+  openapi/wise-contact-api-openapi.yml, openapi/wise-currencies-api-openapi.yml, openapi/wise-delivery-estimate-api-openapi.yml,
+  openapi/wise-digital-wallet-api-openapi.yml, openapi/wise-direct-debit-account-api-openapi.yml,
+  openapi/wise-disputes-api-openapi.yml, openapi/wise-facetec-api-openapi.yml, openapi/wise-jose-api-openapi.yml,
+  openapi/wise-kyc-review-api-openapi.yml, openapi/wise-multi-currency-account-api-openapi.yml,
+  openapi/wise-oauth-token-api-openapi.yml, openapi/wise-payin-deposit-detail-api-openapi.yml,
+  openapi/wise-payins-api-openapi.yml, openapi/wise-profile-api-openapi.yml, openapi/wise-quote-api-openapi.yml,
+  openapi/wise-rate-api-openapi.yml, openapi/wise-recipient-api-openapi.yml, openapi/wise-sca-device-fingerprints-api-openapi.yml,
+  openapi/wise-sca-facemaps-api-openapi.yml, openapi/wise-sca-otp-api-openapi.yml, openapi/wise-sca-ott-api-openapi.yml,
+  openapi/wise-sca-pin-api-openapi.yml, openapi/wise-sca-sessions-api-openapi.yml, openapi/wise-simulation-api-openapi.yml,
+  openapi/wise-spend-controls-api-openapi.yml, openapi/wise-spend-limits-api-openapi.yml, openapi/wise-transfer-api-openapi.yml,
+  openapi/wise-user-api-openapi.yml, openapi/wise-user-security-api-openapi.yml, openapi/wise-verification-api-openapi.yml,
+  openapi/wise-webhook-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
   operations: 238
   by_action_class:
-    acting: 147
-    connected: 91
+    acting: 142
+    connected: 96
   by_consequence:
-    write: 116
-    read: 91
+    write: 111
+    read: 96
     physical: 25
     safety-critical: 6
   human_in_the_loop_required: 6
@@ -35,64 +52,6 @@ operations:
 - path: /v1/profiles/{profileId}/activities
   method: get
   operationId: activityList
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /v3/profiles/{profileId}/additional-verification/upload-evidences
-  method: post
-  operationId: verificationUploadEvidencesV3
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v5/profiles/{profileId}/additional-verification/upload-evidences
-  method: post
-  operationId: verificationUploadEvidences
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v3/profiles/{profileId}/verification-status/upload-document
-  method: post
-  operationId: verificationUploadDocument
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v3/profiles/{profileId}/verification-status/required-evidences
-  method: get
-  operationId: verificationGetRequiredEvidences
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -150,18 +109,12 @@ operations:
   method: post
   operationId: addressRequirementsPost
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /v4/profiles/{profileId}/balances
   method: post
   operationId: balanceCreate
@@ -298,18 +251,12 @@ operations:
   method: post
   operationId: holdLimitBreachList
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /v1/profiles/{profileId}/balances/hold-limit-breach/{holdLimitBreachId}
   method: post
   operationId: holdLimitBreachClose
@@ -636,48 +583,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /twcard-data/v1/clientSideEncryption/fetchEncryptingKey
-  method: get
-  operationId: cardEncryptionKeyGet
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /twcard-data/v1/sensitive-card-data/details
-  method: post
-  operationId: cardSensitiveDetailsGet
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /twcard-data/v1/sensitive-card-data/pin
-  method: post
-  operationId: cardPinGet
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /v3/spend/profiles/{profileId}/cards/{cardToken}/phone-number
   method: put
   operationId: cardPhoneNumberUpdate
@@ -830,6 +735,36 @@ operations:
     escalation:
       human-in-the-loop: required
     audit: required
+- path: /twcard-data/v1/clientSideEncryption/fetchEncryptingKey
+  method: get
+  operationId: cardEncryptionKeyGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /twcard-data/v1/sensitive-card-data/details
+  method: post
+  operationId: cardSensitiveDetailsGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /twcard-data/v1/sensitive-card-data/pin
+  method: post
+  operationId: cardPinGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
 - path: /v3/spend/profiles/{profileId}/cards/transactions/{transactionId}
   method: get
   operationId: cardTransactionGetV3
@@ -860,6 +795,58 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /v1/cases
+  method: post
+  operationId: caseCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/cases/{caseId}
+  method: get
+  operationId: caseGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/cases/{caseId}/comments
+  method: get
+  operationId: caseCommentsGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/cases/{caseId}/comments
+  method: put
+  operationId: caseCommentCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /v1/user/claim-account
   method: post
   operationId: claimAccountCreate
@@ -932,6 +919,78 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens
+  method: post
+  operationId: pushProvisioningPaymentTokensList
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens/{paymentTokenUniqueReference}/activation
+  method: post
+  operationId: digitalWalletActivatePaymentToken
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /twcard-data/v1/push-provisioning/encrypted-payload/google-pay
+  method: post
+  operationId: pushProvisioningGooglePayGet
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /twcard-data/v1/push-provisioning/encrypted-payload/apple-pay
+  method: post
+  operationId: pushProvisioningApplePayGet
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /v1/profiles/{profileId}/direct-debit-accounts
   method: post
   operationId: directDebitAccountCreate
@@ -1314,9 +1373,9 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /v1/one-time-token/status
+- path: /v1/profiles/{profileId}/transfers/{transferId}/deposit-details/bank-transfer
   method: get
-  operationId: ottStatusGet
+  operationId: payinDepositDetailGet
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -1324,270 +1383,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /v1/one-time-token/pin/verify
-  method: post
-  operationId: ottPinVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/partner-device-fingerprint/verify
-  method: post
-  operationId: ottDeviceFingerprintVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/facemap/verify
-  method: post
-  operationId: ottFacemapVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/application/users/{userId}/phone-numbers
-  method: get
-  operationId: userSecurityPhoneNumberList
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /v1/application/users/{userId}/phone-numbers
-  method: post
-  operationId: userSecurityPhoneNumberCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/sms/trigger
-  method: post
-  operationId: ottSmsTrigger
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/sms/verify
-  method: post
-  operationId: ottSmsVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/whatsapp/trigger
-  method: post
-  operationId: ottWhatsappTrigger
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/whatsapp/verify
-  method: post
-  operationId: ottWhatsappVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/voice/trigger
-  method: post
-  operationId: ottVoiceTrigger
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/one-time-token/voice/verify
-  method: post
-  operationId: ottVoiceVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/application/users/{userId}/phone-numbers/{phoneNumberId}
-  method: put
-  operationId: userSecurityPhoneNumberUpdate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/application/users/{userId}/phone-numbers/{phoneNumberId}
-  method: delete
-  operationId: userSecurityPhoneNumberDelete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/identity/one-time-token/status
-  method: get
-  operationId: ottStatusGetV1
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /v1/cases
-  method: post
-  operationId: caseCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v1/cases/{caseId}
-  method: get
-  operationId: caseGet
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /v1/cases/{caseId}/comments
-  method: get
-  operationId: caseCommentsGet
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
-- path: /v1/cases/{caseId}/comments
-  method: put
-  operationId: caseCommentCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /v1/profiles/{profileId}/payin-sessions/{payinSessionId}/paynow
   method: post
   operationId: paynowCreate
@@ -1606,16 +1401,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /v1/profiles/{profileId}/transfers/{transferId}/deposit-details/bank-transfer
-  method: get
-  operationId: payinDepositDetailGet
-  x-agentic-access:
-    action-class: connected
-    consequence: read
-    subject: optional
-    token:
-      max-ttl: 3600
-    audit: none
 - path: /v1/profiles
   method: post
   operationId: profileCreateV1
@@ -1992,78 +1777,6 @@ operations:
       - abnormal
       - high-value
     audit: required
-- path: /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens
-  method: post
-  operationId: pushProvisioningPaymentTokensList
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v3/spend/profiles/{profileId}/cards/{cardToken}/payment-tokens/{paymentTokenUniqueReference}/activation
-  method: post
-  operationId: digitalWalletActivatePaymentToken
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /twcard-data/v1/push-provisioning/encrypted-payload/google-pay
-  method: post
-  operationId: pushProvisioningGooglePayGet
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /twcard-data/v1/push-provisioning/encrypted-payload/apple-pay
-  method: post
-  operationId: pushProvisioningApplePayGet
-  x-agentic-access:
-    action-class: acting
-    consequence: physical
-    subject: required
-    audience: null
-    token:
-      max-ttl: 300
-      exchange: true
-      purpose-required: true
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /v3/quotes
   method: post
   operationId: quoteCreateUnauthenticated
@@ -2218,18 +1931,12 @@ operations:
   method: post
   operationId: recipientAccountRequirementsPost
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /v1/accounts/{accountId}/quotes/{quoteId}/compatibility
   method: post
   operationId: recipientCompatibilityCheckV1
@@ -2265,6 +1972,362 @@ operations:
 - path: /v2/accounts/{accountId}/confirmations
   method: patch
   operationId: recipientConfirmationsAccept
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/partner-device-fingerprint/verify
+  method: post
+  operationId: ottDeviceFingerprintVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/device-fingerprints
+  method: post
+  operationId: scaDeviceFingerprintCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/device-fingerprints/verify
+  method: post
+  operationId: scaDeviceFingerprintVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/device-fingerprints/{deviceFingerprintId}
+  method: delete
+  operationId: scaDeviceFingerprintDelete
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/facemap/verify
+  method: post
+  operationId: ottFacemapVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/facemaps
+  method: post
+  operationId: scaFacemapCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/facemaps
+  method: delete
+  operationId: scaFacemapDelete
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/facemaps/verify
+  method: post
+  operationId: scaFacemapVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/application/users/{userId}/phone-numbers
+  method: post
+  operationId: userSecurityPhoneNumberCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/sms/trigger
+  method: post
+  operationId: ottSmsTrigger
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/sms/verify
+  method: post
+  operationId: ottSmsVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/whatsapp/trigger
+  method: post
+  operationId: ottWhatsappTrigger
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/whatsapp/verify
+  method: post
+  operationId: ottWhatsappVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/voice/trigger
+  method: post
+  operationId: ottVoiceTrigger
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/voice/verify
+  method: post
+  operationId: ottVoiceVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/application/users/{userId}/phone-numbers/{phoneNumberId}
+  method: delete
+  operationId: userSecurityPhoneNumberDelete
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/one-time-token/status
+  method: get
+  operationId: ottStatusGet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/identity/one-time-token/status
+  method: get
+  operationId: ottStatusGetV1
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/one-time-token/pin/verify
+  method: post
+  operationId: ottPinVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/pin
+  method: post
+  operationId: scaPinCreate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/pin
+  method: delete
+  operationId: scaPinDelete
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/pin/verify
+  method: post
+  operationId: scaPinVerify
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/profiles/{profileId}/sca-sessions/authorise
+  method: post
+  operationId: scaSessionCreate
   x-agentic-access:
     action-class: acting
     consequence: write
@@ -2666,166 +2729,6 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /v2/profiles/{profileId}/pin
-  method: post
-  operationId: scaPinCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/pin
-  method: delete
-  operationId: scaPinDelete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/pin/verify
-  method: post
-  operationId: scaPinVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/device-fingerprints
-  method: post
-  operationId: scaDeviceFingerprintCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/device-fingerprints/verify
-  method: post
-  operationId: scaDeviceFingerprintVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/device-fingerprints/{deviceFingerprintId}
-  method: delete
-  operationId: scaDeviceFingerprintDelete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/facemaps
-  method: post
-  operationId: scaFacemapCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/facemaps
-  method: delete
-  operationId: scaFacemapDelete
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/facemaps/verify
-  method: post
-  operationId: scaFacemapVerify
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
-- path: /v2/profiles/{profileId}/sca-sessions/authorise
-  method: post
-  operationId: scaSessionCreate
-  x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
-    token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
 - path: /v1/transfers
   method: post
   operationId: transferCreate
@@ -3102,6 +3005,32 @@ operations:
     token:
       max-ttl: 3600
     audit: none
+- path: /v1/application/users/{userId}/phone-numbers
+  method: get
+  operationId: userSecurityPhoneNumberList
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/application/users/{userId}/phone-numbers/{phoneNumberId}
+  method: put
+  operationId: userSecurityPhoneNumberUpdate
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
 - path: /v1/user/pin
   method: post
   operationId: userSecurityPinCreate
@@ -3208,6 +3137,64 @@ operations:
       - abnormal
       - high-value
     audit: required
+- path: /v3/profiles/{profileId}/additional-verification/upload-evidences
+  method: post
+  operationId: verificationUploadEvidencesV3
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v5/profiles/{profileId}/additional-verification/upload-evidences
+  method: post
+  operationId: verificationUploadEvidences
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v3/profiles/{profileId}/verification-status/upload-document
+  method: post
+  operationId: verificationUploadDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v3/profiles/{profileId}/verification-status/required-evidences
+  method: get
+  operationId: verificationGetRequiredEvidences
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
 - path: /v3/applications/{clientKey}/subscriptions
   method: post
   operationId: webhookApplicationSubscriptionCreate
