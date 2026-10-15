@@ -131,7 +131,7 @@
     node_path: Wise
     trigger: true
     builder: n8n (built-in node)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
 - slug: wise-pipedream
   label: Pipedream
@@ -157,7 +157,7 @@
     actions: true
     sources: true
     builder: Pipedream repo (component)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
 - slug: wise-fincen-msb-registration
   label: FinCEN (MSB registration)
