@@ -5,8 +5,10 @@ source:
 - https://composio.dev/toolkits/wise
 checked:
 - https://composio.dev/toolkits/wise
+- https://data.directory.openbankingbrasil.org.br/participants
 - https://monid.ai/tools/wise
 - https://n8n.io/integrations/wise/
+- https://www.bcb.gov.br/estabilidadefinanceira/participantespix
 - https://zapier.com/apps/wise/integrations
 summary: null
 marketplace_apps:
@@ -61,5 +63,110 @@ marketplace_apps:
   - key: WISE_LIST_PROFILES
   - key: WISE_LIST_RECIPIENTS
   - key: WISE_LIST_TRANSFERS
-edges: []
+edges:
+- partner_name: Open Finance Brasil
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://data.directory.openbankingbrasil.org.br/participants
+  category: open finance (Brazil)
+  contract_reference:
+    register: Open Finance Brasil directory (Banco Central do Brasil)
+    spec_file: null
+    standard: Open Finance Brasil
+    role: participant
+    regulator_roles:
+    - CONTA
+    - PAGTO
+    registrations: &id001
+    - registered_name: WISE BRASIL INSTITUICAO DE PAGAMENTO LTDA
+      register_id: 34d6ef40-713a-429b-a443-d56edb0d84bf
+      cnpj: '40571694000131'
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+    declared_families:
+    - enrollments
+    - payments-consents
+    - payments-pix
+    - payments-pix-recurring-payments
+    - payments-pix-recurring-payments-automatic
+    - payments-recurring-consents
+    - payments-recurring-consents-automatic
+    signal_note: 'participation only: declared families are context; the certification edge carries depth'
+    detected_by: sweep-latam-open-finance.py
+    detected: '2026-10-15'
+  detected_by: sweep-latam-open-finance.py
+  first_seen: '2026-10-15'
+- partner_name: Open Finance Brasil functional certification
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://data.directory.openbankingbrasil.org.br/participants
+  category: open finance conformance (Brazil)
+  contract_reference:
+    register: Open Finance Brasil directory, per-family CertificationStatus (submissions in github.com/OpenBanking-Brasil/conformance)
+    spec_file: null
+    standard: Open Finance Brasil
+    role: certified-participant
+    registrations: *id001
+    certified_products:
+    - product: payments
+      families:
+      - enrollments
+      - payments-consents
+      - payments-pix
+      status: Self-Certified
+      expires: '2027-10-06'
+      certification_uri: https://github.com/OpenBanking-Brasil/conformance/blob/main/submissions/functional/payments/5.0.0/40571694_WISE_PAYMENTS_V5_payments_v5.0_19-05-2026.json
+    - product: recurring-payments
+      families:
+      - payments-pix-recurring-payments
+      - payments-pix-recurring-payments-automatic
+      - payments-recurring-consents
+      - payments-recurring-consents-automatic
+      status: Self-Certified
+      expires: '2027-10-07'
+      certification_uri: https://github.com/OpenBanking-Brasil/conformance/blob/main/submissions/functional/automatic-payments/2.2.0/40571694_WISE_AUTOMATIC_PAYMENTS_V2.2_automatic-payments_v2.2.0_06-10-2026.json
+    signal_note: one entry per PRODUCT TYPE, lapsed flagged; family counts are context, never read
+    detected_by: sweep-latam-open-finance.py
+    detected: '2026-10-15'
+  detected_by: sweep-latam-open-finance.py
+  first_seen: '2026-10-15'
+- partner_name: Pix (Banco Central do Brasil)
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.bcb.gov.br/estabilidadefinanceira/participantespix
+  category: instant payments (Brazil)
+  contract_reference:
+    register: Pix participants (Banco Central do Brasil, https://www.bcb.gov.br/content/estabilidadefinanceira/participantes_pix/lista-participantes-instituicoes-em-adesao-pix-20261015.csv)
+    spec_file: null
+    standard: Pix
+    role: pix-participant
+    registrations:
+    - registered_name: WISE BRASIL IP LTDA.
+      ispb: '40571694'
+      cnpj: 40.571.694/0001-31
+      institution_type: Instituição de Pagamento
+      spi_participation: Indireta
+      pix_participation: Facultativa
+      pix_modality: Provedor de Conta Transacional
+      payment_initiation: false
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      identity: Open Finance Brasil directory, same CNPJ 40571694000131 ('WISE BRASIL INSTITUICAO DE PAGAMENTO LTDA')
+    signal_note: 'participation only: the domain comes from a labelled lookup (registrations[].identity)'
+    detected_by: sweep-latam-open-finance.py
+    detected: '2026-10-15'
+  detected_by: sweep-latam-open-finance.py
+  first_seen: '2026-10-15'
 templates: []
