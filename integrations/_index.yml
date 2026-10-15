@@ -108,3 +108,87 @@
     detected: '2026-10-15'
   status: not-a-workflow
   arazzo: null
+- slug: wise-n8n
+  label: n8n
+  partner: n8n
+  partner_name: n8n
+  type: marketplace
+  marketplace: n8n-nodes-base
+  channel: open-source-node
+  evidence: https://github.com/n8n-io/n8n/tree/860f1273ebd73fabbd668cbec2c49ed9b48a286d/packages/nodes-base/nodes/Wise
+  source: edge
+  relationship: ipaas-bridge
+  contract_reference:
+    register: n8n built-in nodes (n8n-io/n8n packages/nodes-base)
+    spec_file: null
+    role: ipaas-connector:n8n-nodes-base
+    registered_name: Wise
+    matched_domain: wise.com
+    matched_by: domain+name-among-holders
+    detected_by: sweep-workflow-automation.py
+    detected: '2026-10-15'
+    signal_note: one edge per (provider, platform); actions, triggers and usage counts are context, never read
+    node_path: Wise
+    trigger: true
+    builder: n8n (built-in node)
+  status: pending-generation
+  arazzo: null
+- slug: wise-pipedream
+  label: Pipedream
+  partner: pipedream
+  partner_name: Pipedream
+  type: marketplace
+  marketplace: pipedream-components
+  channel: open-source-node
+  evidence: https://github.com/PipedreamHQ/pipedream/tree/94800dd6de6640b942c65ea7ee655f71ac56d438/components/wise
+  source: edge
+  relationship: ipaas-bridge
+  contract_reference:
+    register: Pipedream components (PipedreamHQ/pipedream components/)
+    spec_file: null
+    role: ipaas-connector:pipedream
+    registered_name: wise
+    matched_domain: wise.com
+    matched_by: domain+name-among-holders
+    detected_by: sweep-workflow-automation.py
+    detected: '2026-10-15'
+    signal_note: one edge per (provider, platform); actions, triggers and usage counts are context, never read
+    app_slug: wise
+    actions: true
+    sources: true
+    builder: Pipedream repo (component)
+  status: pending-generation
+  arazzo: null
+- slug: wise-fincen-msb-registration
+  label: FinCEN (MSB registration)
+  partner_name: FinCEN (MSB registration)
+  category: Money services business
+  type: contract
+  channel: regulator-register
+  evidence: https://msb.fincen.gov/
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: FinCEN MSB Registrant Search (msb.fincen.gov, full list export)
+    spec_file: null
+    standard: FinCEN MSB registration (US Bank Secrecy Act)
+    role: fincen-msb-registrant
+    registered_name: Wise US Inc.
+    dba_name: null
+    register_id: Wise US Inc.
+    matched_domain: wise.com
+    matched_by: domain+name-among-holders
+    identity: wikidata Q7833987 'Wise' P856 https://wise.com/
+    identity_source: wikidata P856 (labelled provenance step; Kin 2026-10-15 decision 1)
+    msb_activities:
+    - 409 money transmitter
+    - 414 provider of prepaid access
+    - 415 dealer in foreign exchange
+    states_of_activity: 53
+    received_date: 12/17/2024
+    signal_note: 'participation only: an MSB registration is not a licence or a certification; activities and states
+      are context, never counted'
+    detected_by: sweep-regtech-aml.py
+    detected: '2026-10-15'
+  status: not-a-workflow
+  arazzo: null
