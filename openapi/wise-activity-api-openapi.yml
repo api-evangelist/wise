@@ -123,81 +123,38 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-  responses:
-    '429':
-      x-global: true
-      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
-      headers:
-        Retry-After:
-          description: Number of seconds to wait before retrying the request.
-          schema:
-            type: integer
-          example: 5
-        X-Rate-Limited-By:
-          description: Identifies the rate limiter that triggered the 429 response.
-          schema:
-            type: string
-          example: wise-public-api
-        X-External-Correlation-Id:
-          $ref: '#/components/headers/X-External-Correlation-Id'
-        x-trace-id:
-          $ref: '#/components/headers/x-trace-id'
-      content:
-        application/json:
-          schema:
-            type: object
   schemas:
-    ActivityStatus:
+    ActivityType:
       type: string
-      description: 'Status of the Activity.
-
-        - `REQUIRES_ATTENTION` - Requires an end user attention.
-
-        - `IN_PROGRESS` - Indicates that this activity has yet to be completed. (Example: In progress Top Up)
-
-        - `UPCOMING` - Indicates that this activity is scheduled to happen in the future. By default these activities will only be shown 2 days before the date. (Example: A scheduled transfer)
-
-        - `COMPLETED` - Indicates that this activity is at its end state. (Example: A completed Top Up)
-
-        - `CANCELLED` - Indicates that this activity is cancelled. (Example: A Top Up is cancelled)
-
-        '
-      example: IN_PROGRESS
+      description: Type of Activity.
+      example: CARD_PAYMENT
       enum:
-      - REQUIRES_ATTENTION
-      - IN_PROGRESS
-      - UPCOMING
-      - COMPLETED
-      - CANCELLED
+      - ACQUIRING_PAYMENT
+      - AUTO_CONVERSION
+      - BALANCE_ADJUSTMENT
+      - BALANCE_ASSET_FEE
+      - BALANCE_CASHBACK
+      - BALANCE_DEPOSIT
+      - BALANCE_HOLD_FEE
+      - BALANCE_INTEREST
+      - BANK_DETAILS_ORDER
+      - BATCH_TRANSFER
+      - CARD_CASHBACK
+      - CARD_CHECK
+      - CARD_ORDER
+      - CARD_PAYMENT
+      - CASH_WITHDRAWAL
+      - CLAIMABLE_SEND_ORDER
+      - DIRECT_DEBIT_TRANSACTION
+      - EXCESS_REFUND
+      - FEE_REFUND
+      - INCORPORATION_ORDER
+      - INTERBALANCE
+      - PAYMENT_REQUEST
+      - PREFUNDING_TRANSFER
+      - REWARD
+      - SCHEDULED_SEND_ORDER
+      - TRANSFER
     ActivityResourceType:
       type: string
       description: Type of Activity Monetary Resource.
@@ -226,6 +183,28 @@ components:
       - SEND_ORDER
       - SEND_ORDER_EXECUTION
       - TRANSFER
+    ActivityStatus:
+      type: string
+      description: 'Status of the Activity.
+
+        - `REQUIRES_ATTENTION` - Requires an end user attention.
+
+        - `IN_PROGRESS` - Indicates that this activity has yet to be completed. (Example: In progress Top Up)
+
+        - `UPCOMING` - Indicates that this activity is scheduled to happen in the future. By default these activities will only be shown 2 days before the date. (Example: A scheduled transfer)
+
+        - `COMPLETED` - Indicates that this activity is at its end state. (Example: A completed Top Up)
+
+        - `CANCELLED` - Indicates that this activity is cancelled. (Example: A Top Up is cancelled)
+
+        '
+      example: IN_PROGRESS
+      enum:
+      - REQUIRES_ATTENTION
+      - IN_PROGRESS
+      - UPCOMING
+      - COMPLETED
+      - CANCELLED
     Activity:
       type: object
       description: Activity represents a snapshot of a performed action for a profile.
@@ -307,37 +286,58 @@ components:
           format: date-time
           description: Timestamp when the activity was last modified.
           example: '2023-01-01T00:00:00.000Z'
-    ActivityType:
-      type: string
-      description: Type of Activity.
-      example: CARD_PAYMENT
-      enum:
-      - ACQUIRING_PAYMENT
-      - AUTO_CONVERSION
-      - BALANCE_ADJUSTMENT
-      - BALANCE_ASSET_FEE
-      - BALANCE_CASHBACK
-      - BALANCE_DEPOSIT
-      - BALANCE_HOLD_FEE
-      - BALANCE_INTEREST
-      - BANK_DETAILS_ORDER
-      - BATCH_TRANSFER
-      - CARD_CASHBACK
-      - CARD_CHECK
-      - CARD_ORDER
-      - CARD_PAYMENT
-      - CASH_WITHDRAWAL
-      - CLAIMABLE_SEND_ORDER
-      - DIRECT_DEBIT_TRANSACTION
-      - EXCESS_REFUND
-      - FEE_REFUND
-      - INCORPORATION_ORDER
-      - INTERBALANCE
-      - PAYMENT_REQUEST
-      - PREFUNDING_TRANSFER
-      - REWARD
-      - SCHEDULED_SEND_ORDER
-      - TRANSFER
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+  responses:
+    '429':
+      x-global: true
+      description: Rate limit exceeded. Retry after the number of seconds specified in the `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Number of seconds to wait before retrying the request.
+          schema:
+            type: integer
+          example: 5
+        X-Rate-Limited-By:
+          description: Identifies the rate limiter that triggered the 429 response.
+          schema:
+            type: string
+          example: wise-public-api
+        X-External-Correlation-Id:
+          $ref: '#/components/headers/X-External-Correlation-Id'
+        x-trace-id:
+          $ref: '#/components/headers/x-trace-id'
+      content:
+        application/json:
+          schema:
+            type: object
   securitySchemes:
     UserToken:
       type: http

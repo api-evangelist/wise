@@ -379,6 +379,45 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  schemas:
+    one-time-token:
+      title: One-Time Token
+      x-tags:
+      - sca-ott
+      type: object
+      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
+
+
+        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
+
+        '
+      properties:
+        oneTimeToken:
+          type: string
+          format: uuid
+          description: A one-time token unique identifier.
+          example: 5932d5b5-ec13-452f-8688-308feade7834
+        challenges:
+          type: array
+          description: An array of challenges.
+          items:
+            type: object
+            properties:
+              primaryChallenge:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: A type of challenge.
+                    example: PIN
+              passed:
+                type: boolean
+                description: The status of a challenge.
+                example: false
+        validity:
+          type: integer
+          description: The One-Time Token expiration in seconds.
+          example: 3600
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -431,45 +470,6 @@ components:
         application/json:
           schema:
             type: object
-  schemas:
-    one-time-token:
-      title: One-Time Token
-      x-tags:
-      - sca-ott
-      type: object
-      description: 'A one-time token is generated when accessing an endpoint secured by SCA. This token includes a list of all available challenges to complete.
-
-
-        You can use the [OTT status endpoint](/api-reference/sca-ott/ottstatusget) to view challenges and their statuses, or use [create SCA session](/api-reference/sca-sessions/scasessioncreate) to manually trigger SCA and return a one-time token.
-
-        '
-      properties:
-        oneTimeToken:
-          type: string
-          format: uuid
-          description: A one-time token unique identifier.
-          example: 5932d5b5-ec13-452f-8688-308feade7834
-        challenges:
-          type: array
-          description: An array of challenges.
-          items:
-            type: object
-            properties:
-              primaryChallenge:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: A type of challenge.
-                    example: PIN
-              passed:
-                type: boolean
-                description: The status of a challenge.
-                example: false
-        validity:
-          type: integer
-          description: The One-Time Token expiration in seconds.
-          example: 3600
   securitySchemes:
     UserToken:
       type: http

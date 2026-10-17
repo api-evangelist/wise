@@ -574,7 +574,94 @@ components:
       schema:
         type: string
       example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
+
+        '
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   schemas:
+    PaymentInitiation:
+      type: object
+      description: Payment initiation for funding a batch group via direct debit.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Payment initiation ID.
+          example: 12345
+        batchGroupId:
+          type: string
+          format: uuid
+          description: Batch group ID.
+          example: 068e186d-9632-4937-b753-af3e53f4d0b0
+        reference:
+          type: string
+          description: Payment reference that will be passed to the network. Can be used for reconciliation.
+          example: B1234567
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user who initiated this payment.
+          example: 33333333
+        profileId:
+          type: integer
+          format: int64
+          description: The ID of the profile this payment belongs to.
+          example: 44444444
+        type:
+          type: string
+          description: Payment type.
+          enum:
+          - DIRECT_DEBIT
+          example: DIRECT_DEBIT
+        status:
+          type: string
+          description: 'Payment initiation status:
+
+            - `NEW` — Payment initiation created
+
+            - `PROCESSING` — Payment is being processed
+
+            - `COMPLETED` — Payment completed successfully
+
+            - `FAILED` — Payment failed
+
+            - `CHARGED_BACK` — Payment was charged back
+
+            '
+          enum:
+          - NEW
+          - PROCESSING
+          - COMPLETED
+          - FAILED
+          - CHARGED_BACK
+          example: NEW
+        accountId:
+          type: integer
+          format: int64
+          description: External account ID associated with the payment.
+          example: 1
+        transferId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Transfer ID of the direct debit payment. Present only after the direct debit is initiated.
+          example: null
+        createdTime:
+          type: string
+          format: date-time
+          description: Date and time when the payment initiation was created.
+          example: '2022-01-01T19:51:41.423404Z'
     BatchGroup:
       title: Batch Group
       x-tags:
@@ -811,93 +898,6 @@ components:
           - 'null'
           description: Clearing number. Provided only when the currency route requires it (such as SEK).
           example: null
-    PaymentInitiation:
-      type: object
-      description: Payment initiation for funding a batch group via direct debit.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Payment initiation ID.
-          example: 12345
-        batchGroupId:
-          type: string
-          format: uuid
-          description: Batch group ID.
-          example: 068e186d-9632-4937-b753-af3e53f4d0b0
-        reference:
-          type: string
-          description: Payment reference that will be passed to the network. Can be used for reconciliation.
-          example: B1234567
-        userId:
-          type: integer
-          format: int64
-          description: The ID of the user who initiated this payment.
-          example: 33333333
-        profileId:
-          type: integer
-          format: int64
-          description: The ID of the profile this payment belongs to.
-          example: 44444444
-        type:
-          type: string
-          description: Payment type.
-          enum:
-          - DIRECT_DEBIT
-          example: DIRECT_DEBIT
-        status:
-          type: string
-          description: 'Payment initiation status:
-
-            - `NEW` — Payment initiation created
-
-            - `PROCESSING` — Payment is being processed
-
-            - `COMPLETED` — Payment completed successfully
-
-            - `FAILED` — Payment failed
-
-            - `CHARGED_BACK` — Payment was charged back
-
-            '
-          enum:
-          - NEW
-          - PROCESSING
-          - COMPLETED
-          - FAILED
-          - CHARGED_BACK
-          example: NEW
-        accountId:
-          type: integer
-          format: int64
-          description: External account ID associated with the payment.
-          example: 1
-        transferId:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Transfer ID of the direct debit payment. Present only after the direct debit is initiated.
-          example: null
-        createdTime:
-          type: string
-          format: date-time
-          description: Date and time when the payment initiation was created.
-          example: '2022-01-01T19:51:41.423404Z'
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true

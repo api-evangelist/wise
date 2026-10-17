@@ -413,22 +413,21 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   schemas:
+    test-notification:
+      title: Test Notification
+      type: object
+      properties:
+        delivery_id:
+          type: string
+          format: uuid
+          description: ID of the delivery that was queued for sending.
+          example: 4a6b9810-4279-4de5-8d8d-1a6cf3b92a75
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the test notification was created.
+          example: '2019-03-28T11:22:33Z'
     subscription:
       title: Subscription
       type: object
@@ -518,20 +517,21 @@ components:
               type: string
               description: The URL where your server will be listening for events.
               example: https://your.webhook.url/12345
-    test-notification:
-      title: Test Notification
-      type: object
-      properties:
-        delivery_id:
-          type: string
-          format: uuid
-          description: ID of the delivery that was queued for sending.
-          example: 4a6b9810-4279-4de5-8d8d-1a6cf3b92a75
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp of when the test notification was created.
-          example: '2019-03-28T11:22:33Z'
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   parameters:
     X-External-Correlation-Id:
       x-global: true

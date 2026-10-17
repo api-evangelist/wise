@@ -61,6 +61,24 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  schemas:
+    ChallengeResultRequest:
+      type: object
+      required:
+      - transactionReference
+      - challengeStatus
+      properties:
+        transactionReference:
+          type: string
+          description: Transaction reference as received in the 3DS challenge webhook event.
+          example: '148579538'
+        challengeStatus:
+          type: string
+          description: The customer's response to the 3DS challenge.
+          enum:
+          - APPROVED
+          - REJECTED
+          example: APPROVED
   headers:
     X-External-Correlation-Id:
       x-global: true
@@ -113,24 +131,6 @@ components:
         application/json:
           schema:
             type: object
-  schemas:
-    ChallengeResultRequest:
-      type: object
-      required:
-      - transactionReference
-      - challengeStatus
-      properties:
-        transactionReference:
-          type: string
-          description: Transaction reference as received in the 3DS challenge webhook event.
-          example: '148579538'
-        challengeStatus:
-          type: string
-          description: The customer's response to the 3DS challenge.
-          enum:
-          - APPROVED
-          - REJECTED
-          example: APPROVED
   securitySchemes:
     UserToken:
       type: http

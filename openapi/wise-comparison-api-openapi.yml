@@ -450,7 +450,237 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
   schemas:
+    Comparison:
+      title: Comparison
+      type: object
+      additionalProperties: true
+      description: V4 comparison response containing price and speed estimates from various money transfer providers.
+      properties:
+        sourceCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 source currency code
+          example: GBP
+        targetCurrency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 target currency code
+          example: EUR
+        sourceCountry:
+          type:
+          - string
+          - 'null'
+          description: Source country (ISO 3166-1 Alpha-2 code)
+          example: null
+        targetCountry:
+          type:
+          - string
+          - 'null'
+          description: Target country (ISO 3166-1 Alpha-2 code)
+          example: null
+        providerCountry:
+          type:
+          - string
+          - 'null'
+          description: Provider country (ISO 3166-1 Alpha-2 code)
+          example: null
+        providerTypes:
+          type: array
+          description: List of provider types included in the response
+          items:
+            type: string
+          example:
+          - bank
+          - moneyTransferProvider
+        amount:
+          type: number
+          description: The comparison amount
+          example: 10000
+        amountType:
+          type: string
+          description: Whether the amount represents a send amount or recipient gets amount
+          example: SEND
+        providers:
+          type: array
+          description: List of providers with their estimated quotes
+          items:
+            type: object
+            additionalProperties: true
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Provider ID
+                example: 39
+              alias:
+                type: string
+                description: Provider alias (lowercase slug name)
+                example: wise
+              name:
+                type: string
+                description: Provider name (presentational / formal name)
+                example: Wise
+              logos:
+                type: object
+                description: URLs pointing to provider logos (svg, png)
+                properties:
+                  normal:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.png
+                  inverse:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png
+                  white:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png
+                  circle:
+                    type: object
+                    properties:
+                      svgUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg
+                      pngUrl:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                  altText:
+                    type: string
+                    description: Alt text for the provider logo
+                    example: Wise
+              type:
+                type: string
+                description: 'Provider type: bank, money transfer provider, or travel money'
+                example: moneyTransferProvider
+              partner:
+                type: boolean
+                description: Whether a partner of Wise or not
+                example: false
+              quotes:
+                type: array
+                description: An array of estimated quotes per provider
+                items:
+                  type: object
+                  additionalProperties: true
+                  properties:
+                    rate:
+                      type: number
+                      description: The live estimated exchange rate for the provider for this quote
+                      example: 1.15989
+                    fee:
+                      type: number
+                      description: The estimated fee for the provider for this quote
+                      example: 37.12
+                    dateCollected:
+                      type: string
+                      description: The date of collection for the original quote
+                      example: '2019-10-22T14:36:43Z'
+                    sourceCountry:
+                      type:
+                      - string
+                      - 'null'
+                      description: Source country (ISO 3166-1 Alpha-2 code)
+                      example: null
+                    targetCountry:
+                      type:
+                      - string
+                      - 'null'
+                      description: Target country (ISO 3166-1 Alpha-2 code)
+                      example: null
+                    markup:
+                      type: number
+                      description: Percentage markup on the quoted rate compared to the mid-market rate
+                      example: 0
+                    receivedAmount:
+                      type:
+                      - number
+                      - 'null'
+                      description: The total estimated received amount for the provider for this quote (non-null only if a send amount request was made)
+                      example: 11555.84
+                    sendAmount:
+                      type:
+                      - number
+                      - 'null'
+                      description: The total estimated send amount for the provider for this quote (non-null only if a recipient gets amount request was made)
+                      example: null
+                    isConsideredMidMarketRate:
+                      type: boolean
+                      description: Whether the provider's rate is close enough to the true mid-market rate to be classified as a mid-market rate
+                      example: true
+                    deliveryEstimation:
+                      type: object
+                      description: Delivery estimation details - i.e. a speed estimate
+                      properties:
+                        duration:
+                          type: object
+                          description: Duration range
+                          properties:
+                            min:
+                              type:
+                              - string
+                              - 'null'
+                              description: Minimum quoted time for transaction delivery (ISO 8601 duration format)
+                              example: PT20H8M16.305111S
+                            max:
+                              type:
+                              - string
+                              - 'null'
+                              description: Maximum quoted time for transaction delivery (ISO 8601 duration format)
+                              example: PT20H8M16.305111S
+                        providerGivesEstimate:
+                          type: boolean
+                          description: Whether a provider publicly surfaces a speed estimate or not
+                          example: true
     ComparisonV3:
       title: Comparison (V3)
       type: object
@@ -689,236 +919,6 @@ components:
                               - 'null'
                               description: Maximum estimated delivery date
                               example: '2025-02-05T15:08:00.000000492Z'
-    Comparison:
-      title: Comparison
-      type: object
-      additionalProperties: true
-      description: V4 comparison response containing price and speed estimates from various money transfer providers.
-      properties:
-        sourceCurrency:
-          type:
-          - string
-          - 'null'
-          description: ISO 4217 source currency code
-          example: GBP
-        targetCurrency:
-          type:
-          - string
-          - 'null'
-          description: ISO 4217 target currency code
-          example: EUR
-        sourceCountry:
-          type:
-          - string
-          - 'null'
-          description: Source country (ISO 3166-1 Alpha-2 code)
-          example: null
-        targetCountry:
-          type:
-          - string
-          - 'null'
-          description: Target country (ISO 3166-1 Alpha-2 code)
-          example: null
-        providerCountry:
-          type:
-          - string
-          - 'null'
-          description: Provider country (ISO 3166-1 Alpha-2 code)
-          example: null
-        providerTypes:
-          type: array
-          description: List of provider types included in the response
-          items:
-            type: string
-          example:
-          - bank
-          - moneyTransferProvider
-        amount:
-          type: number
-          description: The comparison amount
-          example: 10000
-        amountType:
-          type: string
-          description: Whether the amount represents a send amount or recipient gets amount
-          example: SEND
-        providers:
-          type: array
-          description: List of providers with their estimated quotes
-          items:
-            type: object
-            additionalProperties: true
-            properties:
-              id:
-                type: integer
-                format: int64
-                description: Provider ID
-                example: 39
-              alias:
-                type: string
-                description: Provider alias (lowercase slug name)
-                example: wise
-              name:
-                type: string
-                description: Provider name (presentational / formal name)
-                example: Wise
-              logos:
-                type: object
-                description: URLs pointing to provider logos (svg, png)
-                properties:
-                  normal:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo.png
-                  inverse:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_inverse.png
-                  white:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://wise.com/public-resources/assets/logos/wise-personal/logo_white.png
-                  circle:
-                    type: object
-                    properties:
-                      svgUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg
-                      pngUrl:
-                        type:
-                        - string
-                        - 'null'
-                        example: null
-                  altText:
-                    type: string
-                    description: Alt text for the provider logo
-                    example: Wise
-              type:
-                type: string
-                description: 'Provider type: bank, money transfer provider, or travel money'
-                example: moneyTransferProvider
-              partner:
-                type: boolean
-                description: Whether a partner of Wise or not
-                example: false
-              quotes:
-                type: array
-                description: An array of estimated quotes per provider
-                items:
-                  type: object
-                  additionalProperties: true
-                  properties:
-                    rate:
-                      type: number
-                      description: The live estimated exchange rate for the provider for this quote
-                      example: 1.15989
-                    fee:
-                      type: number
-                      description: The estimated fee for the provider for this quote
-                      example: 37.12
-                    dateCollected:
-                      type: string
-                      description: The date of collection for the original quote
-                      example: '2019-10-22T14:36:43Z'
-                    sourceCountry:
-                      type:
-                      - string
-                      - 'null'
-                      description: Source country (ISO 3166-1 Alpha-2 code)
-                      example: null
-                    targetCountry:
-                      type:
-                      - string
-                      - 'null'
-                      description: Target country (ISO 3166-1 Alpha-2 code)
-                      example: null
-                    markup:
-                      type: number
-                      description: Percentage markup on the quoted rate compared to the mid-market rate
-                      example: 0
-                    receivedAmount:
-                      type:
-                      - number
-                      - 'null'
-                      description: The total estimated received amount for the provider for this quote (non-null only if a send amount request was made)
-                      example: 11555.84
-                    sendAmount:
-                      type:
-                      - number
-                      - 'null'
-                      description: The total estimated send amount for the provider for this quote (non-null only if a recipient gets amount request was made)
-                      example: null
-                    isConsideredMidMarketRate:
-                      type: boolean
-                      description: Whether the provider's rate is close enough to the true mid-market rate to be classified as a mid-market rate
-                      example: true
-                    deliveryEstimation:
-                      type: object
-                      description: Delivery estimation details - i.e. a speed estimate
-                      properties:
-                        duration:
-                          type: object
-                          description: Duration range
-                          properties:
-                            min:
-                              type:
-                              - string
-                              - 'null'
-                              description: Minimum quoted time for transaction delivery (ISO 8601 duration format)
-                              example: PT20H8M16.305111S
-                            max:
-                              type:
-                              - string
-                              - 'null'
-                              description: Maximum quoted time for transaction delivery (ISO 8601 duration format)
-                              example: PT20H8M16.305111S
-                        providerGivesEstimate:
-                          type: boolean
-                          description: Whether a provider publicly surfaces a speed estimate or not
-                          example: true
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   parameters:
     X-External-Correlation-Id:
       x-global: true

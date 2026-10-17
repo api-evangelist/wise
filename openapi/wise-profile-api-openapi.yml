@@ -3263,22 +3263,213 @@ paths:
         '429':
           $ref: '#/components/responses/429'
 components:
-  headers:
-    X-External-Correlation-Id:
-      x-global: true
-      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-    x-trace-id:
-      x-global: true
-      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
-      schema:
-        type: string
-      example: fba501b6d453b96789f52338f019341f
   schemas:
+    director:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the director. Automatically set.
+          example: 10
+        firstName:
+          type: string
+          description: Director first name.
+          example: John
+        lastName:
+          type: string
+          description: Director last name.
+          example: Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+    address:
+      type: object
+      description: Address associated with a profile.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of the address.
+          example: 36086782
+        addressFirstLine:
+          type: string
+          description: First line of the address.
+          example: 24 Willow Creek Lane
+        city:
+          type: string
+          description: City of the address.
+          example: Bristol
+        countryIso2Code:
+          type: string
+          description: Two-letter ISO country code.
+          example: GB
+        countryIso3Code:
+          type: string
+          description: Three-letter ISO country code.
+          example: gbr
+        postCode:
+          type: string
+          description: Postal code of the address.
+          example: BS1 6AE
+        stateCode:
+          type:
+          - string
+          - 'null'
+          description: State code of the address (can be null for some countries).
+          example: null
+    ubo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the ultimate beneficial owner.
+          example: 013ab1c2688d0185b582ee7e0bcb28b2
+        name:
+          type: string
+          description: Owner full name.
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: Date of birth.
+          example: '1982-05-20'
+        countryOfResidenceIso3Code:
+          type: string
+          description: 3 character country code.
+          example: usa
+        addressFirstLine:
+          type: string
+          description: First line of address.
+          example: 123 Fake St
+        postCode:
+          type: string
+          description: Address post code.
+          example: FK 12345
+        ownershipPercentage:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Percentage of ownership.
+          example: 30
+    personal-profile:
+      title: Personal Profile
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          description: Type of profile.
+          enum:
+          - PERSONAL
+          example: PERSONAL
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the profile.
+          example: 14575282
+        publicId:
+          type: string
+          description: Publicly accessible identifier for the profile.
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        userId:
+          type: integer
+          format: int64
+          description: The ID of the user associated with this profile.
+          example: 9889627
+        address:
+          description: Main registered address of the profile.
+          $ref: '#/components/schemas/address'
+        email:
+          type: string
+          description: Primary email address for the profile.
+          example: sarah.jenkins@example.com
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created (ISO 8601 format).
+          example: '2023-01-15T10:30:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated (ISO 8601 format).
+          example: '2025-06-18T14:20:00'
+        avatar:
+          type:
+          - string
+          - 'null'
+          description: Link to person avatar image.
+          example: null
+        currentState:
+          type: string
+          description: Current status of this profile.
+          enum:
+          - HIDDEN
+          - VISIBLE
+          - DEACTIVATED
+          example: VISIBLE
+        contactDetails:
+          type: object
+          description: Contact information for the profile.
+          properties:
+            email:
+              type: string
+              description: Contact email address.
+              example: sarah.contact@example.com
+            phoneNumber:
+              type: string
+              description: Contact phone number.
+              example: '+447700900123'
+        firstName:
+          type: string
+          description: First name of the profile holder.
+          example: Sarah
+        lastName:
+          type: string
+          description: Last name of the profile holder.
+          example: Jenkins
+        preferredName:
+          type: string
+          description: Preferred name of the profile holder.
+          example: Sal
+        dateOfBirth:
+          type: string
+          description: Date of birth of the profile holder.
+          example: '1985-05-20'
+        phoneNumber:
+          type: string
+          description: Phone number of the profile holder.
+          example: '+447700900456'
+        secondaryAddresses:
+          type: array
+          description: An array of secondary addresses associated with the profile.
+          items:
+            $ref: '#/components/schemas/address'
+        fullName:
+          type: string
+          description: Full name of the profile holder.
+          example: Sarah Jenkins
+    profile:
+      title: Profile
+      x-tags:
+      - profile
+      description: 'A profile represents an identity that can send and receive money through Wise. There are two types: **Personal** (an individual) and **Business** (a company). The fields returned vary depending on the profile type.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          PERSONAL: '#/components/schemas/personal-profile'
+          BUSINESS: '#/components/schemas/business-profile'
+      oneOf:
+      - $ref: '#/components/schemas/personal-profile'
+      - $ref: '#/components/schemas/business-profile'
     business-profile:
       title: Business Profile
       type: object
@@ -3391,212 +3582,35 @@ components:
           type: string
           description: Full legal name of the business.
           example: Innovate Solutions Ltd
-    address:
-      type: object
-      description: Address associated with a profile.
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the address.
-          example: 36086782
-        addressFirstLine:
-          type: string
-          description: First line of the address.
-          example: 24 Willow Creek Lane
-        city:
-          type: string
-          description: City of the address.
-          example: Bristol
-        countryIso2Code:
-          type: string
-          description: Two-letter ISO country code.
-          example: GB
-        countryIso3Code:
-          type: string
-          description: Three-letter ISO country code.
-          example: gbr
-        postCode:
-          type: string
-          description: Postal code of the address.
-          example: BS1 6AE
-        stateCode:
-          type:
-          - string
-          - 'null'
-          description: State code of the address (can be null for some countries).
-          example: null
-    ubo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID of the ultimate beneficial owner.
-          example: 013ab1c2688d0185b582ee7e0bcb28b2
-        name:
-          type: string
-          description: Owner full name.
-          example: John Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
-        addressFirstLine:
-          type: string
-          description: First line of address.
-          example: 123 Fake St
-        postCode:
-          type: string
-          description: Address post code.
-          example: FK 12345
-        ownershipPercentage:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          description: Percentage of ownership.
-          example: 30
-    director:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: ID of the director. Automatically set.
-          example: 10
-        firstName:
-          type: string
-          description: Director first name.
-          example: John
-        lastName:
-          type: string
-          description: Director last name.
-          example: Doe
-        dateOfBirth:
-          type: string
-          description: Date of birth.
-          example: '1982-05-20'
-        countryOfResidenceIso3Code:
-          type: string
-          description: 3 character country code.
-          example: usa
-    profile:
-      title: Profile
-      x-tags:
-      - profile
-      description: 'A profile represents an identity that can send and receive money through Wise. There are two types: **Personal** (an individual) and **Business** (a company). The fields returned vary depending on the profile type.
+  headers:
+    X-External-Correlation-Id:
+      x-global: true
+      description: Echoed back when `X-External-Correlation-Id` was included in the request. [Learn more](/guides/developer/headers/correlation-id).
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    x-trace-id:
+      x-global: true
+      description: Unique trace identifier assigned by Wise. Useful when contacting support about a specific request.
+      schema:
+        type: string
+      example: fba501b6d453b96789f52338f019341f
+  parameters:
+    X-External-Correlation-Id:
+      x-global: true
+      name: X-External-Correlation-Id
+      in: header
+      required: false
+      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
 
         '
-      discriminator:
-        propertyName: type
-        mapping:
-          PERSONAL: '#/components/schemas/personal-profile'
-          BUSINESS: '#/components/schemas/business-profile'
-      oneOf:
-      - $ref: '#/components/schemas/personal-profile'
-      - $ref: '#/components/schemas/business-profile'
-    personal-profile:
-      title: Personal Profile
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: Type of profile.
-          enum:
-          - PERSONAL
-          example: PERSONAL
-        id:
-          type: integer
-          format: int64
-          description: Unique identifier for the profile.
-          example: 14575282
-        publicId:
-          type: string
-          description: Publicly accessible identifier for the profile.
-          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
-        userId:
-          type: integer
-          format: int64
-          description: The ID of the user associated with this profile.
-          example: 9889627
-        address:
-          description: Main registered address of the profile.
-          $ref: '#/components/schemas/address'
-        email:
-          type: string
-          description: Primary email address for the profile.
-          example: sarah.jenkins@example.com
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was created (ISO 8601 format).
-          example: '2023-01-15T10:30:00'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the profile was last updated (ISO 8601 format).
-          example: '2025-06-18T14:20:00'
-        avatar:
-          type:
-          - string
-          - 'null'
-          description: Link to person avatar image.
-          example: null
-        currentState:
-          type: string
-          description: Current status of this profile.
-          enum:
-          - HIDDEN
-          - VISIBLE
-          - DEACTIVATED
-          example: VISIBLE
-        contactDetails:
-          type: object
-          description: Contact information for the profile.
-          properties:
-            email:
-              type: string
-              description: Contact email address.
-              example: sarah.contact@example.com
-            phoneNumber:
-              type: string
-              description: Contact phone number.
-              example: '+447700900123'
-        firstName:
-          type: string
-          description: First name of the profile holder.
-          example: Sarah
-        lastName:
-          type: string
-          description: Last name of the profile holder.
-          example: Jenkins
-        preferredName:
-          type: string
-          description: Preferred name of the profile holder.
-          example: Sal
-        dateOfBirth:
-          type: string
-          description: Date of birth of the profile holder.
-          example: '1985-05-20'
-        phoneNumber:
-          type: string
-          description: Phone number of the profile holder.
-          example: '+447700900456'
-        secondaryAddresses:
-          type: array
-          description: An array of secondary addresses associated with the profile.
-          items:
-            $ref: '#/components/schemas/address'
-        fullName:
-          type: string
-          description: Full name of the profile holder.
-          example: Sarah Jenkins
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   responses:
     '429':
       x-global: true
@@ -3620,20 +3634,6 @@ components:
         application/json:
           schema:
             type: object
-  parameters:
-    X-External-Correlation-Id:
-      x-global: true
-      name: X-External-Correlation-Id
-      in: header
-      required: false
-      description: 'Optional UUID for correlating requests across systems. If provided, Wise echoes it back in the response. Maximum 36 characters. [Learn more](/guides/developer/headers/correlation-id).
-
-        '
-      schema:
-        type: string
-        format: uuid
-        maxLength: 36
-      example: f47ac10b-58cc-4372-a567-0e02b2c3d479
   securitySchemes:
     UserToken:
       type: http

@@ -1046,61 +1046,6 @@ components:
               type: array
               items:
                 type: object
-    recipient-create-request:
-      type: object
-      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
-
-        '
-      properties:
-        currency:
-          type: string
-          description: 3 character currency code.
-          example: GBP
-        type:
-          type: string
-          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
-          example: sort_code
-        profile:
-          type: integer
-          format: int64
-          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
-          example: 30000000
-        accountHolderName:
-          type: string
-          description: Recipient full name.
-          example: John Doe
-        ownedByCustomer:
-          type: boolean
-          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
-
-            '
-          example: true
-        details:
-          type: object
-          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
-
-            '
-          properties:
-            legalType:
-              type: string
-              description: Recipient legal type (when applicable).
-              enum:
-              - PRIVATE
-              - BUSINESS
-              example: PRIVATE
-            sortCode:
-              type: string
-              description: Sort code (GBP example).
-              example: '040075'
-            accountNumber:
-              type: string
-              description: Account number (GBP example).
-              example: '37778842'
-            dateOfBirth:
-              type: string
-              description: Date of birth in ISO 8601 date format (Optional for GBP example).
-              example: '1961-01-01'
-          additionalProperties: true
     confirmations:
       type: object
       description: 'Verification results for the recipient''s details. Only populated for currencies with recipient verification enabled (KRW, INR, IDR, EUR). See the [Verifying Recipient Details](/guides/developer/api-guides/recipient-verification) guide for how to handle these.
@@ -1181,6 +1126,205 @@ components:
                       type: string
                       description: The recommended value for the field.
                       example: Joe Doe
+    account-requirements-response:
+      type: array
+      description: 'Dynamic account-requirements response used to build recipient forms. The structure and the fields returned vary by currency, recipient type, route, and sometimes previously provided inputs. Treat this as a schema for a dynamically generated form definition rather than a fixed set of recipient fields.
+
+        '
+      items:
+        type: object
+        description: A requirement group for a specific payout method / route.
+        properties:
+          type:
+            type: string
+            description: Requirement group identifier (route/payout-method specific).
+            example: south_korean_paygate
+          title:
+            type: string
+            description: Human-readable title for the requirement group.
+            example: PayGate
+          usageInfo:
+            type: string
+            description: Optional usage/help text.
+            example: null
+          fields:
+            type: array
+            description: List of UI field groups to collect required data.
+            items:
+              type: object
+              description: Group of related fields shown together in UI.
+              properties:
+                name:
+                  type: string
+                  description: Display name of this group.
+                  example: E-mail
+                group:
+                  type: array
+                  description: The actual fields within this group.
+                  items:
+                    type: object
+                    description: A single field descriptor.
+                    properties:
+                      key:
+                        type: string
+                        description: Key to include in JSON when submitting recipient details.
+                        example: email
+                      name:
+                        type: string
+                        description: Human-readable label.
+                        example: E-mail
+                      type:
+                        type: string
+                        description: UI field type.
+                        example: text
+                      refreshRequirementsOnChange:
+                        type: boolean
+                        description: 'If true, changing this field can alter requirements; call the POST account-requirements endpoint with updated data to refresh requirements.
+
+                          '
+                        example: false
+                      required:
+                        type: boolean
+                        description: Indicates whether this field is mandatory.
+                        example: true
+                      displayFormat:
+                        type: string
+                        description: Optional display formatting hint.
+                        example: null
+                      example:
+                        type: string
+                        description: Example value for the field (may be empty string).
+                        example: example@example.ex
+                      minLength:
+                        type: integer
+                        description: Minimum allowed length, when applicable.
+                        example: null
+                      maxLength:
+                        type: integer
+                        description: Maximum allowed length, when applicable.
+                        example: null
+                      validationRegexp:
+                        type: string
+                        description: Regex pattern for validation, when applicable.
+                        example: ^[^\s]+@[^\s]+\.[^\s]{2,}$
+                      validationAsync:
+                        type: string
+                        deprecated: true
+                        description: Deprecated. This validation will instead be performed when submitting the request.
+                        example: null
+                      valuesAllowed:
+                        type:
+                        - array
+                        - 'null'
+                        description: Allowed values for select/radio inputs; null for free-text/date inputs.
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              description: Machine-readable value.
+                              example: PRIVATE
+                            name:
+                              type: string
+                              description: Human-readable value label.
+                              example: Person
+      example:
+      - type: south_korean_paygate
+        title: PayGate
+        usageInfo: null
+        fields:
+        - name: E-mail
+          group:
+          - key: email
+            name: E-mail
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: example@example.ex
+            minLength: null
+            maxLength: null
+            validationRegexp: ^[^\s]+@[^\s]+\.[^\s]{2,}$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient type
+          group:
+          - key: legalType
+            name: Recipient type
+            type: select
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: null
+            maxLength: null
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed:
+            - key: PRIVATE
+              name: Person
+        - name: Full Name
+          group:
+          - key: accountHolderName
+            name: Full Name
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: 2
+            maxLength: 140
+            validationRegexp: ^[0-9A-Za-zÀ-ÖØ-öø-ÿ-_()'*,.%#^@{}~<>+$"\[\]\\ ]+$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient's Date of Birth
+          group:
+          - key: dateOfBirth
+            name: Recipient's Date of Birth
+            type: date
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: ''
+            minLength: null
+            maxLength: null
+            validationRegexp: ^\d{4}\-\d{2}\-\d{2}$
+            validationAsync: null
+            valuesAllowed: null
+        - name: Recipient Bank Name
+          group:
+          - key: bankCode
+            name: Recipient Bank Name
+            type: select
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: Choose recipient bank
+            minLength: null
+            maxLength: null
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed:
+            - key: ''
+              name: Choose recipient bank
+            - key: '004'
+              name: Example Bank A
+            - key: '011'
+              name: Example Bank B
+        - name: Account number (KRW accounts only)
+          group:
+          - key: accountNumber
+            name: Account number (KRW accounts only)
+            type: text
+            refreshRequirementsOnChange: false
+            required: true
+            displayFormat: null
+            example: '1254693521232'
+            minLength: 10
+            maxLength: 16
+            validationRegexp: null
+            validationAsync: null
+            valuesAllowed: null
     recipient:
       type: object
       title: Recipient Account
@@ -1412,205 +1556,61 @@ components:
                           type: string
                           description: The recommended value for the field.
                           example: Joe Doe
-    account-requirements-response:
-      type: array
-      description: 'Dynamic account-requirements response used to build recipient forms. The structure and the fields returned vary by currency, recipient type, route, and sometimes previously provided inputs. Treat this as a schema for a dynamically generated form definition rather than a fixed set of recipient fields.
+    recipient-create-request:
+      type: object
+      description: 'Create a recipient (beneficiary) account request for POST /v1/accounts. The required fields inside `details` depend on currency/route; use the account-requirements endpoints (e.g. /v1/quotes/{quoteId}/account-requirements) to discover the exact required fields.
 
         '
-      items:
-        type: object
-        description: A requirement group for a specific payout method / route.
-        properties:
-          type:
-            type: string
-            description: Requirement group identifier (route/payout-method specific).
-            example: south_korean_paygate
-          title:
-            type: string
-            description: Human-readable title for the requirement group.
-            example: PayGate
-          usageInfo:
-            type: string
-            description: Optional usage/help text.
-            example: null
-          fields:
-            type: array
-            description: List of UI field groups to collect required data.
-            items:
-              type: object
-              description: Group of related fields shown together in UI.
-              properties:
-                name:
-                  type: string
-                  description: Display name of this group.
-                  example: E-mail
-                group:
-                  type: array
-                  description: The actual fields within this group.
-                  items:
-                    type: object
-                    description: A single field descriptor.
-                    properties:
-                      key:
-                        type: string
-                        description: Key to include in JSON when submitting recipient details.
-                        example: email
-                      name:
-                        type: string
-                        description: Human-readable label.
-                        example: E-mail
-                      type:
-                        type: string
-                        description: UI field type.
-                        example: text
-                      refreshRequirementsOnChange:
-                        type: boolean
-                        description: 'If true, changing this field can alter requirements; call the POST account-requirements endpoint with updated data to refresh requirements.
+      properties:
+        currency:
+          type: string
+          description: 3 character currency code.
+          example: GBP
+        type:
+          type: string
+          description: Recipient account type (currency/route-specific), e.g. sort_code, iban, email.
+          example: sort_code
+        profile:
+          type: integer
+          format: int64
+          description: Personal or business profile ID of the sender. It is highly advised to pass the business profile ID in this field if your business account is managed by multiple users, so that the recipient can be accessed by all users authorized on the business account.
+          example: 30000000
+        accountHolderName:
+          type: string
+          description: Recipient full name.
+          example: John Doe
+        ownedByCustomer:
+          type: boolean
+          description: 'Indicates whether the recipient account is owned by the profile owner (self-transfer), such as a user sending money to their own account in another country or currency. Set to `true` for self-transfers. We strongly recommend setting this field, as distinguishing self-transfers from third-party transfers improves routing and processing efficiency.
 
-                          '
-                        example: false
-                      required:
-                        type: boolean
-                        description: Indicates whether this field is mandatory.
-                        example: true
-                      displayFormat:
-                        type: string
-                        description: Optional display formatting hint.
-                        example: null
-                      example:
-                        type: string
-                        description: Example value for the field (may be empty string).
-                        example: example@example.ex
-                      minLength:
-                        type: integer
-                        description: Minimum allowed length, when applicable.
-                        example: null
-                      maxLength:
-                        type: integer
-                        description: Maximum allowed length, when applicable.
-                        example: null
-                      validationRegexp:
-                        type: string
-                        description: Regex pattern for validation, when applicable.
-                        example: ^[^\s]+@[^\s]+\.[^\s]{2,}$
-                      validationAsync:
-                        type: string
-                        deprecated: true
-                        description: Deprecated. This validation will instead be performed when submitting the request.
-                        example: null
-                      valuesAllowed:
-                        type:
-                        - array
-                        - 'null'
-                        description: Allowed values for select/radio inputs; null for free-text/date inputs.
-                        items:
-                          type: object
-                          properties:
-                            key:
-                              type: string
-                              description: Machine-readable value.
-                              example: PRIVATE
-                            name:
-                              type: string
-                              description: Human-readable value label.
-                              example: Person
-      example:
-      - type: south_korean_paygate
-        title: PayGate
-        usageInfo: null
-        fields:
-        - name: E-mail
-          group:
-          - key: email
-            name: E-mail
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: example@example.ex
-            minLength: null
-            maxLength: null
-            validationRegexp: ^[^\s]+@[^\s]+\.[^\s]{2,}$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient type
-          group:
-          - key: legalType
-            name: Recipient type
-            type: select
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: null
-            maxLength: null
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed:
-            - key: PRIVATE
-              name: Person
-        - name: Full Name
-          group:
-          - key: accountHolderName
-            name: Full Name
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: 2
-            maxLength: 140
-            validationRegexp: ^[0-9A-Za-zÀ-ÖØ-öø-ÿ-_()'*,.%#^@{}~<>+$"\[\]\\ ]+$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient's Date of Birth
-          group:
-          - key: dateOfBirth
-            name: Recipient's Date of Birth
-            type: date
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: ''
-            minLength: null
-            maxLength: null
-            validationRegexp: ^\d{4}\-\d{2}\-\d{2}$
-            validationAsync: null
-            valuesAllowed: null
-        - name: Recipient Bank Name
-          group:
-          - key: bankCode
-            name: Recipient Bank Name
-            type: select
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: Choose recipient bank
-            minLength: null
-            maxLength: null
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed:
-            - key: ''
-              name: Choose recipient bank
-            - key: '004'
-              name: Example Bank A
-            - key: '011'
-              name: Example Bank B
-        - name: Account number (KRW accounts only)
-          group:
-          - key: accountNumber
-            name: Account number (KRW accounts only)
-            type: text
-            refreshRequirementsOnChange: false
-            required: true
-            displayFormat: null
-            example: '1254693521232'
-            minLength: 10
-            maxLength: 16
-            validationRegexp: null
-            validationAsync: null
-            valuesAllowed: null
+            '
+          example: true
+        details:
+          type: object
+          description: 'Currency/route-specific recipient fields. Common examples include legalType, sortCode, accountNumber, email, dateOfBirth, etc. Use account-requirements APIs to determine what is required.
+
+            '
+          properties:
+            legalType:
+              type: string
+              description: Recipient legal type (when applicable).
+              enum:
+              - PRIVATE
+              - BUSINESS
+              example: PRIVATE
+            sortCode:
+              type: string
+              description: Sort code (GBP example).
+              example: '040075'
+            accountNumber:
+              type: string
+              description: Account number (GBP example).
+              example: '37778842'
+            dateOfBirth:
+              type: string
+              description: Date of birth in ISO 8601 date format (Optional for GBP example).
+              example: '1961-01-01'
+          additionalProperties: true
   headers:
     X-External-Correlation-Id:
       x-global: true
