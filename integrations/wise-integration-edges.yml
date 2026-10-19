@@ -6,6 +6,7 @@ source:
 checked:
 - https://composio.dev/toolkits/wise
 - https://data.directory.openbankingbrasil.org.br/participants
+- https://eservices.mas.gov.sg/fid
 - https://github.com/PipedreamHQ/pipedream/tree/94800dd6de6640b942c65ea7ee655f71ac56d438/components/
 - https://github.com/n8n-io/n8n/tree/860f1273ebd73fabbd668cbec2c49ed9b48a286d/packages/nodes-base/nodes/
 - https://kantarainitiative.org/trust-status-list/
@@ -14,6 +15,9 @@ checked:
 - https://n8n.io/integrations/wise/
 - https://www.access-dvs-register.service.gov.uk/register/download-register
 - https://www.bcb.gov.br/estabilidadefinanceira/participantespix
+- https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+- https://www.bnm.gov.my/list-of-regulatees
+- https://www.ojk.go.id/id/kanal/iknb/data-dan-statistik/direktori/fintech/Default.aspx
 - https://zapier.com/apps/wise/integrations
 summary: null
 marketplace_apps:
@@ -258,4 +262,58 @@ edges:
     detected: '2026-10-15'
   detected_by: sweep-regtech-aml.py
   first_seen: '2026-10-15'
+- partner_name: Bank Indonesia payment-system licence register
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+  category: open finance / payments (Indonesia)
+  contract_reference:
+    register: Bank Indonesia payment-system licence register
+    spec_file: null
+    standard: Bank Indonesia payment-system licensing (PBI 22/23/2020; SNAP applies to licensees)
+    role: licensed-participant
+    registrations:
+    - registered_name: PT Wise Payments Indonesia
+      licences:
+      - Payment Service Provider - License Category 2
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+      decision: 28/628/Jkt/Srt/B
+    signal_note: 'participation only: a regulator licence; no API conformance is published by this register'
+    detected_by: sweep-gulf-asean-open-finance.py
+    detected: '2026-10-18'
+  detected_by: sweep-gulf-asean-open-finance.py
+  first_seen: '2026-10-18'
+- partner_name: MAS Financial Institutions Directory
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://eservices.mas.gov.sg/fid
+  category: open finance (Singapore)
+  contract_reference:
+    register: MAS Financial Institutions Directory
+    spec_file: null
+    standard: MAS licensing (Banking Act / Payment Services Act, Singapore)
+    role: licensed-participant
+    registrations:
+    - registered_name: WISE ASIA-PACIFIC PTE. LTD.
+      licences:
+      - Major Payment Institution
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      evidence: https://eservices.mas.gov.sg/fid/institution/detail/200786-WISE-ASIA-PACIFIC-PTE-LTD
+      register_id: 200786-WISE-ASIA-PACIFIC-PTE-LTD
+    signal_note: 'participation only: a regulator licence; no API conformance is published by this register'
+    detected_by: sweep-gulf-asean-open-finance.py
+    detected: '2026-10-18'
+  detected_by: sweep-gulf-asean-open-finance.py
+  first_seen: '2026-10-18'
 templates: []
