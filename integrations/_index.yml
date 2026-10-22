@@ -304,3 +304,107 @@
     sector: fintech
   status: not-a-workflow
   arazzo: null
+- slug: wise-eba-payment-institutions-register-psd2-emd2
+  label: EBA Payment Institutions Register (PSD2 / EMD2)
+  partner_name: EBA Payment Institutions Register (PSD2 / EMD2)
+  category: EU/EEA PSD2 payment / e-money authorisation
+  type: register
+  channel: regulator-register
+  evidence: https://euclid.eba.europa.eu/register/pir/search
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: EBA Payment Institutions Register (PSD2 / EMD2)
+    spec_file: null
+    standard: null
+    role: authorised-payment-or-e-money-institution
+    registrations:
+    - registered_name: Wise Europe SA
+      licences:
+      - payment institution
+      register_country: BE
+      register_id: BE_NBB!0713629988
+      matched_domain: null
+      matched_by: register-name
+      authorised: '2019-03-19'
+      competent_authority: BE_NBB
+      national_ref: 0713629988
+      home_services:
+      - PS_03A
+      - PS_03B
+      - PS_03C
+      - PS_04A
+      - PS_04B
+      - PS_04C
+      - PS_05A
+      - PS_05B
+      - PS_060
+      passports:
+      - AT
+      - BG
+      - CY
+      - CZ
+      - DE
+      - DK
+      - EE
+      - ES
+      - FI
+      - FR
+      - GR
+      - HR
+      - HU
+      - IE
+      - IS
+      - IT
+      - LI
+      - LT
+      - LU
+      - LV
+      - MT
+      - NL
+      - 'NO'
+      - PL
+      - PT
+      - RO
+      - SE
+      - SI
+      - SK
+      register_name_note: register-name 'wise' = wise; no wikidata P856
+    matched_by: register-name
+    signal_note: 'participation only: a regulator authorisation / registration and its PSD2 passports (host countries);
+      no API conformance is published by this register'
+    detected_by: sweep-eu-psd2-payment-institutions.py
+    detected: '2026-10-21'
+    identity_source: register-name
+    identity_note: register gave only the name; exact normalised match to the repo's apis.yml name, one repo, Wikidata
+      P856 not contradicting (Kin 2026-10-20 decision 2)
+  status: not-a-workflow
+  arazzo: null
+- slug: wise-mozilla-firefox-add-ons-amo
+  label: Mozilla Firefox Add-ons (AMO)
+  partner_name: Mozilla Firefox Add-ons (AMO)
+  category: browser extension (Firefox Add-ons)
+  type: marketplace
+  marketplace: firefox-add-ons
+  channel: partner-built
+  evidence: https://addons.mozilla.org/en-US/firefox/addon/wise-send-money/
+  source: edge
+  relationship: platform-app
+  contract_reference:
+    register: 'Firefox Add-ons (addons.mozilla.org public API v5 search: authors, homepage, support_url)'
+    spec_file: null
+    role: firefox-add-on-publisher
+    registered_name: Wise
+    register_id: https://addons.mozilla.org/api/v5/addons/addon/wise-send-money/
+    matched_domain: wise.com
+    matched_by: domain+name-among-holders
+    matched_name: Wise
+    builder: publisher
+    signal_note: ONE edge per provider for the store; listing alone = participation. The AMO author name (builder
+      publisher) or homepage + support_url both on the provider's domain (builder domain-attested) identifies it;
+      extension / user counts are context, never counted. No Mozilla repo in all/*, so no platform-side edge exists
+      to mirror.
+    detected_by: sweep-browser-extension-stores.py
+    detected: '2026-10-21'
+  status: not-a-workflow
+  arazzo: null
