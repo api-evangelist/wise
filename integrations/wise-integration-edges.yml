@@ -33,6 +33,11 @@ checked:
 - https://addons.mozilla.org/api/v5/addons/addon/<slug>/
 - https://addons.mozilla.org/api/v5/addons/search/?type=extension&app=firefox
 - https://chromewebstore.google.com/sitemap
+- https://www.bankofcanada.ca/core-functions/retail-payments-supervision/psp-registry/
+- https://www.bankofcanada.ca/rps-api/cif2/accounts/list
+- https://www.payments.ca/payment-resources/directories?field_directory_type=10
+- https://www.payments.ca/payment-resources/directories?field_directory_type=13
+- https://www.payments.ca/payment-resources/directories?field_directory_type=14
 summary: null
 marketplace_apps:
 - marketplace: n8n
@@ -493,4 +498,53 @@ edges:
     detected: '2026-10-21'
   detected_by: sweep-browser-extension-stores.py
   first_seen: '2026-10-21'
+- partner_name: Bank of Canada RPAA registry of payment service providers
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.bankofcanada.ca/core-functions/retail-payments-supervision/psp-registry/
+  category: Canadian retail payment activities (RPAA) PSP registration
+  contract_reference:
+    register: Bank of Canada RPAA registry of payment service providers
+    spec_file: null
+    standard: null
+    role: registered-psp
+    registrations:
+    - registered_name: Wise Payments Canada Inc.
+      register_status: registered
+      register_country: CA
+      register_id: 251b221d-5b98-ef11-8a68-000d3a84a24c
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      evidence_url: https://www.bankofcanada.ca/core-functions/retail-payments-supervision/psp-registry/psp-registry-details/?account_id=251b221d-5b98-ef11-8a68-000d3a84a24c
+      licences:
+      - RPAA registered PSP
+      brand: Wise
+      registration_date: '2025-10-16'
+      head_office_country: Canada
+      trade_names:
+      - n/a
+      - n/a
+      - n/a
+      - n/a
+      - n/a
+      - n/a
+      payment_functions:
+      - Holding of funds on behalf of an end user until they are withdrawn by the end user or transferred to another
+        individual or entity
+      - The initiation of an electronic funds transfer at the request of an end user
+      - Authorization or Transmission, Reception or Facilitation of an instruction in relation to an electronic
+        funds transfer
+      - The provision or maintenance of an account that, in relation to an electronic funds transfer, is held on
+        behalf of one or more end users
+      has_violations: false
+    signal_note: 'participation only: a regulator registration / payment-system membership; no API conformance is
+      published by this register'
+    detected_by: sweep-canada-rpaa-psp-registry.py
+    detected: '2026-10-22'
+  detected_by: sweep-canada-rpaa-psp-registry.py
+  first_seen: '2026-10-22'
 templates: []
