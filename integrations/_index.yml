@@ -457,3 +457,131 @@
     detected: '2026-10-22'
   status: not-a-workflow
   arazzo: null
+- slug: wise-raycast
+  label: Raycast
+  partner: raycast
+  partner_name: Raycast
+  category: Raycast Store extension (community wrapper)
+  type: marketplace
+  marketplace: raycast-store
+  channel: connector-listing
+  evidence: https://www.raycast.com/hugoliconv/wise-quotes
+  source: edge
+  relationship: connector-coverage
+  contract_reference:
+    register: Raycast Store (raycast/extensions monorepo + store_listings JSON)
+    spec_file: null
+    role: raycast-community-wrapper
+    builder: community
+    authors:
+    - hugoliconv
+    - jorgetoh
+    - robsel118
+    matched_domain: wise.com
+    matched_by: domain+name-among-holders
+    monorepo_commit: 84f9ac51336a8c69f70974a75bc067c0feae3658
+    listings:
+    - title: Wise Quotes
+      store_url: https://www.raycast.com/hugoliconv/wise-quotes
+      installs: 765
+      categories:
+      - Finance
+      source: https://github.com/raycast/extensions/tree/84f9ac51336a8c69f70974a75bc067c0feae3658/extensions/wise-quotes/
+      author: hugoliconv
+    - title: Wise Accounts
+      store_url: https://www.raycast.com/robsel118/wise-accounts
+      installs: 287
+      categories:
+      - Productivity
+      - Finance
+      source: https://github.com/raycast/extensions/tree/84f9ac51336a8c69f70974a75bc067c0feae3658/extensions/wise-accounts/
+      author: robsel118
+    - title: Wise Lens
+      store_url: https://www.raycast.com/jorgetoh/wise-lens
+      installs: 25
+      categories:
+      - Finance
+      - Productivity
+      source: https://github.com/raycast/extensions/tree/84f9ac51336a8c69f70974a75bc067c0feae3658/extensions/wise-lens/
+      author: jorgetoh
+    categories:
+    - Finance
+    - Productivity
+    identity_note: the extension's own source calls a host on the product's domain AND its title / package name
+      passes partner_link's name check; built by Raycast community developers, not the vendor
+    signal_note: 'coverage: Raycast''s store reaches the product through community-built extensions; one edge per
+      (product, store); install / listing counts are context, never counted'
+    detected_by: sweep-raycast-store-extensions.py
+    detected: '2026-10-22'
+  status: not-a-workflow
+  arazzo: null
+- slug: wise-banco-central-do-brasil-authorized-payment-institutions-institui-es-de-pagamento
+  label: Banco Central do Brasil authorized payment institutions (Instituições de Pagamento)
+  partner_name: Banco Central do Brasil authorized payment institutions (Instituições de Pagamento)
+  category: Brazil BCB-authorized payment institution (IP)
+  type: register
+  channel: regulator-register
+  evidence: https://www.bcb.gov.br/estabilidadefinanceira/relacao_instituicoes_funcionamento
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: Banco Central do Brasil authorized payment institutions (Instituições de Pagamento)
+    spec_file: null
+    standard: null
+    role: authorized-payment-institution
+    institution_class: fintech
+    registrations:
+    - registered_name: WISE BRASIL INSTITUICAO DE PAGAMENTO LTDA
+      register_status: authorized-active
+      register_country: BR
+      register_id: CNPJ 40571694
+      segment: Instituição de Pagamento
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      evidence_url: https://www.bcb.gov.br/estabilidadefinanceira/relacao_instituicoes_funcionamento
+      licences:
+      - Instituição de Pagamento
+      situation: Autorizada em Atividade
+      tariff_list_confirmed: true
+      domain_source: filed-website
+    signal_note: 'participation only: a Banco Central do Brasil authorisation to operate; no API conformance is
+      published by this register'
+    detected_by: sweep-brazil-bcb-authorized-institutions.py
+    detected: '2026-10-22'
+  status: not-a-workflow
+  arazzo: null
+- slug: wise-banco-central-do-brasil-authorized-financial-companies-sociedades
+  label: Banco Central do Brasil authorized financial companies (sociedades)
+  partner_name: Banco Central do Brasil authorized financial companies (sociedades)
+  category: Brazil BCB-authorized financial company (CFI / DTVM / CTVM / FX broker / other)
+  type: register
+  channel: regulator-register
+  evidence: https://www.bcb.gov.br/estabilidadefinanceira/relacao_instituicoes_funcionamento
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: Banco Central do Brasil authorized financial companies (sociedades)
+    spec_file: null
+    standard: null
+    role: authorized-financial-company
+    institution_class: incumbent
+    registrations:
+    - registered_name: WISE BRASIL CORRETORA DE CÂMBIO LTDA
+      register_status: authorized-active
+      register_country: BR
+      register_id: CNPJ 36588217
+      segment: Sociedade Corretora de Câmbio
+      matched_domain: wise.com
+      matched_by: domain+name-among-holders
+      evidence_url: https://www.bcb.gov.br/estabilidadefinanceira/relacao_instituicoes_funcionamento
+      licences:
+      - Sociedade Corretora de Câmbio
+      situation: Autorizada em Atividade
+      tariff_list_confirmed: true
+      domain_source: filed-website
+    signal_note: 'participation only: a Banco Central do Brasil authorisation to operate; no API conformance is
+      published by this register'
+    detected_by: sweep-brazil-bcb-authorized-institutions.py
+    detected: '2026-10-22'
+  status: not-a-workflow
+  arazzo: null
